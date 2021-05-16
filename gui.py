@@ -34,7 +34,6 @@ def loadImageLeft():
     leftCanvas.delete("all")
 
     imageFile = filedialog.askopenfilename()
-    print(imageFile)
     leftImage = cv2.imread(imageFile)
 
     leftCanvas.grid(row = 2, column = 0)
@@ -47,11 +46,12 @@ def loadImageLeft():
 
     root.geometry("500x400")
 
+    cropRight(leftImage)
+
 def loadImageRight():
     rightCanvas.delete("all")
 
     imageFile = filedialog.askopenfilename()
-    print(imageFile)
     rightImage = cv2.imread(imageFile)
 
     rightCanvas.grid(row = 2, column = 1)
@@ -64,10 +64,13 @@ def loadImageRight():
 
     root.geometry("500x400")
 
+    cropRight(rightImage)
+
 # Crop image for right side of the target and start analysis process
 def cropRight(image):
     label.config(text="Analyzing right side...")
 
+    #region Crop the image
     y=275
     x=720
     h=580
@@ -103,7 +106,9 @@ def cropRight(image):
     h=580
     w=580
     crop6 = image[y:y+h, x:x+w]
+    #endregion
 
+    # Save the cropped sections
     cv2.imwrite("images/output/top-mid.jpg", crop1)
     cv2.imwrite("images/output/top-right.jpg", crop2)
     cv2.imwrite("images/output/upper-right.jpg", crop3)
@@ -111,25 +116,28 @@ def cropRight(image):
     cv2.imwrite("images/output/bottom-right.jpg", crop5)
     cv2.imwrite("images/output/bottom-mid.jpg", crop6)
 
-    # Open Explorer to the location of the images
+    #region (OLD) Open Explorer to the location of the images
     #os.system("explorer " + '"' + os.getcwd() + "\images" + '"')
+    #endregion
 
-    # Run the analysis program on all of the images
+    #region (OLD) Run the analysis program on all of the images
     #os.system("python " + '"' + os.getcwd() + "\improved.py" + '"' + " --image " + '"' + os.getcwd() + "\images\\output\\top-mid.jpg" + '"')
     #os.system("python " + '"' + os.getcwd() + "\improved.py" + '"' + " --image " + '"' + os.getcwd() + "\images\\output\\top-right.jpg" + '"')
     #os.system("python " + '"' + os.getcwd() + "\improved.py" + '"' + " --image " + '"' + os.getcwd() + "\images\\output\\upper-right.jpg" + '"')
     #os.system("python " + '"' + os.getcwd() + "\improved.py" + '"' + " --image " + '"' + os.getcwd() + "\images\\output\\lower-right.jpg" + '"')
     #os.system("python " + '"' + os.getcwd() + "\improved.py" + '"' + " --image " + '"' + os.getcwd() + "\images\\output\\bottom-right.jpg" + '"')
     #os.system("python " + '"' + os.getcwd() + "\improved.py" + '"' + " --image " + '"' + os.getcwd() + "\images\\output\\bottom-mid.jpg" + '"')
+    #endregion
 
-    analyzeImage("images/output/top-mid.jpg")
-    analyzeImage("images/output/top-right.jpg")
-    analyzeImage("images/output/upper-right.jpg")
-    analyzeImage("images/output/lower-right.jpg")
-    analyzeImage("images/output/bottom-right.jpg")
-    analyzeImage("images/output/bottom-mid.jpg")
+    #region (OLD) Run the analysis function
+    # analyzeImage("images/output/top-mid.jpg")
+    # analyzeImage("images/output/top-right.jpg")
+    # analyzeImage("images/output/upper-right.jpg")
+    # analyzeImage("images/output/lower-right.jpg")
+    # analyzeImage("images/output/bottom-right.jpg")
+    # analyzeImage("images/output/bottom-mid.jpg")
 
-    label.config(text="Done")
+    #label.config(text="Done")
 
 # Crop image for left side of the target and start analysis process
 def cropLeft(image):
@@ -138,6 +146,7 @@ def cropLeft(image):
     verticalFlippedImage = cv2.flip(image, -1)
     cv2.imwrite("images/output/vertical-flipped.jpg", verticalFlippedImage)
 
+    #region Crop each image
     y=240
     x=185
     h=580
@@ -161,7 +170,9 @@ def cropLeft(image):
     h=580
     w=580
     crop5 = verticalFlippedImage[y:y+h, x:x+w]
+    #endregion
 
+    # Save the cropped sections
     cv2.imwrite("images/output/top-left.jpg", crop2)
     cv2.imwrite("images/output/upper-left.jpg", crop3)
     cv2.imwrite("images/output/lower-left.jpg", crop4)
@@ -176,17 +187,21 @@ def cropLeft(image):
         filewriter.writerow(["Image", "Dropped", "X", "HoleX", "HoleY", "Distance"])
         csvfile.close()
 
-    # Run the analysis program on all of the images
+    #region (OLD) Run the analysis program on all of the images
     #os.system("python " + '"' + os.getcwd() + "\improved.py" + '"' + " --image " + '"' + os.getcwd() + "\images\\output\\top-left.jpg" + '"' + " --month " + monthVar.get() + " --day " + dayVar.get() + " --year " + yearVar.get() + " --name " + nameVar.get())
     #os.system("python " + '"' + os.getcwd() + "\improved.py" + '"' + " --image " + '"' + os.getcwd() + "\images\\output\\upper-left.jpg" + '"' + " --month " + monthVar.get() + " --day " + dayVar.get() + " --year " + yearVar.get() + " --name " + nameVar.get())
     #os.system("python " + '"' + os.getcwd() + "\improved.py" + '"' + " --image " + '"' + os.getcwd() + "\images\\output\\lower-left.jpg" + '"' + " --month " + monthVar.get() + " --day " + dayVar.get() + " --year " + yearVar.get() + " --name " + nameVar.get())
     #os.system("python " + '"' + os.getcwd() + "\improved.py" + '"' + " --image " + '"' + os.getcwd() + "\images\\output\\bottom-left.jpg" + '"' + " --month " + monthVar.get() + " --day " + dayVar.get() + " --year " + yearVar.get() + " --name " + nameVar.get())
-    analyzeImage("images/output/top-left.jpg")
-    analyzeImage("images/output/upper-left.jpg")
-    analyzeImage("images/output/lower-left.jpg")
-    analyzeImage("images/output/bottom-left.jpg")
+    #endregion
 
-    label.config(text="Done")
+    #region (OLD) Run the analysis function on each image
+    # analyzeImage("images/output/top-left.jpg")
+    # analyzeImage("images/output/upper-left.jpg")
+    # analyzeImage("images/output/lower-left.jpg")
+    # analyzeImage("images/output/bottom-left.jpg")
+    #endregion
+
+    #label.config(text="Done")
 
 # Open the working folder in Explorer
 def showFolder():
@@ -430,11 +445,13 @@ root.title("Target Analysis")
 menubar = tk.Menu(root)
 
 filemenu = tk.Menu(menubar, tearoff=0)
-filemenu.add_command(label="Load Image", command=loadImage)
-filemenu.add_command(label="Save CSV", command=saveCSV)
-filemenu.add_command(label="Open Folder", command=openFolder)
+#filemenu.add_command(label="Load Image", command=loadImage)
+filemenu.add_command(label="Load left image", command=loadImageLeft)
+filemenu.add_command(label="Load right image", command=loadImageRight)
+#filemenu.add_command(label="Save CSV", command=saveCSV)
+#filemenu.add_command(label="Open Folder", command=openFolder)
 filemenu.add_command(label="Show in Explorer", command=showFolder)
-filemenu.add_command(label="Create CSV data file", command=createCSV)
+#filemenu.add_command(label="Create CSV data file", command=createCSV)
 filemenu.add_separator()
 filemenu.add_command(label="Exit", command=root.quit)
 menubar.add_cascade(label="File", menu=filemenu)
@@ -465,9 +482,6 @@ leftImageButton = tk.Button(root, text = "Select left image", command = loadImag
 leftImageButton.grid(row=1, column=0)
 rightImageButton = tk.Button(root, text = "Select right image", command = loadImageRight)
 rightImageButton.grid(row=1, column=1)
-
-#leftCanvas = tk.Canvas(root, width=230,height=300)
-#leftCanvas.grid(row = 4, columnspan = 4)
 
 leftCanvas = tk.Canvas(root, width=230,height=300)
 leftCanvas.grid(row = 2, column = 0)
