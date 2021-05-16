@@ -11,24 +11,25 @@ import argparse
 import datetime
 #endregion
 
-# Load an image using a file selection window
-def loadImage():
-    canvas.delete("all")
+#region (OLD) Load an image using a file selection window
+# def loadImage():
+#     canvas.delete("all")
 
-    imageFile = filedialog.askopenfilename()
-    print(imageFile)
-    global image
-    image = cv2.imread(imageFile)
+#     imageFile = filedialog.askopenfilename()
+#     print(imageFile)
+#     global image
+#     image = cv2.imread(imageFile)
 
-    canvas.grid(row=5,columnspan=3)
+#     canvas.grid(row=5,columnspan=3)
     
-    global preview
-    preview = ImageTk.PhotoImage(Image.open(imageFile).resize((230, 300), Image.ANTIALIAS))
-    canvas.create_image(0, 0, anchor="nw", image=preview)
+#     global preview
+#     preview = ImageTk.PhotoImage(Image.open(imageFile).resize((230, 300), Image.ANTIALIAS))
+#     canvas.create_image(0, 0, anchor="nw", image=preview)
 
-    label.config(text="Image loaded")
+#     label.config(text="Image loaded")
 
-    root.geometry("400x400")
+#     root.geometry("400x400")
+#endregion
 
 def loadImageLeft():
     leftCanvas.delete("all")
@@ -181,11 +182,11 @@ def cropLeft(image):
     # Open Explorer to the location of the images
     #os.system("explorer " + '"' + os.getcwd() + "\images" + '"')
 
-    csvName = "data/data-" + nameVar.get() + dayVar.get() + monthVar.get() + yearVar.get() + targetNumVar.get()
-    with open('data/data.csv', 'x', newline="") as csvfile:
-        filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        filewriter.writerow(["Image", "Dropped", "X", "HoleX", "HoleY", "Distance"])
-        csvfile.close()
+    # csvName = "data/data-" + nameVar.get() + dayVar.get() + monthVar.get() + yearVar.get() + targetNumVar.get()
+    # with open('data/data.csv', 'x', newline="") as csvfile:
+    #     filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+    #     filewriter.writerow(["Image", "Dropped", "X", "HoleX", "HoleY", "Distance"])
+    #     csvfile.close()
 
     #region (OLD) Run the analysis program on all of the images
     #os.system("python " + '"' + os.getcwd() + "\improved.py" + '"' + " --image " + '"' + os.getcwd() + "\images\\output\\top-left.jpg" + '"' + " --month " + monthVar.get() + " --day " + dayVar.get() + " --year " + yearVar.get() + " --name " + nameVar.get())
@@ -203,18 +204,26 @@ def cropLeft(image):
 
     #label.config(text="Done")
 
+# Runs the analyzeImage function for every image that has been cropped out
+def analyzeTarget():
+    analyzeImage("images/output/top-left.jpg")
+    analyzeImage("images/output/upper-left.jpg")
+    analyzeImage("images/output/lower-left.jpg")
+    analyzeImage("images/output/bottom-left.jpg")
+    analyzeImage("images/output/top-mid.jpg")
+    analyzeImage("images/output/top-right.jpg")
+    analyzeImage("images/output/upper-right.jpg")
+    analyzeImage("images/output/lower-right.jpg")
+    analyzeImage("images/output/bottom-right.jpg")
+    analyzeImage("images/output/bottom-mid.jpg")
+
 # Open the working folder in Explorer
 def showFolder():
     os.system("explorer " + '"' + os.getcwd() + "\images" + '"')
     label.config(text="Working directory opened in Explorer")
 
-# Open documentation (txt) in Notepad
+# Open documentation with associated editor
 def showDocumentation(docFile):
-    os.system("notepad " + '"' + os.getcwd() + "\help\\" + docFile + '"')
-    label.config(text="Showing documentation " + str(docFile))
-
-# Show documentation picture using default file viewer
-def showPicture(docFile):
     os.system('"' + os.getcwd() + "\help\\" + docFile + '"')
     label.config(text="Showing documentation " + str(docFile))
 
@@ -432,9 +441,6 @@ def analyzeImage(image):
     #cv2.imshow("output", output)
     cv2.imwrite(image + "-output.jpg", output)
 
-score = 100
-xCount = 0
-
 root = tk.Tk()
 root.minsize(500,200)
 root.geometry("500x200")
@@ -448,6 +454,7 @@ filemenu = tk.Menu(menubar, tearoff=0)
 #filemenu.add_command(label="Load Image", command=loadImage)
 filemenu.add_command(label="Load left image", command=loadImageLeft)
 filemenu.add_command(label="Load right image", command=loadImageRight)
+filemenu.add_command(label="Analyze target", command=loadImageRight)
 #filemenu.add_command(label="Save CSV", command=saveCSV)
 #filemenu.add_command(label="Open Folder", command=openFolder)
 filemenu.add_command(label="Show in Explorer", command=showFolder)
@@ -456,16 +463,16 @@ filemenu.add_separator()
 filemenu.add_command(label="Exit", command=root.quit)
 menubar.add_cascade(label="File", menu=filemenu)
 
-analysismenu=tk.Menu(menubar, tearoff=0)
-analysismenu.add_command(label="Analyze Left Side", command=lambda: cropLeft(image))
-analysismenu.add_command(label="Analyze Right Side", command=lambda: cropRight(image))
-menubar.add_cascade(label="Analyze", menu=analysismenu)
+# analysismenu=tk.Menu(menubar, tearoff=0)
+# analysismenu.add_command(label="Analyze Left Side", command=lambda: cropLeft(image))
+# analysismenu.add_command(label="Analyze Right Side", command=lambda: cropRight(image))
+# menubar.add_cascade(label="Analyze", menu=analysismenu)
 
 helpmenu = tk.Menu(menubar, tearoff=0)
 helpmenu.add_command(label="Usage", command=lambda: showDocumentation("usage.txt"))
 helpmenu.add_separator()
 helpmenu.add_command(label="Scanning", command=lambda: showDocumentation("scanning.txt"))
-helpmenu.add_command(label="Scanning diagram", command=lambda: showPicture("scanner.jpg"))
+helpmenu.add_command(label="Scanning diagram", command=lambda: showDocumentation("scanner.jpg"))
 helpmenu.add_separator()
 helpmenu.add_command(label="Measurements", command=lambda: showDocumentation("measurements.txt"))
 helpmenu.add_command(label="Information", command=lambda: showDocumentation("information.txt"))
@@ -474,12 +481,14 @@ menubar.add_cascade(label="Help", menu=helpmenu)
 root.config(menu=menubar)
 #endregion
 
-# Label at top of root alerts the user
+# Label at top of root alerts the user to the program's actions
 label = tk.Label(root, text="Click File -> Load Image to get started")
 label.grid(row = 0, columnspan = 2)
 
+# Add buttons and canvases for the left and right target images
 leftImageButton = tk.Button(root, text = "Select left image", command = loadImageLeft)
 leftImageButton.grid(row=1, column=0)
+
 rightImageButton = tk.Button(root, text = "Select right image", command = loadImageRight)
 rightImageButton.grid(row=1, column=1)
 
@@ -489,6 +498,7 @@ leftCanvas.grid(row = 2, column = 0)
 rightCanvas = tk.Canvas(root, width=230,height=300)
 rightCanvas.grid(row = 2, column = 1)
 
+#region Entry boxes for main page
 # monthVar = tk.StringVar()
 # monthVar.set("")
 # monthEntry = tk.Entry(root, textvariable=monthVar)
@@ -518,5 +528,6 @@ rightCanvas.grid(row = 2, column = 1)
 # nameVar.set("Sigmond Kukla")
 # nameEntry = tk.Entry(root, textvariable=nameVar)
 # nameEntry.grid(column = 0, row = 2, columnspan = 4, padx = 2, pady = 2, ipadx = 128)
+#endregion
 
 tk.mainloop()
