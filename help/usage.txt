@@ -1,0 +1,7 @@
+Documentation - Usage
+
+To score a target:
+1. Click File -> Load Image and select your scanned image for the left side
+2. Click Analyze -> Analyze Left Side
+3. Hit any key on the keyboard or click the [X] on the analysis windows to move to the next bull
+4. Repeat steps 1 to 3, selecting the scan for the right side and selecting Analyze -> Analyze Right Side
