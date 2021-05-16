@@ -1,3 +1,4 @@
+#region Import libraries
 import cv2
 import tkinter as tk
 from tkinter import filedialog
@@ -8,15 +9,7 @@ import numpy as np
 import math
 import argparse
 import datetime
-
-score = 100
-xCount = 0
-
-root = tk.Tk()
-root.minsize(400,150)
-root.geometry("400x150")
-root.iconbitmap("assets/icon.ico")
-root.title("Target Analysis")
+#endregion
 
 # Load an image using a file selection window
 def loadImage():
@@ -36,7 +29,6 @@ def loadImage():
     label.config(text="Image loaded")
 
     root.geometry("400x400")
-
 
 # Crop image for right side of the target and start analysis process
 def cropRight(image):
@@ -391,9 +383,16 @@ def analyzeImage(image):
     #cv2.imshow("output", output)
     cv2.imwrite(image + "-output.jpg", output)
 
-# --- [TKINTER STUFF] ---
+score = 100
+xCount = 0
 
-# Establish and populate the top menu bar
+root = tk.Tk()
+root.minsize(400,150)
+root.geometry("400x150")
+root.iconbitmap("assets/icon.ico")
+root.title("Target Analysis")
+
+#region Menubar
 menubar = tk.Menu(root)
 
 filemenu = tk.Menu(menubar, tearoff=0)
@@ -420,18 +419,7 @@ helpmenu.add_separator()
 helpmenu.add_command(label="Measurements", command=lambda: showDocumentation("measurements.txt"))
 helpmenu.add_command(label="Information", command=lambda: showDocumentation("information.txt"))
 menubar.add_cascade(label="Help", menu=helpmenu)
-
-#loadButton = tk.Button(root, text="Load Image", command=loadImage)
-#loadButton.pack(padx=5, pady=5)
-
-#ropRightButton = tk.Button(root, text="Analyze Left Side", command=cropLeft)
-#cropRightButton.pack(padx=5, pady=5)
-
-#cropRightButton = tk.Button(root, text="Analyze Right Side", command=cropRight)
-#cropRightButton.pack(padx=5, pady=5)
-
-#showFolderButton = tk.Button(root, text="Show in Explorer", command=showFolder)
-#showFolderButton.pack(padx=5, pady=5)
+#endregion
 
 monthVar = tk.StringVar()
 monthVar.set("")
