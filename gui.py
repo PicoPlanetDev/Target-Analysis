@@ -30,6 +30,40 @@ def loadImage():
 
     root.geometry("400x400")
 
+def loadImageLeft():
+    leftCanvas.delete("all")
+
+    imageFile = filedialog.askopenfilename()
+    print(imageFile)
+    leftImage = cv2.imread(imageFile)
+
+    leftCanvas.grid(row = 2, column = 0)
+    
+    global leftPreview
+    leftPreview = ImageTk.PhotoImage(Image.open(imageFile).resize((230, 300), Image.ANTIALIAS))
+    leftCanvas.create_image(0, 0, anchor="nw", image=leftPreview)
+
+    label.config(text="Image loaded")
+
+    root.geometry("500x400")
+
+def loadImageRight():
+    rightCanvas.delete("all")
+
+    imageFile = filedialog.askopenfilename()
+    print(imageFile)
+    rightImage = cv2.imread(imageFile)
+
+    rightCanvas.grid(row = 2, column = 1)
+    
+    global rightPreview
+    rightPreview = ImageTk.PhotoImage(Image.open(imageFile).resize((230, 300), Image.ANTIALIAS))
+    rightCanvas.create_image(0, 0, anchor="nw", image=rightPreview)
+
+    label.config(text="Image loaded")
+
+    root.geometry("500x400")
+
 # Crop image for right side of the target and start analysis process
 def cropRight(image):
     label.config(text="Analyzing right side...")
@@ -387,8 +421,8 @@ score = 100
 xCount = 0
 
 root = tk.Tk()
-root.minsize(400,150)
-root.geometry("400x150")
+root.minsize(500,200)
+root.geometry("500x200")
 root.iconbitmap("assets/icon.ico")
 root.title("Target Analysis")
 
@@ -419,44 +453,56 @@ helpmenu.add_separator()
 helpmenu.add_command(label="Measurements", command=lambda: showDocumentation("measurements.txt"))
 helpmenu.add_command(label="Information", command=lambda: showDocumentation("information.txt"))
 menubar.add_cascade(label="Help", menu=helpmenu)
-#endregion
-
-monthVar = tk.StringVar()
-monthVar.set("")
-monthEntry = tk.Entry(root, textvariable=monthVar)
-monthEntry.grid(column = 0, row = 1, padx = 2, pady = 2)
-
-dayVar = tk.StringVar()
-dayVar.set("")
-dateEntry = tk.Entry(root, textvariable=dayVar)
-dateEntry.grid(column = 1, row = 1, padx = 2, pady = 2)
-
-yearVar = tk.StringVar()
-yearVar.set("")
-yearEntry = tk.Entry(root, textvariable=yearVar)
-yearEntry.grid(column = 2, row = 1, padx = 2, pady = 2)
-
-targetNumVar = tk.StringVar()
-targetNumVar.set("")
-targetNumEntry = tk.Entry(root, textvariable=targetNumVar)
-targetNumEntry.grid(column = 3, row = 1, padx = 2, pady = 2)
-
-today = datetime.datetime.now()
-monthVar.set(today.strftime("%B"))
-dayVar.set(today.strftime("%d"))
-yearVar.set(today.strftime("%Y"))
-
-nameVar = tk.StringVar()
-nameVar.set("Sigmond Kukla")
-nameEntry = tk.Entry(root, textvariable=nameVar)
-#nameEntry.insert(-1, "Name")
-nameEntry.grid(column = 0, row = 2, columnspan = 4, padx = 2, pady = 2, ipadx = 128)
-
-label = tk.Label(root, text="Click File -> Load Image to get started")
-label.grid(row = 3, columnspan = 3)
-
-canvas = tk.Canvas(root, width=230,height=300)
-canvas.grid(row = 4, columnspan = 3)
 
 root.config(menu=menubar)
+#endregion
+
+# Label at top of root alerts the user
+label = tk.Label(root, text="Click File -> Load Image to get started")
+label.grid(row = 0, columnspan = 2)
+
+leftImageButton = tk.Button(root, text = "Select left image", command = loadImageLeft)
+leftImageButton.grid(row=1, column=0)
+rightImageButton = tk.Button(root, text = "Select right image", command = loadImageRight)
+rightImageButton.grid(row=1, column=1)
+
+#leftCanvas = tk.Canvas(root, width=230,height=300)
+#leftCanvas.grid(row = 4, columnspan = 4)
+
+leftCanvas = tk.Canvas(root, width=230,height=300)
+leftCanvas.grid(row = 2, column = 0)
+
+rightCanvas = tk.Canvas(root, width=230,height=300)
+rightCanvas.grid(row = 2, column = 1)
+
+# monthVar = tk.StringVar()
+# monthVar.set("")
+# monthEntry = tk.Entry(root, textvariable=monthVar)
+# monthEntry.grid(column = 0, row = 1, padx = 2, pady = 2)
+
+# dayVar = tk.StringVar()
+# dayVar.set("")
+# dateEntry = tk.Entry(root, textvariable=dayVar)
+# dateEntry.grid(column = 1, row = 1, padx = 2, pady = 2)
+
+# yearVar = tk.StringVar()
+# yearVar.set("")
+# yearEntry = tk.Entry(root, textvariable=yearVar)
+# yearEntry.grid(column = 2, row = 1, padx = 2, pady = 2)
+
+# targetNumVar = tk.StringVar()
+# targetNumVar.set("")
+# targetNumEntry = tk.Entry(root, textvariable=targetNumVar)
+# targetNumEntry.grid(column = 3, row = 1, padx = 2, pady = 2)
+
+# today = datetime.datetime.now()
+# monthVar.set(today.strftime("%B"))
+# dayVar.set(today.strftime("%d"))
+# yearVar.set(today.strftime("%Y"))
+
+# nameVar = tk.StringVar()
+# nameVar.set("Sigmond Kukla")
+# nameEntry = tk.Entry(root, textvariable=nameVar)
+# nameEntry.grid(column = 0, row = 2, columnspan = 4, padx = 2, pady = 2, ipadx = 128)
+
 tk.mainloop()
