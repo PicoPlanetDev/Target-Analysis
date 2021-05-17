@@ -1,5 +1,5 @@
 #region Import libraries
-from tkinter.constants import BOTTOM, CENTER, FLAT, LEFT, RIGHT, SOLID, SUNKEN, TOP
+from tkinter.constants import BOTTOM, CENTER, FLAT, HORIZONTAL, LEFT, NSEW, RIGHT, SOLID, SUNKEN, TOP, X
 import cv2
 import tkinter as tk
 from tkinter import ttk
@@ -14,26 +14,6 @@ import argparse
 import datetime
 import shutil
 from numpy.core.fromnumeric import var
-#endregion
-
-#region (OLD) Load an image using a file selection window
-# def loadImage():
-#     canvas.delete("all")
-
-#     imageFile = filedialog.askopenfilename()
-#     print(imageFile)
-#     global image
-#     image = cv2.imread(imageFile)
-
-#     canvas.grid(row=5,columnspan=3)
-    
-#     global preview
-#     preview = ImageTk.PhotoImage(Image.open(imageFile).resize((230, 300), Image.ANTIALIAS))
-#     canvas.create_image(0, 0, anchor="nw", image=preview)
-
-#     label.config(text="Image loaded")
-
-#     root.geometry("400x400")
 #endregion
 
 # Loads an image for the left side of the target
@@ -258,17 +238,18 @@ def createCSV():
     label.config(text="Created CSV data file")
 
 #region Opens and analyzes all files in a folder
-# def openFolder():
-#     folder = filedialog.askdirectory()
-#     for file in os.listdir(folder):
-#         if file.endswith(".jpeg") or file.endswith(".jpg"):
-#             path = os.getcwd() + "\images\\" + file
-#             setInfoFromFile(file)
-#             fileImage = cv2.imread(path)
-#             if "left" in file:
-#                 cropLeft(fileImage)
-#             elif "right" in file:
-#                 cropRight(fileImage)
+def openFolder():
+    folder = filedialog.askdirectory()
+    for file in os.listdir(folder):
+        if file.endswith(".jpeg"):
+            path = os.getcwd() + "\images\\" + file
+            setInfoFromFile(file)
+            fileImage = cv2.imread(path)
+            if "left" in file:
+                cropLeft(fileImage)
+            elif "right" in file:
+                cropRight(fileImage)
+            analyzeTarget()
 #endregion
 
 # Sets file options by parsing a correctly-named target         
@@ -511,13 +492,16 @@ menubar.add_cascade(label="Help", menu=helpmenu)
 root.config(menu=menubar)
 #endregion
 
-#region Set up the top, options, and bottom frames
+#region Set up frames
 topFrame = ttk.Frame(root)
-topFrame.pack()
+topFrame.pack(fill=X)
+
 optionsFrame = ttk.Frame(root)
-optionsFrame.pack(side=tk.TOP)
+optionsFrame.pack(side=tk.TOP, pady=10)
+
 buttonsFrame = ttk.Frame(root)
 buttonsFrame.pack(side=tk.TOP)
+
 bottomFrame = ttk.Frame(root)
 bottomFrame.pack(side=tk.TOP)
 #endregion
@@ -525,39 +509,40 @@ bottomFrame.pack(side=tk.TOP)
 #region Label at top of the frame alerts the user to the program's actions uses topFrame
 label = ttk.Label(topFrame, text="Click File -> Load Image to get started")
 label.pack(side=tk.TOP, padx=10, pady=5)
+labelSeparator = ttk.Separator(topFrame, orient=HORIZONTAL)
+labelSeparator.pack(side=tk.TOP, fill=X)
 #endregion
 
 #region Options area uses optionsFrame
+
+# Month, day, year, and target number on same line
 monthVar = tk.StringVar()
 monthVar.set("Month")
 monthEntry = ttk.Entry(optionsFrame, textvariable=monthVar, width=10)
-#monthEntry.pack(side=LEFT)
-monthEntry.grid(column = 0, row = 0)
+monthEntry.grid(column = 0, row = 0, sticky=NSEW)
 
 dayVar = tk.StringVar()
 dayVar.set("Day")
 dateEntry = ttk.Entry(optionsFrame, textvariable=dayVar, width=5)
-#dateEntry.pack(side=LEFT)
-dateEntry.grid(column = 1, row = 0)
+dateEntry.grid(column = 1, row = 0, sticky=NSEW)
 
 yearVar = tk.StringVar()
 yearVar.set("Year")
 yearEntry = ttk.Entry(optionsFrame, textvariable=yearVar, width=5)
-#yearEntry.pack(side=LEFT)
-yearEntry.grid(column = 2, row = 0)
+yearEntry.grid(column = 2, row = 0, sticky=NSEW)
 
 targetNumVar = tk.StringVar()
 targetNumVar.set("Num")
 targetNumEntry = ttk.Entry(optionsFrame, textvariable=targetNumVar, width=5)
-#targetNumEntry.pack(side=LEFT)
-targetNumEntry.grid(column = 3, row = 0)
+targetNumEntry.grid(column = 3, row = 0, sticky=NSEW)
 
+# Name goes below
 nameVar = tk.StringVar()
 nameVar.set("Sigmond")
 nameEntry = ttk.Entry(optionsFrame, textvariable=nameVar, width=30)
-#nameEntry.pack(side=tk.TOP)
-nameEntry.grid(column = 0, row = 1, columnspan = 4)
+nameEntry.grid(column = 0, row = 1, columnspan = 4, sticky=NSEW)
 
+# Today button and use file info checkbox are placed to the right of the name and date
 todayButton = ttk.Button(optionsFrame, text="Use Today", command=setInfoFromToday)
 todayButton.grid(column=4, row=0, rowspan=2, padx=10)
 
@@ -569,13 +554,13 @@ useFileInfoCheckbutton.grid(column=5, row=0, rowspan=2, padx=5)
 
 #region Add buttons for loading images and analyzing the target uses buttonsFrame
 leftImageButton = ttk.Button(buttonsFrame, text = "Select left image", command = loadImageLeft)
-leftImageButton.grid(row=0, column=0, padx=5, pady=10)
+leftImageButton.grid(row=0, column=0, padx=5, pady=5)
 
 analyzeTargetButton = ttk.Button(buttonsFrame, text = "Analyze target", command = analyzeTarget)
-analyzeTargetButton.grid(row=0, column=1, padx=5, pady=10)
+analyzeTargetButton.grid(row=0, column=1, padx=5, pady=5)
 
 rightImageButton = ttk.Button(buttonsFrame, text = "Select right image", command = loadImageRight)
-rightImageButton.grid(row=0, column=2, padx=5, pady=10)
+rightImageButton.grid(row=0, column=2, padx=5, pady=5)
 #endregion
 
 #region Add canvases uses bottomFrame

@@ -1,8 +1,8 @@
 Documentation - Measurements
 
 *Disclaimer: This might not actually be what these rings are called... I'm just going off of what I used in the code.
-*Disclaimer: This might be the radius, it might also be the diameter. I don't remember.
 
+Measurements used in the target analysis system (radius):
 Outer ring   - 46.150 millimeters
 Five ring    - 37.670 millimeters
 Six ring     - 29.210 millimeters
@@ -10,6 +10,7 @@ Seven ring   - 20.750 millimeters
 Eight ring   - 12.270 millimeters
 Nine ring    - 3.810 millimeters
 
-Scoring spindle on scoring gauge uses radius 2.8 millimeters
+Scoring spindle on scoring gauge uses radius 2.8 millimeters (equivalent to ⌀5.6mm)
 
 All of these millimeter values are converted to pixel values through calibration to the detected outer ring of the target.
+The target analysis system uses Hough Circles to identify a large circle in the scanned image. If the ratio of the detected ring to the image size is incorrect, the circle will be multiplied to adjust it accordingly.

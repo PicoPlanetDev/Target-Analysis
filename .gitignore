@@ -126,3 +126,6 @@ dmypy.json
 
 # all images
 images/**
+
+# all data
+data/**
