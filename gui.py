@@ -2,6 +2,8 @@
 from tkinter.constants import BOTTOM, CENTER, LEFT, RIGHT, TOP
 import cv2
 import tkinter as tk
+from tkinter import ttk
+from ttkthemes import ThemedTk
 from tkinter import Frame, filedialog
 from PIL import ImageTk,Image
 import os
@@ -44,10 +46,10 @@ def loadImageLeft():
     if useFileInfo.get() is True:
         setInfoFromFile(imageFile)
 
-    leftCanvas.grid(row = 4, column = 0, columnspan=2)
+    leftCanvas.grid(row = 0, column = 0)
     
     global leftPreview
-    leftPreview = ImageTk.PhotoImage(Image.open(imageFile).resize((230, 300), Image.ANTIALIAS))
+    leftPreview = ImageTk.PhotoImage(Image.open(imageFile).resize((230, 350), Image.ANTIALIAS))
     leftCanvas.create_image(0, 0, anchor="nw", image=leftPreview)
 
     label.config(text="Image loaded")
@@ -66,10 +68,10 @@ def loadImageRight():
     if useFileInfo.get() is True:
         setInfoFromFile(imageFile)
 
-    rightCanvas.grid(row = 4, column = 2, columnspan=2)
+    rightCanvas.grid(row = 0, column = 1)
     
     global rightPreview
-    rightPreview = ImageTk.PhotoImage(Image.open(imageFile).resize((230, 300), Image.ANTIALIAS))
+    rightPreview = ImageTk.PhotoImage(Image.open(imageFile).resize((230, 350), Image.ANTIALIAS))
     rightCanvas.create_image(0, 0, anchor="nw", image=rightPreview)
 
     label.config(text="Image loaded")
@@ -240,8 +242,8 @@ def showFolder():
 
 # Open documentation with associated editor
 def showDocumentation(docFile):
-    os.system('"' + os.getcwd() + "\help\\" + docFile + '"')
     label.config(text="Showing documentation " + str(docFile))
+    os.system('"' + os.getcwd() + "\help\\" + docFile + '"')
 
 # Basic implementation of the distance formula
 def ComputeDistance(x1, y1, x2, y2):
@@ -254,17 +256,6 @@ def createCSV():
         filewriter.writerow(['Name', 'Month','Day','Year','Score','X'])
         csvfile.close()
     label.config(text="Created CSV data file")
-
-def saveCSV():
-    global score
-    global xCount
-    with open('data.csv', 'a', newline="") as csvfile:
-        filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        filewriter.writerow([str(nameVar.get()),str(monthVar.get()),str(dayVar.get()),str(yearVar.get()),str(score),str(xCount)+"X"])
-        csvfile.close()
-    label.config(text="Appended target to CSV data file")
-    score=100
-    xCount=0
 
 #region Opens and analyzes all files in a folder
 # def openFolder():
@@ -319,6 +310,7 @@ def setInfoFromToday():
     yearVar.set(today.strftime("%Y"))
     targetNumVar.set("1")
 
+# Delete all files in the data folder
 def clearData():
     shutil.rmtree(os.getcwd()+"\data")
     os.mkdir(os.getcwd()+"\data")
@@ -481,7 +473,8 @@ def analyzeImage(image):
     cv2.imwrite(image + "-output.jpg", output)
 
 #region Initialize tkinter
-root = tk.Tk()
+#root = tk.Tk()
+root = ThemedTk(theme="breeze")
 root.minsize(500,200)
 root.geometry("500x200")
 root.iconbitmap("assets/icon.ico")
@@ -505,11 +498,6 @@ filemenu.add_separator()
 filemenu.add_command(label="Exit", command=root.quit)
 menubar.add_cascade(label="File", menu=filemenu)
 
-# analysismenu=tk.Menu(menubar, tearoff=0)
-# analysismenu.add_command(label="Analyze Left Side", command=lambda: cropLeft(image))
-# analysismenu.add_command(label="Analyze Right Side", command=lambda: cropRight(image))
-# menubar.add_cascade(label="Analyze", menu=analysismenu)
-
 helpmenu = tk.Menu(menubar, tearoff=0)
 helpmenu.add_command(label="Usage", command=lambda: showDocumentation("usage.txt"))
 helpmenu.add_separator()
@@ -524,71 +512,78 @@ root.config(menu=menubar)
 #endregion
 
 #region Set up the top, options, and bottom frames
-topFrame = tk.Frame(root)
+topFrame = ttk.Frame(root)
 topFrame.pack()
-optionsFrame = tk.Frame(root)
+optionsFrame = ttk.Frame(root)
 optionsFrame.pack(side=tk.TOP)
-bottomFrame = tk.Frame(root)
-bottomFrame.pack(side=tk.BOTTOM)
+buttonsFrame = ttk.Frame(root)
+buttonsFrame.pack(side=tk.TOP)
+bottomFrame = ttk.Frame(root)
+bottomFrame.pack(side=tk.TOP)
 #endregion
 
 #region Label at top of the frame alerts the user to the program's actions uses topFrame
-label = tk.Label(topFrame, text="Click File -> Load Image to get started")
+label = ttk.Label(topFrame, text="Click File -> Load Image to get started")
 label.pack(side=tk.TOP)
 #endregion
 
 #region Options area uses optionsFrame
 monthVar = tk.StringVar()
 monthVar.set("Month")
-monthEntry = tk.Entry(optionsFrame, textvariable=monthVar, width=10)
+monthEntry = ttk.Entry(optionsFrame, textvariable=monthVar, width=10)
 #monthEntry.pack(side=LEFT)
 monthEntry.grid(column = 0, row = 0)
 
 dayVar = tk.StringVar()
 dayVar.set("Day")
-dateEntry = tk.Entry(optionsFrame, textvariable=dayVar, width=5)
+dateEntry = ttk.Entry(optionsFrame, textvariable=dayVar, width=5)
 #dateEntry.pack(side=LEFT)
 dateEntry.grid(column = 1, row = 0)
 
 yearVar = tk.StringVar()
 yearVar.set("Year")
-yearEntry = tk.Entry(optionsFrame, textvariable=yearVar, width=5)
+yearEntry = ttk.Entry(optionsFrame, textvariable=yearVar, width=5)
 #yearEntry.pack(side=LEFT)
 yearEntry.grid(column = 2, row = 0)
 
 targetNumVar = tk.StringVar()
 targetNumVar.set("Num")
-targetNumEntry = tk.Entry(optionsFrame, textvariable=targetNumVar, width=5)
+targetNumEntry = ttk.Entry(optionsFrame, textvariable=targetNumVar, width=5)
 #targetNumEntry.pack(side=LEFT)
 targetNumEntry.grid(column = 3, row = 0)
 
 nameVar = tk.StringVar()
 nameVar.set("Sigmond")
-nameEntry = tk.Entry(optionsFrame, textvariable=nameVar, width=23)
+nameEntry = ttk.Entry(optionsFrame, textvariable=nameVar, width=23)
 #nameEntry.pack(side=tk.TOP)
 nameEntry.grid(column = 0, row = 1, columnspan = 4)
 
-todayButton = tk.Button(optionsFrame, text="Use Today", command=setInfoFromToday)
+todayButton = ttk.Button(optionsFrame, text="Use Today", command=setInfoFromToday)
 todayButton.grid(column=4, row=0, rowspan=2, padx=10)
 
 useFileInfo = tk.BooleanVar()
 useFileInfo.set(True)
-useFileInfoCheckbutton = tk.Checkbutton(optionsFrame, text="Use info from file", variable=useFileInfo, onvalue=True, offvalue=False)
+useFileInfoCheckbutton = ttk.Checkbutton(optionsFrame, text="Use info from file", variable=useFileInfo, onvalue=True, offvalue=False)
 useFileInfoCheckbutton.grid(column=5, row=0, rowspan=2, padx=5)
 #endregion
 
-#region Add buttons and canvases for the left and right target images uses bottomFrame
-leftImageButton = tk.Button(bottomFrame, text = "Select left image", command = loadImageLeft)
-leftImageButton.grid(row=3, column=0, columnspan=2)
+#region Add buttons for loading images and analyzing the target uses buttonsFrame
+leftImageButton = ttk.Button(buttonsFrame, text = "Select left image", command = loadImageLeft)
+leftImageButton.grid(row=0, column=0, padx=5, pady=10)
 
-rightImageButton = tk.Button(bottomFrame, text = "Select right image", command = loadImageRight)
-rightImageButton.grid(row=3, column=2, columnspan=2)
+analyzeTargetButton = ttk.Button(buttonsFrame, text = "Analyze target", command = analyzeTarget)
+analyzeTargetButton.grid(row=0, column=1, padx=5, pady=10)
 
+rightImageButton = ttk.Button(buttonsFrame, text = "Select right image", command = loadImageRight)
+rightImageButton.grid(row=0, column=2, padx=5, pady=10)
+#endregion
+
+#region Add canvases uses bottomFrame
 leftCanvas = tk.Canvas(bottomFrame, width=230,height=300)
-leftCanvas.grid(row = 4, column = 0, columnspan=2)
+leftCanvas.grid(row = 0, column = 0)
 
 rightCanvas = tk.Canvas(bottomFrame, width=230,height=300)
-rightCanvas.grid(row = 4, column = 2, columnspan=2)
+rightCanvas.grid(row = 0, column = 1)
 #endregion
 
 tk.mainloop()
