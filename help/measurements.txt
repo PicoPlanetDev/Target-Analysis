@@ -10,6 +10,6 @@ Seven ring   - 20.750 millimeters
 Eight ring   - 12.270 millimeters
 Nine ring    - 3.810 millimeters
 
-Scoring spindle on scoring gauge uses radius 2.794 millimeters
+Scoring spindle on scoring gauge uses radius 2.8 millimeters
 
 All of these millimeter values are converted to pixel values through calibration to the detected outer ring of the target.

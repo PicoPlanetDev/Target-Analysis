@@ -3,6 +3,11 @@ Documentation - Scanning
 For a normal-sized scanner glass, two scans must be used.
 
 1. Place the target on the scanner glass with the top left of the back of the target pressed firmly into the back right corner of the glass.
-2. Scan the target to the computer, saving it as an IMAGE (jpeg preferred) in the Target Analysis -> "images" folder. Name it something like <date>-right
+2. Scan the target to the computer, saving it as an IMAGE (jpeg file) in the Target Analysis -> "images" folder.
 3. Rotate the target 180° so that the top left of the back of the page is now in the front left corner. Firmly press the top right into the back left of the scanner glass.
-4. Scan the target to the computer, saving it as an IMAGE (jpeg preferred) in the Target Analysis -> "images" folder. Name it something like <date>-left
+4. Scan the target to the computer, saving it as an IMAGE (jpeg file) in the Target Analysis -> "images" folder.
+
+If you would like to use the Open Folder operation or automatic information parsing, make sure to name the scans as such:
+<2 number day><3 letter shortened month><Year><left side or right><target number>.jpeg
+For example:
+"03jan2021left1.jpeg" and "03jan2021right1.jpeg"

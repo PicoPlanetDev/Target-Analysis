@@ -1,7 +1,17 @@
 Documentation - Usage
 
 To score a target:
-1. Click File -> Load Image and select your scanned image for the left side
-2. Click Analyze -> Analyze Left Side
-3. Hit any key on the keyboard or click the [X] on the analysis windows to move to the next bull
-4. Repeat steps 1 to 3, selecting the scan for the right side and selecting Analyze -> Analyze Right Side
+1. Click File -> Load left image and select your scanned image for the left side (or click the [Select left image] button at the bottom)
+2. Click File -> Load right image and select your scanned image for the right side (or click the [Select right image] button at the bottom)
+3. Click File -> Analyze target (or click the [Analyze target] button at the bottom)
+4. Click the [X] on the analysis windows to view results for each bull
+
+Data from the analysis is stored in the data folder as data-<Name><Day><Month><Year><Target number>.csv
+
+For each target, you can click [Use Today] to set today's date and use target #1. The target number allows you to score multiple targets from the same person on the same day.
+If "Use info from file" is selected, the program will automatically update the date and target number.
+For this, you must name the target files as such:
+<2 number day><3 letter shortened month><Year><left side or right><target number>.jpeg
+
+For example:
+"03jan2021left1.jpeg" and "03jan2021right1.jpeg"

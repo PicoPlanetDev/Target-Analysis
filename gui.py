@@ -1,5 +1,5 @@
 #region Import libraries
-from tkinter.constants import BOTTOM, CENTER, LEFT, RIGHT, TOP
+from tkinter.constants import BOTTOM, CENTER, FLAT, LEFT, RIGHT, SOLID, SUNKEN, TOP
 import cv2
 import tkinter as tk
 from tkinter import ttk
@@ -486,16 +486,16 @@ menubar = tk.Menu(root)
 
 filemenu = tk.Menu(menubar, tearoff=0)
 #filemenu.add_command(label="Load Image", command=loadImage)
-filemenu.add_command(label="Load left image", command=loadImageLeft)
-filemenu.add_command(label="Load right image", command=loadImageRight)
-filemenu.add_command(label="Analyze target", command=analyzeTarget)
+filemenu.add_command(label="📂 Load left image", command=loadImageLeft)
+filemenu.add_command(label="📂 Load right image", command=loadImageRight)
+filemenu.add_command(label="🎯 Analyze target", command=analyzeTarget)
 #filemenu.add_command(label="Save CSV", command=saveCSV)
 #filemenu.add_command(label="Open Folder", command=openFolder)
-filemenu.add_command(label="Show in Explorer", command=showFolder)
-filemenu.add_command(label="⚠ Clear data ⚠", command=clearData)
+filemenu.add_command(label="💾 Show in Explorer", command=showFolder)
+filemenu.add_command(label="⚠️ Clear data", command=clearData)
 #filemenu.add_command(label="Create CSV data file", command=createCSV)
 filemenu.add_separator()
-filemenu.add_command(label="Exit", command=root.quit)
+filemenu.add_command(label="❌ Exit", command=root.quit)
 menubar.add_cascade(label="File", menu=filemenu)
 
 helpmenu = tk.Menu(menubar, tearoff=0)
@@ -524,7 +524,7 @@ bottomFrame.pack(side=tk.TOP)
 
 #region Label at top of the frame alerts the user to the program's actions uses topFrame
 label = ttk.Label(topFrame, text="Click File -> Load Image to get started")
-label.pack(side=tk.TOP)
+label.pack(side=tk.TOP, padx=10, pady=5)
 #endregion
 
 #region Options area uses optionsFrame
@@ -554,7 +554,7 @@ targetNumEntry.grid(column = 3, row = 0)
 
 nameVar = tk.StringVar()
 nameVar.set("Sigmond")
-nameEntry = ttk.Entry(optionsFrame, textvariable=nameVar, width=23)
+nameEntry = ttk.Entry(optionsFrame, textvariable=nameVar, width=30)
 #nameEntry.pack(side=tk.TOP)
 nameEntry.grid(column = 0, row = 1, columnspan = 4)
 
