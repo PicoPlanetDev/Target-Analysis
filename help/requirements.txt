@@ -1,0 +1,14 @@
+Documentation - Requirements
+
+Please use pip to ensure that the following Python packages are installed:
+
+opencv-python
+tkinter
+pillow
+os
+csv
+numpy
+math
+argparse
+datetime
+shutil

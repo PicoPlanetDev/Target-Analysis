@@ -1,7 +1,8 @@
 #region Import libraries
+from tkinter.constants import BOTTOM, CENTER, LEFT, RIGHT, TOP
 import cv2
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import Frame, filedialog
 from PIL import ImageTk,Image
 import os
 import csv
@@ -9,6 +10,8 @@ import numpy as np
 import math
 import argparse
 import datetime
+import shutil
+from numpy.core.fromnumeric import var
 #endregion
 
 #region (OLD) Load an image using a file selection window
@@ -31,13 +34,17 @@ import datetime
 #     root.geometry("400x400")
 #endregion
 
+# Loads an image for the left side of the target
 def loadImageLeft():
     leftCanvas.delete("all")
 
     imageFile = filedialog.askopenfilename()
     leftImage = cv2.imread(imageFile)
 
-    leftCanvas.grid(row = 2, column = 0)
+    if useFileInfo.get() is True:
+        setInfoFromFile(imageFile)
+
+    leftCanvas.grid(row = 4, column = 0, columnspan=2)
     
     global leftPreview
     leftPreview = ImageTk.PhotoImage(Image.open(imageFile).resize((230, 300), Image.ANTIALIAS))
@@ -47,15 +54,19 @@ def loadImageLeft():
 
     root.geometry("500x400")
 
-    cropRight(leftImage)
+    cropLeft(leftImage)
 
+# Loads an image for the right side of the target
 def loadImageRight():
     rightCanvas.delete("all")
 
     imageFile = filedialog.askopenfilename()
     rightImage = cv2.imread(imageFile)
 
-    rightCanvas.grid(row = 2, column = 1)
+    if useFileInfo.get() is True:
+        setInfoFromFile(imageFile)
+
+    rightCanvas.grid(row = 4, column = 2, columnspan=2)
     
     global rightPreview
     rightPreview = ImageTk.PhotoImage(Image.open(imageFile).resize((230, 300), Image.ANTIALIAS))
@@ -182,12 +193,6 @@ def cropLeft(image):
     # Open Explorer to the location of the images
     #os.system("explorer " + '"' + os.getcwd() + "\images" + '"')
 
-    # csvName = "data/data-" + nameVar.get() + dayVar.get() + monthVar.get() + yearVar.get() + targetNumVar.get()
-    # with open('data/data.csv', 'x', newline="") as csvfile:
-    #     filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-    #     filewriter.writerow(["Image", "Dropped", "X", "HoleX", "HoleY", "Distance"])
-    #     csvfile.close()
-
     #region (OLD) Run the analysis program on all of the images
     #os.system("python " + '"' + os.getcwd() + "\improved.py" + '"' + " --image " + '"' + os.getcwd() + "\images\\output\\top-left.jpg" + '"' + " --month " + monthVar.get() + " --day " + dayVar.get() + " --year " + yearVar.get() + " --name " + nameVar.get())
     #os.system("python " + '"' + os.getcwd() + "\improved.py" + '"' + " --image " + '"' + os.getcwd() + "\images\\output\\upper-left.jpg" + '"' + " --month " + monthVar.get() + " --day " + dayVar.get() + " --year " + yearVar.get() + " --name " + nameVar.get())
@@ -206,6 +211,17 @@ def cropLeft(image):
 
 # Runs the analyzeImage function for every image that has been cropped out
 def analyzeTarget():
+    global csvName
+    csvName = "data/data-" + nameVar.get() + dayVar.get() + monthVar.get() + yearVar.get() + targetNumVar.get() + ".csv"
+    print(str(os.getcwd())+"\\"+csvName)
+    if os.path.exists(str(os.getcwd()) +"\\" + csvName):
+        print("CSV already exists. Removing old version")
+        os.remove(os.getcwd() + "\\" + csvName)
+    with open(csvName, 'x', newline="") as csvfile:
+        filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        filewriter.writerow(["Image", "Dropped", "X", "HoleX", "HoleY", "Distance"])
+        csvfile.close()
+
     analyzeImage("images/output/top-left.jpg")
     analyzeImage("images/output/upper-left.jpg")
     analyzeImage("images/output/lower-left.jpg")
@@ -250,23 +266,30 @@ def saveCSV():
     score=100
     xCount=0
 
-def openFolder():
-    folder = filedialog.askdirectory()
-    for file in os.listdir(folder):
-        if file.endswith(".jpeg") or file.endswith(".jpg"):
-            path = os.getcwd() + "\images\\" + file
-            setInfoFromFile(file)
-            fileImage = cv2.imread(path)
-            if "left" in file:
-                cropLeft(fileImage)
-            elif "right" in file:
-                cropRight(fileImage)
-            
-def setInfoFromFile(file):
-    dayVar.set(file[0:2])
-    yearVar.set(file[5:9])
+#region Opens and analyzes all files in a folder
+# def openFolder():
+#     folder = filedialog.askdirectory()
+#     for file in os.listdir(folder):
+#         if file.endswith(".jpeg") or file.endswith(".jpg"):
+#             path = os.getcwd() + "\images\\" + file
+#             setInfoFromFile(file)
+#             fileImage = cv2.imread(path)
+#             if "left" in file:
+#                 cropLeft(fileImage)
+#             elif "right" in file:
+#                 cropRight(fileImage)
+#endregion
 
-    month = file[2:5]
+# Sets file options by parsing a correctly-named target         
+def setInfoFromFile(file):
+    filename = os.path.basename(file)
+    print(filename)
+
+    dayVar.set(filename[0:2])
+
+    yearVar.set(filename[5:9])
+
+    month = filename[2:5]
     months = {
         'jan': 'January', 
         'feb': 'February', 
@@ -286,13 +309,23 @@ def setInfoFromFile(file):
 
     monthVar.set(month)
 
-    filename = file.strip(os.path.splitext(file)[0])
-    
-    targetNumVar.set(filename(-0))
+    targetNumVar.set(filename[-6])
+
+# Sets file options from today's date
+def setInfoFromToday():
+    today = datetime.datetime.now()
+    monthVar.set(today.strftime("%B"))
+    dayVar.set(today.strftime("%d"))
+    yearVar.set(today.strftime("%Y"))
+    targetNumVar.set("1")
+
+def clearData():
+    shutil.rmtree(os.getcwd()+"\data")
+    os.mkdir(os.getcwd()+"\data")
 
 # Derived from improved.py
 def analyzeImage(image):
-    # multipliers are from NRA A-17 target in millimeters
+    #region multipliers are from NRA A-17 target in millimeters
     outer = 46.150
     five = 37.670/outer
     six = 29.210/outer
@@ -301,14 +334,15 @@ def analyzeImage(image):
     nine = 3.810/outer
 
     spindleRadius = 2.8
+    #endregion
 
-    global score
-    global xCount
+    droppedPoints = 0
+    xCount = 0
 
     img = cv2.imread(image)
     output = img.copy()
 
-    # --- [FINDS THE TARGET] ---
+    #region Identify the target's outer ring
     # Convert the image to grayscale
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     
@@ -361,8 +395,9 @@ def analyzeImage(image):
 
             # Draw a small circle to show the center.
             cv2.circle(output, (a, b), 1, (0, 0, 255), 3)
+    #endregion
 
-    # --- [FINDS BULLET HOLES] ---
+    #region Identify the hole in the target
     # Make the image binary using a threshold
     img_thresholded = cv2.inRange(img, (100, 100, 100), (255, 255, 255))
     #cv2.imshow('Image Thresholded', img_thresholded)
@@ -413,51 +448,58 @@ def analyzeImage(image):
                 print("0")
                 cv2.putText(output, "0", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
 
-            if distance+spindleRadius > pixelEight and distance-spindleRadius < pixelSeven:
+            if distance+spindleRadius > pixelEight and distance+spindleRadius < pixelSeven:
                 print("1")
                 cv2.putText(output, "1", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                score -= 1
+                droppedPoints += 1
 
-            if distance+spindleRadius > pixelSeven and distance-spindleRadius < pixelSix:
+            if distance+spindleRadius > pixelSeven and distance+spindleRadius < pixelSix:
                 print("2")
                 cv2.putText(output, "2", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                score -= 2
+                droppedPoints += 2
 
-            if distance+spindleRadius > pixelSix and distance-spindleRadius < pixelFive:
+            if distance+spindleRadius > pixelSix and distance+spindleRadius < pixelFive:
                 print("3")
                 cv2.putText(output, "3", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                score -= 3
+                droppedPoints += 3
 
-            if distance+spindleRadius > pixelFive and distance-spindleRadius < pixelOuter:
+            if distance+spindleRadius > pixelFive and distance+spindleRadius < pixelOuter:
                 print("4")
                 cv2.putText(output, "4", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                score -= 4
+                droppedPoints += 4
 
-            with open('data/data.csv', 'a', newline="") as csvfile:
+            global csvName
+
+            with open(csvName, 'a', newline="") as csvfile:
                 filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-                filewriter.writerow([image, score, xCount, holeX, holeY, distance])
+                filewriter.writerow([image, droppedPoints, xCount, holeX, holeY, distance])
                 csvfile.close()
-    
-    #cv2.imshow("output", output)
+    #endregion
+
+    cv2.imshow("output", output)
+    cv2.waitKey(0)
     cv2.imwrite(image + "-output.jpg", output)
 
+#region Initialize tkinter
 root = tk.Tk()
 root.minsize(500,200)
 root.geometry("500x200")
 root.iconbitmap("assets/icon.ico")
 root.title("Target Analysis")
+#endregion
 
-#region Menubar
+#region Menubar with File and Help menus
 menubar = tk.Menu(root)
 
 filemenu = tk.Menu(menubar, tearoff=0)
 #filemenu.add_command(label="Load Image", command=loadImage)
 filemenu.add_command(label="Load left image", command=loadImageLeft)
 filemenu.add_command(label="Load right image", command=loadImageRight)
-filemenu.add_command(label="Analyze target", command=loadImageRight)
+filemenu.add_command(label="Analyze target", command=analyzeTarget)
 #filemenu.add_command(label="Save CSV", command=saveCSV)
 #filemenu.add_command(label="Open Folder", command=openFolder)
 filemenu.add_command(label="Show in Explorer", command=showFolder)
+filemenu.add_command(label="⚠ Clear data ⚠", command=clearData)
 #filemenu.add_command(label="Create CSV data file", command=createCSV)
 filemenu.add_separator()
 filemenu.add_command(label="Exit", command=root.quit)
@@ -481,53 +523,72 @@ menubar.add_cascade(label="Help", menu=helpmenu)
 root.config(menu=menubar)
 #endregion
 
-# Label at top of root alerts the user to the program's actions
-label = tk.Label(root, text="Click File -> Load Image to get started")
-label.grid(row = 0, columnspan = 2)
+#region Set up the top, options, and bottom frames
+topFrame = tk.Frame(root)
+topFrame.pack()
+optionsFrame = tk.Frame(root)
+optionsFrame.pack(side=tk.TOP)
+bottomFrame = tk.Frame(root)
+bottomFrame.pack(side=tk.BOTTOM)
+#endregion
 
-# Add buttons and canvases for the left and right target images
-leftImageButton = tk.Button(root, text = "Select left image", command = loadImageLeft)
-leftImageButton.grid(row=1, column=0)
+#region Label at top of the frame alerts the user to the program's actions uses topFrame
+label = tk.Label(topFrame, text="Click File -> Load Image to get started")
+label.pack(side=tk.TOP)
+#endregion
 
-rightImageButton = tk.Button(root, text = "Select right image", command = loadImageRight)
-rightImageButton.grid(row=1, column=1)
+#region Options area uses optionsFrame
+monthVar = tk.StringVar()
+monthVar.set("Month")
+monthEntry = tk.Entry(optionsFrame, textvariable=monthVar, width=10)
+#monthEntry.pack(side=LEFT)
+monthEntry.grid(column = 0, row = 0)
 
-leftCanvas = tk.Canvas(root, width=230,height=300)
-leftCanvas.grid(row = 2, column = 0)
+dayVar = tk.StringVar()
+dayVar.set("Day")
+dateEntry = tk.Entry(optionsFrame, textvariable=dayVar, width=5)
+#dateEntry.pack(side=LEFT)
+dateEntry.grid(column = 1, row = 0)
 
-rightCanvas = tk.Canvas(root, width=230,height=300)
-rightCanvas.grid(row = 2, column = 1)
+yearVar = tk.StringVar()
+yearVar.set("Year")
+yearEntry = tk.Entry(optionsFrame, textvariable=yearVar, width=5)
+#yearEntry.pack(side=LEFT)
+yearEntry.grid(column = 2, row = 0)
 
-#region Entry boxes for main page
-# monthVar = tk.StringVar()
-# monthVar.set("")
-# monthEntry = tk.Entry(root, textvariable=monthVar)
-# monthEntry.grid(column = 0, row = 1, padx = 2, pady = 2)
+targetNumVar = tk.StringVar()
+targetNumVar.set("Num")
+targetNumEntry = tk.Entry(optionsFrame, textvariable=targetNumVar, width=5)
+#targetNumEntry.pack(side=LEFT)
+targetNumEntry.grid(column = 3, row = 0)
 
-# dayVar = tk.StringVar()
-# dayVar.set("")
-# dateEntry = tk.Entry(root, textvariable=dayVar)
-# dateEntry.grid(column = 1, row = 1, padx = 2, pady = 2)
+nameVar = tk.StringVar()
+nameVar.set("Sigmond")
+nameEntry = tk.Entry(optionsFrame, textvariable=nameVar, width=23)
+#nameEntry.pack(side=tk.TOP)
+nameEntry.grid(column = 0, row = 1, columnspan = 4)
 
-# yearVar = tk.StringVar()
-# yearVar.set("")
-# yearEntry = tk.Entry(root, textvariable=yearVar)
-# yearEntry.grid(column = 2, row = 1, padx = 2, pady = 2)
+todayButton = tk.Button(optionsFrame, text="Use Today", command=setInfoFromToday)
+todayButton.grid(column=4, row=0, rowspan=2, padx=10)
 
-# targetNumVar = tk.StringVar()
-# targetNumVar.set("")
-# targetNumEntry = tk.Entry(root, textvariable=targetNumVar)
-# targetNumEntry.grid(column = 3, row = 1, padx = 2, pady = 2)
+useFileInfo = tk.BooleanVar()
+useFileInfo.set(True)
+useFileInfoCheckbutton = tk.Checkbutton(optionsFrame, text="Use info from file", variable=useFileInfo, onvalue=True, offvalue=False)
+useFileInfoCheckbutton.grid(column=5, row=0, rowspan=2, padx=5)
+#endregion
 
-# today = datetime.datetime.now()
-# monthVar.set(today.strftime("%B"))
-# dayVar.set(today.strftime("%d"))
-# yearVar.set(today.strftime("%Y"))
+#region Add buttons and canvases for the left and right target images uses bottomFrame
+leftImageButton = tk.Button(bottomFrame, text = "Select left image", command = loadImageLeft)
+leftImageButton.grid(row=3, column=0, columnspan=2)
 
-# nameVar = tk.StringVar()
-# nameVar.set("Sigmond Kukla")
-# nameEntry = tk.Entry(root, textvariable=nameVar)
-# nameEntry.grid(column = 0, row = 2, columnspan = 4, padx = 2, pady = 2, ipadx = 128)
+rightImageButton = tk.Button(bottomFrame, text = "Select right image", command = loadImageRight)
+rightImageButton.grid(row=3, column=2, columnspan=2)
+
+leftCanvas = tk.Canvas(bottomFrame, width=230,height=300)
+leftCanvas.grid(row = 4, column = 0, columnspan=2)
+
+rightCanvas = tk.Canvas(bottomFrame, width=230,height=300)
+rightCanvas.grid(row = 4, column = 2, columnspan=2)
 #endregion
 
 tk.mainloop()
