@@ -130,13 +130,15 @@ def cropRight(image):
     # analyzeImage("images/output/lower-right.jpg")
     # analyzeImage("images/output/bottom-right.jpg")
     # analyzeImage("images/output/bottom-mid.jpg")
-
+    #endregion
+    
     #label.config(text="Done")
 
 # Crop image for left side of the target and start analysis process
 def cropLeft(image):
     label.config(text="Cropping left side...")
 
+    # Flips the image vertically and horizontally before cropping
     verticalFlippedImage = cv2.flip(image, -1)
     cv2.imwrite("images/output/vertical-flipped.jpg", verticalFlippedImage)
 
@@ -244,7 +246,7 @@ def analyzeTarget():
 
 # Open the working folder in Explorer
 def showFolder():
-    os.system("explorer " + '"' + os.getcwd() + "\images" + '"')
+    os.system("explorer " + '"' + os.getcwd() + '"')
     label.config(text="Working directory opened in Explorer")
 
 # Open documentation with associated editor
@@ -264,8 +266,9 @@ def createCSV():
         csvfile.close()
     label.config(text="Created CSV data file")
 
-#region Opens and analyzes all files in a folder
+# Opens and analyzes all files in a folder
 def openFolder():
+    label.config("Opening folder")
     folder = filedialog.askdirectory()
     for file in os.listdir(folder):
         if file.endswith(".jpeg"):
@@ -277,7 +280,6 @@ def openFolder():
             elif "right" in file:
                 cropRight(fileImage)
             analyzeTarget()
-#endregion
 
 # Sets file options by parsing a correctly-named target         
 def setInfoFromFile(file):
