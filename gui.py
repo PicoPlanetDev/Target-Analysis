@@ -32,7 +32,7 @@ def loadImageLeft():
     leftPreview = ImageTk.PhotoImage(Image.open(imageFile).resize((230, 350), Image.ANTIALIAS))
     leftCanvas.create_image(0, 0, anchor="nw", image=leftPreview)
 
-    label.config(text="Image loaded")
+    label.config(text="Right image loaded")
 
     root.geometry("500x400")
 
@@ -54,7 +54,7 @@ def loadImageRight():
     rightPreview = ImageTk.PhotoImage(Image.open(imageFile).resize((230, 350), Image.ANTIALIAS))
     rightCanvas.create_image(0, 0, anchor="nw", image=rightPreview)
 
-    label.config(text="Image loaded")
+    label.config(text="Left image loaded")
 
     root.geometry("500x400")
 
@@ -62,7 +62,7 @@ def loadImageRight():
 
 # Crop image for right side of the target and start analysis process
 def cropRight(image):
-    label.config(text="Analyzing right side...")
+    label.config(text="Cropping right side...")
 
     #region Crop the image
     y=275
@@ -135,7 +135,7 @@ def cropRight(image):
 
 # Crop image for left side of the target and start analysis process
 def cropLeft(image):
-    label.config(text="Analyzing left side...")
+    label.config(text="Cropping left side...")
 
     verticalFlippedImage = cv2.flip(image, -1)
     cv2.imwrite("images/output/vertical-flipped.jpg", verticalFlippedImage)
@@ -193,12 +193,16 @@ def cropLeft(image):
 
 # Runs the analyzeImage function for every image that has been cropped out
 def analyzeTarget():
+    label.config(text="Analyzing target...")
+
     global csvName
     csvName = "data/data-" + nameVar.get() + dayVar.get() + monthVar.get() + yearVar.get() + targetNumVar.get() + ".csv"
+
     print(str(os.getcwd())+"\\"+csvName)
     if os.path.exists(str(os.getcwd()) +"\\" + csvName):
         print("CSV already exists. Removing old version")
         os.remove(os.getcwd() + "\\" + csvName)
+    
     with open(csvName, 'x', newline="") as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         filewriter.writerow(["Image", "Dropped", "X", "HoleX", "HoleY", "Distance"])
@@ -214,6 +218,29 @@ def analyzeTarget():
     analyzeImage("images/output/lower-right.jpg")
     analyzeImage("images/output/bottom-right.jpg")
     analyzeImage("images/output/bottom-mid.jpg")
+
+    score = 100
+    xCount = 0
+
+    with open(csvName) as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        line_count = 0
+        for row in csv_reader:
+            if line_count != 0:
+                score -= int(row[1])
+                xCount += int(row[2])
+            line_count += 1
+    
+    print(str(os.getcwd()) +"data\data.csv")
+    if not os.path.exists(str(os.getcwd()) +"\data\data.csv"):
+        createCSV()
+
+    with open("data/data.csv", 'a', newline="") as csvfile:
+                filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                filewriter.writerow([nameVar.get(), dayVar.get() + " " + monthVar.get() + " " + yearVar.get(), targetNumVar.get(), score, xCount])
+                csvfile.close()
+
+    label.config(text="Done")
 
 # Open the working folder in Explorer
 def showFolder():
@@ -231,9 +258,9 @@ def ComputeDistance(x1, y1, x2, y2):
 
 # Create a template CSV file
 def createCSV():
-    with open('data.csv', 'x', newline="") as csvfile:
+    with open('data/data.csv', 'x', newline="") as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        filewriter.writerow(['Name', 'Month','Day','Year','Score','X'])
+        filewriter.writerow(['Name', 'Date', 'Target Number', 'Score','X'])
         csvfile.close()
     label.config(text="Created CSV data file")
 
@@ -449,8 +476,8 @@ def analyzeImage(image):
                 csvfile.close()
     #endregion
 
-    cv2.imshow("output", output)
-    cv2.waitKey(0)
+    #cv2.imshow("output", output) # Optional but make sure to use waitkey below if enabled, or else only image will show up.
+    #cv2.waitKey(0)
     cv2.imwrite(image + "-output.jpg", output)
 
 #region Initialize tkinter
@@ -471,7 +498,7 @@ filemenu.add_command(label="📂 Load left image", command=loadImageLeft)
 filemenu.add_command(label="📂 Load right image", command=loadImageRight)
 filemenu.add_command(label="🎯 Analyze target", command=analyzeTarget)
 #filemenu.add_command(label="Save CSV", command=saveCSV)
-#filemenu.add_command(label="Open Folder", command=openFolder)
+filemenu.add_command(label="Open Folder", command=openFolder)
 filemenu.add_command(label="💾 Show in Explorer", command=showFolder)
 filemenu.add_command(label="⚠️ Clear data", command=clearData)
 #filemenu.add_command(label="Create CSV data file", command=createCSV)
