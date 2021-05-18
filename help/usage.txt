@@ -15,3 +15,14 @@ For this, you must name the target files as such:
 
 For example:
 "03jan2021left1.jpeg" and "03jan2021right1.jpeg"
+
+To score multiple targets:
+1. Place all of the scanned targets into the images folder.
+2. Make sure that all targets are named correctly (as per the example above)
+3. Click File -> Open folder and select the images folder
+4. Wait until the label at the top of the window reads "Done"
+5. To view data for an individual target, open Explorer to the data folder. Then, open any CSV file that is named as such:
+    data-<name><day><month><year><target number>.csv
+    For example:
+    data-Sigmond03January20211.csv
+6. To view data for all targets, open the data.csv file in the data folder.
