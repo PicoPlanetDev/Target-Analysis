@@ -3,6 +3,7 @@ from tkinter.constants import BOTTOM, CENTER, FLAT, HORIZONTAL, LEFT, NSEW, RIGH
 import cv2
 import tkinter as tk
 from tkinter import ttk
+from cv2 import data
 from numpy.core.numeric import count_nonzero
 from ttkthemes import ThemedTk
 from tkinter import Frame, filedialog
@@ -15,6 +16,7 @@ import argparse
 import datetime
 import shutil
 from numpy.core.fromnumeric import var
+import matplotlib.pyplot as plt
 #endregion
 
 # Loads an image for the left side of the target
@@ -269,7 +271,7 @@ def createCSV():
 
 # Opens and analyzes all files in a folder
 def openFolder():
-    label.config("Opening folder")
+    label.config(text="Opening folder")
     folder = filedialog.askdirectory()
     for file in os.listdir(folder):
         if file.endswith(".jpeg"):
@@ -495,15 +497,12 @@ root.title("Target Analysis")
 menubar = tk.Menu(root)
 
 filemenu = tk.Menu(menubar, tearoff=0)
-#filemenu.add_command(label="Load Image", command=loadImage)
-filemenu.add_command(label="📂 Load left image", command=loadImageLeft)
-filemenu.add_command(label="📂 Load right image", command=loadImageRight)
+filemenu.add_command(label="📁 Load left image", command=loadImageLeft)
+filemenu.add_command(label="📁 Load right image", command=loadImageRight)
 filemenu.add_command(label="🎯 Analyze target", command=analyzeTarget)
-#filemenu.add_command(label="Save CSV", command=saveCSV)
-filemenu.add_command(label="Open Folder", command=openFolder)
-filemenu.add_command(label="💾 Show in Explorer", command=showFolder)
-filemenu.add_command(label="⚠️ Clear data", command=clearData)
-#filemenu.add_command(label="Create CSV data file", command=createCSV)
+filemenu.add_command(label="🗃 Open Folder", command=openFolder)
+filemenu.add_command(label="🗂 Show in Explorer", command=showFolder)
+filemenu.add_command(label="⚠ Clear data", command=clearData)
 filemenu.add_separator()
 filemenu.add_command(label="❌ Exit", command=root.quit)
 menubar.add_cascade(label="File", menu=filemenu)

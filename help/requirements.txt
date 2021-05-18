@@ -12,3 +12,4 @@ math
 argparse
 datetime
 shutil
+matplotlib
