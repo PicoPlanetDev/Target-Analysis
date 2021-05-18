@@ -15,7 +15,7 @@ Future people: Is COVID over yet?
 
 RW1vcnkgaXMgY3V0ZS4=
 
-### Measurements**
+### Measurements
 
 *Disclaimer: This might not actually be what these rings are called... I'm just going off of what I used in the code.
 
