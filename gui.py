@@ -3,6 +3,7 @@ from tkinter.constants import BOTTOM, CENTER, FLAT, HORIZONTAL, LEFT, NSEW, RIGH
 import cv2
 import tkinter as tk
 from tkinter import ttk
+from numpy.core.numeric import count_nonzero
 from ttkthemes import ThemedTk
 from tkinter import Frame, filedialog
 from PIL import ImageTk,Image
@@ -233,7 +234,7 @@ def analyzeTarget():
                 xCount += int(row[2])
             line_count += 1
     
-    print(str(os.getcwd()) +"data\data.csv")
+    #print(str(os.getcwd()) +"data\data.csv")
     if not os.path.exists(str(os.getcwd()) +"\data\data.csv"):
         createCSV()
 
@@ -415,9 +416,9 @@ def analyzeImage(image):
     for contour in contours:
         # Get the area of the contours
         area = cv2.contourArea(contour)
-        
+
         # Check if area is between max and min values for a bullet hole. Area is usually about 1000
-        if area<1500 and area>500:
+        if area<1500 and area>200:
 
             # Draw the detected contour for debugging
             #cv2.drawContours(output,[contour],0,(255,0,0),2)
@@ -428,17 +429,13 @@ def analyzeImage(image):
             holeCenter = (int(holeX),int(holeY))
             holeRadius = int(holeRadius)
 
-            # Draw the enclosing circle in addition to a dot at the center
-            #cv2.circle(output,holeCenter,holeRadius,(0,255,0),2)
-            cv2.circle(output, holeCenter, 1, (0, 0, 255), 3)
+            #cv2.circle(output,holeCenter,holeRadius,(0,255,0),2) # Enclosing circle
+            cv2.circle(output, holeCenter, 1, (0, 0, 255), 3) # Dot at the center
 
             # Draw the spindle
             cv2.circle(output,holeCenter,int(spindleRadius),(0,255,255),2)
 
             distance = ComputeDistance(holeX, holeY, a, b)
-
-            score = 0
-            xCount = 0
 
             # Currently only scores target to a 4
             if distance-spindleRadius < pixelNine:
