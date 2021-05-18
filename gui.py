@@ -35,7 +35,7 @@ def loadImageLeft():
 
     label.config(text="Right image loaded")
 
-    root.geometry("500x400")
+    root.geometry("500x500")
 
     cropLeft(leftImage)
 
@@ -57,7 +57,7 @@ def loadImageRight():
 
     label.config(text="Left image loaded")
 
-    root.geometry("500x400")
+    root.geometry("500x500")
 
     cropRight(rightImage)
 
@@ -208,7 +208,7 @@ def analyzeTarget():
     
     with open(csvName, 'x', newline="") as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        filewriter.writerow(["Image", "Dropped", "X", "HoleX", "HoleY", "Distance"])
+        filewriter.writerow(["Image", "Dropped", "X", "HoleX", "HoleY", "Distance", "HoleRatioX", "HoleRatioY"])
         csvfile.close()
 
     analyzeImage("images/output/top-left.jpg")
@@ -387,7 +387,7 @@ def analyzeImage(image):
             pixelEight = pixelOuter*eight
             pixelNine = pixelOuter*nine
 
-            spindleRadius = 2.794*(pixelOuter/outer)
+            spindleRadius = spindleRadius*(pixelOuter/outer)
 
             cv2.circle(output, (a, b), int(pixelOuter), (0, 255, 0), 2)
             cv2.circle(output, (a, b), int(pixelFive), (0, 255, 0), 2)
@@ -467,11 +467,14 @@ def analyzeImage(image):
                 cv2.putText(output, "4", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
                 droppedPoints += 4
 
+            holeRatioX = (holeX-a) / pixelOuter
+            holeRatioY = (holeY-a) / pixelOuter
+
             global csvName
 
             with open(csvName, 'a', newline="") as csvfile:
                 filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-                filewriter.writerow([image, droppedPoints, xCount, holeX, holeY, distance])
+                filewriter.writerow([image, droppedPoints, xCount, holeX, holeY, distance, holeRatioX, holeRatioY])
                 csvfile.close()
     #endregion
 
@@ -535,8 +538,9 @@ bottomFrame.pack(side=tk.TOP)
 #region Label at top of the frame alerts the user to the program's actions uses topFrame
 label = ttk.Label(topFrame, text="Click File -> Load Image to get started")
 label.pack(side=tk.TOP, padx=10, pady=5)
+
 labelSeparator = ttk.Separator(topFrame, orient=HORIZONTAL)
-labelSeparator.pack(side=tk.TOP, fill=X)
+labelSeparator.pack(side=TOP, fill=X)
 #endregion
 
 #region Options area uses optionsFrame
