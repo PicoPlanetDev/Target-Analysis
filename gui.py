@@ -1,5 +1,5 @@
 #region Import libraries
-from tkinter.constants import BOTTOM, CENTER, FLAT, HORIZONTAL, LEFT, NSEW, RIGHT, SOLID, SUNKEN, TOP, X
+from tkinter.constants import BOTH, BOTTOM, CENTER, DISABLED, FLAT, HORIZONTAL, LEFT, NORMAL, NSEW, RIGHT, SOLID, SUNKEN, TOP, X
 import cv2
 import tkinter as tk
 from tkinter import ttk
@@ -37,7 +37,7 @@ def loadImageLeft():
 
     label.config(text="Right image loaded")
 
-    root.geometry("500x500")
+    root.geometry("500x470")
 
     cropLeft(leftImage)
 
@@ -59,7 +59,7 @@ def loadImageRight():
 
     label.config(text="Left image loaded")
 
-    root.geometry("500x500")
+    root.geometry("500x470")
 
     cropRight(rightImage)
 
@@ -224,6 +224,7 @@ def analyzeTarget():
     analyzeImage("images/output/bottom-right.jpg")
     analyzeImage("images/output/bottom-mid.jpg")
 
+    global score, xCount
     score = 100
     xCount = 0
 
@@ -247,15 +248,123 @@ def analyzeTarget():
 
     label.config(text="Done")
 
+    filemenu.entryconfigure(5, state=NORMAL)
+
+    #showOutput()
+
+def showOutput():
+    #region Create Toplevel window
+    targetWindow = tk.Toplevel(root)
+    targetWindow.minsize(525,725)
+    targetWindow.geometry("525x710")
+    targetWindow.iconbitmap("assets/icon.ico")
+    targetWindow.title("Target Analysis")
+    #endregion
+
+    #region Create frames
+    outputTopFrame = ttk.Frame(targetWindow)
+    outputTopFrame.pack(side=TOP, fill=X, expand=True, pady=10)
+
+    outputBottomFrame = ttk.Frame(targetWindow)
+    outputBottomFrame.pack(side=TOP, fill=X)
+    #endregion
+
+    #region Create buttons and info at the top
+    #print(csvName)
+    openTargetCSVButton = ttk.Button(outputTopFrame, text="Open target CSV", command=lambda: openFile('"' + os.getcwd() + "\\" + csvName + '"'))
+    openTargetCSVButton.grid(row=0, column=0)
+    outputTopFrame.grid_columnconfigure(0, weight=1)
+    
+    scoreLabel = ttk.Label(outputTopFrame, text=str(score) + "-" + str(xCount) + "X")
+    scoreLabel.grid(row=0, column=1)
+    outputTopFrame.grid_columnconfigure(1, weight=1)
+
+    #print('"' + os.getcwd() + "data/data.csv" + '"')
+    openDataCSVButton = ttk.Button(outputTopFrame, text="Open data CSV", command=lambda: openFile('"' + os.getcwd() + "/data/data.csv" + '"'))
+    openDataCSVButton.grid(row=0, column=2)
+    outputTopFrame.grid_columnconfigure(2, weight=1)
+
+    #region Create canvases and images for each bull
+    topLeftCanvas = tk.Canvas(outputBottomFrame, width=170,height=170)
+    topLeftCanvas.grid(row = 0, column = 0)
+
+    global topLeftOutput
+    topLeftOutput = ImageTk.PhotoImage(Image.open("images/output/top-left.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    topLeftCanvas.create_image(0, 0, anchor="nw", image=topLeftOutput)
+
+    upperLeftCanvas = tk.Canvas(outputBottomFrame, width=170,height=170)
+    upperLeftCanvas.grid(row = 1, column = 0)
+
+    global upperLeftOutput
+    upperLeftOutput = ImageTk.PhotoImage(Image.open("images/output/upper-left.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    upperLeftCanvas.create_image(0, 0, anchor="nw", image=upperLeftOutput)
+
+    lowerLeftCanvas = tk.Canvas(outputBottomFrame, width=170,height=170)
+    lowerLeftCanvas.grid(row = 2, column = 0)
+
+    global lowerLeftOutput
+    lowerLeftOutput = ImageTk.PhotoImage(Image.open("images/output/lower-left.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    lowerLeftCanvas.create_image(0, 0, anchor="nw", image=lowerLeftOutput)
+
+    bottomLeftCanvas = tk.Canvas(outputBottomFrame, width=170,height=170)
+    bottomLeftCanvas.grid(row = 3, column = 0)
+
+    global bottomLeftOutput
+    bottomLeftOutput = ImageTk.PhotoImage(Image.open("images/output/bottom-left.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    bottomLeftCanvas.create_image(0, 0, anchor="nw", image=bottomLeftOutput)
+
+    topMidCanvas = tk.Canvas(outputBottomFrame, width=170,height=170)
+    topMidCanvas.grid(row = 0, column = 1)
+
+    global topMidOutput
+    topMidOutput = ImageTk.PhotoImage(Image.open("images/output/top-mid.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    topMidCanvas.create_image(0, 0, anchor="nw", image=topMidOutput)
+
+    bottomMidCanvas = tk.Canvas(outputBottomFrame, width=170,height=170)
+    bottomMidCanvas.grid(row = 3, column = 1)
+
+    global bottomMidOutput
+    bottomMidOutput = ImageTk.PhotoImage(Image.open("images/output/bottom-mid.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    bottomMidCanvas.create_image(0, 0, anchor="nw", image=bottomMidOutput)
+
+    topRightCanvas = tk.Canvas(outputBottomFrame, width=170,height=170)
+    topRightCanvas.grid(row = 0, column = 2)
+
+    global topRightOutput
+    topRightOutput = ImageTk.PhotoImage(Image.open("images/output/top-right.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    topRightCanvas.create_image(0, 0, anchor="nw", image=topRightOutput)
+
+    upperRightCanvas = tk.Canvas(outputBottomFrame, width=170,height=170)
+    upperRightCanvas.grid(row = 1, column = 2)
+
+    global upperRightOutput
+    upperRightOutput = ImageTk.PhotoImage(Image.open("images/output/upper-right.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    upperRightCanvas.create_image(0, 0, anchor="nw", image=upperRightOutput)
+
+    lowerRightCanvas = tk.Canvas(outputBottomFrame, width=170,height=170)
+    lowerRightCanvas.grid(row = 2, column = 2)
+
+    global lowerRightOutput
+    lowerRightOutput = ImageTk.PhotoImage(Image.open("images/output/lower-right.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    lowerRightCanvas.create_image(0, 0, anchor="nw", image=lowerRightOutput)
+
+    bottomRightCanvas = tk.Canvas(outputBottomFrame, width=170,height=170)
+    bottomRightCanvas.grid(row = 3, column = 2)
+
+    global bottomRightOutput
+    bottomRightOutput = ImageTk.PhotoImage(Image.open("images/output/bottom-right.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    bottomRightCanvas.create_image(0, 0, anchor="nw", image=bottomRightOutput)
+    #endregion
+
 # Open the working folder in Explorer
 def showFolder():
     os.system("explorer " + '"' + os.getcwd() + '"')
     label.config(text="Working directory opened in Explorer")
 
 # Open documentation with associated editor
-def showDocumentation(docFile):
-    label.config(text="Showing documentation " + str(docFile))
-    os.system('"' + os.getcwd() + "\help\\" + docFile + '"')
+def openFile(file):
+    label.config(text="Opening file " + str(file))
+    os.system(file)
 
 # Basic implementation of the distance formula
 def ComputeDistance(x1, y1, x2, y2):
@@ -480,15 +589,15 @@ def analyzeImage(image):
                 csvfile.close()
     #endregion
 
-    #cv2.imshow("output", output) # Optional but make sure to use waitkey below if enabled, or else only image will show up.
-    #cv2.waitKey(0)
+    cv2.imshow("output", output) # Optional but make sure to use waitkey below if enabled, or else only image will show up.
+    cv2.waitKey(0)
     cv2.imwrite(image + "-output.jpg", output)
 
 #region Initialize tkinter
 #root = tk.Tk()
 root = ThemedTk(theme="breeze")
-root.minsize(500,200)
-root.geometry("500x200")
+root.minsize(500,170)
+root.geometry("500x170")
 root.iconbitmap("assets/icon.ico")
 root.title("Target Analysis")
 #endregion
@@ -502,19 +611,19 @@ filemenu.add_command(label="📁 Load right image", command=loadImageRight)
 filemenu.add_command(label="🎯 Analyze target", command=analyzeTarget)
 filemenu.add_command(label="🗃 Open Folder", command=openFolder)
 filemenu.add_command(label="🗂 Show in Explorer", command=showFolder)
+filemenu.add_command(label="💯 Show Output", command=showOutput, state=DISABLED)
 filemenu.add_command(label="⚠ Clear data", command=clearData)
 filemenu.add_separator()
 filemenu.add_command(label="❌ Exit", command=root.quit)
 menubar.add_cascade(label="File", menu=filemenu)
 
 helpmenu = tk.Menu(menubar, tearoff=0)
-helpmenu.add_command(label="Usage", command=lambda: showDocumentation("usage.txt"))
+helpmenu.add_command(label="Usage", command=lambda: openFile('"' + os.getcwd() + "\help\\" + "usage.txt" + '"'))
+helpmenu.add_command(label="Scanning", command=lambda: openFile('"' + os.getcwd() + "\help\\" + "scanning.txt" + '"'))
+helpmenu.add_command(label="Scanning diagram", command=lambda: openFile('"' + os.getcwd() + "\help\\" + "scanner-digital.png" + '"'))
 helpmenu.add_separator()
-helpmenu.add_command(label="Scanning", command=lambda: showDocumentation("scanning.txt"))
-helpmenu.add_command(label="Scanning diagram", command=lambda: showDocumentation("scanner-digital.png"))
-helpmenu.add_separator()
-helpmenu.add_command(label="Measurements", command=lambda: showDocumentation("measurements.txt"))
-helpmenu.add_command(label="Information", command=lambda: showDocumentation("information.txt"))
+helpmenu.add_command(label="Measurements", command=lambda: openFile('"' + os.getcwd() + "\help\\" + "measurements.txt" + '"'))
+helpmenu.add_command(label="Information", command=lambda: openFile('"' + os.getcwd() + "\help\\" + "information.txt" + '"'))
 menubar.add_cascade(label="Help", menu=helpmenu)
 
 root.config(menu=menubar)
