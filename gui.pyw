@@ -249,7 +249,7 @@ def analyzeTarget():
     label.config(text="Done")
 
     # Make sure to count which entry this is! Starts at ZERO not one.
-    filemenu.entryconfigure(4, state=NORMAL)
+    filemenu.entryconfigure(5, state=NORMAL)
 
     #showOutput()
 
@@ -386,17 +386,21 @@ def createCSV():
 def openFolder():
     label.config(text="Opening folder")
     folder = filedialog.askdirectory()
+    fileNum = 0
     for file in os.listdir(folder):
         if file.endswith(".jpeg"):
             path = os.getcwd() + "\images\\" + file
-            print(path)
             setInfoFromFile(file)
+            print(path)
             fileImage = cv2.imread(path)
             if "left" in file:
                 cropLeft(fileImage)
             elif "right" in file:
                 cropRight(fileImage)
-            analyzeTarget()
+            fileNum += 1
+            if fileNum == 2:
+                analyzeTarget()
+                fileNum = 0
 
 # Sets file options by parsing a correctly-named target         
 def setInfoFromFile(file):
@@ -622,7 +626,7 @@ filemenu = tk.Menu(menubar, tearoff=0)
 filemenu.add_command(label="📁 Load left image", command=loadImageLeft)
 filemenu.add_command(label="📁 Load right image", command=loadImageRight)
 filemenu.add_command(label="🎯 Analyze target", command=analyzeTarget)
-#filemenu.add_command(label="🗃 Open Folder", command=openFolder)
+filemenu.add_command(label="🗃 Open Folder", command=openFolder)
 filemenu.add_command(label="🗂 Show in Explorer", command=showFolder)
 filemenu.add_command(label="💯 Show Output", command=showOutput, state=DISABLED)
 filemenu.add_command(label="⚠ Clear data", command=clearData)
