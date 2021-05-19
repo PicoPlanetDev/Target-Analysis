@@ -17,4 +17,4 @@ shutil
 matplotlib
 ttkthemes
 
-You can do this automatically by running the 
+You can do this automatically by running the install_dependencies.bat file in the Target-Analysis-main directory.

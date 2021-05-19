@@ -693,7 +693,7 @@ targetNumEntry.grid(column = 3, row = 0, sticky=NSEW)
 
 # Name goes below
 nameVar = tk.StringVar()
-nameVar.set("Sigmond")
+nameVar.set("Name")
 nameEntry = ttk.Entry(optionsFrame, textvariable=nameVar, width=30)
 nameEntry.grid(column = 0, row = 1, columnspan = 4, sticky=NSEW)
 

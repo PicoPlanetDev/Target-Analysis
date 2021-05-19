@@ -34,19 +34,24 @@ The target analysis system uses Hough Circles to identify a large circle in the 
 
 ### Requirements
 
-Please use pip to ensure that the following Python packages are installed:
+Install Python 3. This project was built using Python 3.9, so that is recommended if possible. When installing Python, be sure to check the "Add Python 3.x to PATH" box.
 
-opencv-python
-tkinter
-pillow
-os
-csv
-numpy
-math
-argparse
-datetime
-shutil
-matplotlib
+Ensure that the following Python packages are installed:
+
+- opencv-python
+- tkinter
+- pillow
+- os
+- csv
+- numpy
+- math
+- argparse
+- datetime
+- shutil
+- matplotlib
+- ttkthemes
+
+You can do this automatically by running the install_dependencies.bat file in the Target-Analysis-main directory.
 
 ### Scanning
 
@@ -74,16 +79,22 @@ To score a target:
 
 Data from the analysis is stored in the data folder as data-<Name><Day><Month><Year><Target number>.csv
 
-For each target, you can click [Use Today] to set today's date and use target #1. The target number allows you to score multiple targets from the same person on the same day.
-If "Use info from file" is selected, the program will automatically update the date and target number.
+Alternatively, click File -> Show Output after analyzing a target to see each bull laid out in their real locations. Click the "Open Target CSV" button to open the CSV file for the target. Click the "Open Data CSV" file to open the CSV that contains all scanned targets.
+You cannot use File -> Show Output if you analyzed multiple targets using the Open Folder method.
+
+If "Use info from file" is selected, the program will automatically update the date and target number. This will overwrite all data and target number information in the box already. If the file is not named correctly, or you would like to use a different date or target number, make sure to deselect this option.
 For this, you must name the target files as such:
 <2 number day><3 letter shortened month><Year><left side or right><target number>.jpeg
-
 For example:
 "03jan2021left1.jpeg" and "03jan2021right1.jpeg"
 
+You can click [Use Today] to set today's date and use target #1. The target number allows you to score multiple targets from the same person on the same day. When using this option, please make sure to disable "Use info from file" in this scenario.
+You can also simply type in a date and target number, but please make sure to disable "Use info from file" in this scenario.
+
+Type in a name that identifies the target. I prefer to use the shooter's name for this. It is preferable to make the name one word only (Sigmond or SigmondKukla for example) to avoid problems related to the path of files that use this name.
+
 To score multiple targets:
-1. Place all of the scanned targets into the images folder.
+1. Place all of the scanned targets into the images folder. Do not place any other files with the JPEG extension in the folder right now. If necessary, create a subfolder and move the extraneous files to that location.
 2. Make sure that all targets are named correctly (as per the example above)
 3. Click File -> Open folder and select the images folder
 4. Wait until the label at the top of the window reads "Done"
@@ -92,3 +103,5 @@ To score multiple targets:
     For example:
     data-Sigmond03January20211.csv
 6. To view data for all targets, open the data.csv file in the data folder.
+
+To hide the black command prompt that appears when running this program, rename "gui.py" to "gui.pyw"
