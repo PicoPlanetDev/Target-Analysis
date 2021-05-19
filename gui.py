@@ -203,9 +203,9 @@ def analyzeTarget():
     global csvName
     csvName = "data/data-" + nameVar.get() + dayVar.get() + monthVar.get() + yearVar.get() + targetNumVar.get() + ".csv"
 
-    print(str(os.getcwd())+"\\"+csvName)
+    #print(str(os.getcwd())+"\\"+csvName)
     if os.path.exists(str(os.getcwd()) +"\\" + csvName):
-        print("CSV already exists. Removing old version")
+        #print("CSV already exists. Removing old version")
         os.remove(os.getcwd() + "\\" + csvName)
     
     with open(csvName, 'x', newline="") as csvfile:
@@ -252,6 +252,7 @@ def analyzeTarget():
 
     #showOutput()
 
+# Shows the results of the program in a separate window and provides buttons for opening CSV files
 def showOutput():
     #region Create Toplevel window
     targetWindow = tk.Toplevel(root)
@@ -385,6 +386,7 @@ def openFolder():
     for file in os.listdir(folder):
         if file.endswith(".jpeg"):
             path = os.getcwd() + "\images\\" + file
+            print(path)
             setInfoFromFile(file)
             fileImage = cv2.imread(path)
             if "left" in file:
@@ -396,7 +398,7 @@ def openFolder():
 # Sets file options by parsing a correctly-named target         
 def setInfoFromFile(file):
     filename = os.path.basename(file)
-    print(filename)
+    #print(filename)
 
     dayVar.set(filename[0:2])
 
@@ -436,6 +438,9 @@ def setInfoFromToday():
 def clearData():
     shutil.rmtree(os.getcwd()+"\data")
     os.mkdir(os.getcwd()+"\data")
+
+    shutil.rmtree(os.getcwd()+"\images\output")
+    os.mkdir(os.getcwd()+"\images\output")
 
 # Derived from improved.py
 def analyzeImage(image):
@@ -609,7 +614,7 @@ filemenu = tk.Menu(menubar, tearoff=0)
 filemenu.add_command(label="📁 Load left image", command=loadImageLeft)
 filemenu.add_command(label="📁 Load right image", command=loadImageRight)
 filemenu.add_command(label="🎯 Analyze target", command=analyzeTarget)
-filemenu.add_command(label="🗃 Open Folder", command=openFolder)
+#filemenu.add_command(label="🗃 Open Folder", command=openFolder)
 filemenu.add_command(label="🗂 Show in Explorer", command=showFolder)
 filemenu.add_command(label="💯 Show Output", command=showOutput, state=DISABLED)
 filemenu.add_command(label="⚠ Clear data", command=clearData)
