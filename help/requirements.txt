@@ -1,6 +1,8 @@
 Documentation - Requirements
 
-Please use pip to ensure that the following Python packages are installed:
+Install Python 3. This project was built using Python 3.9, so that is recommended if possible. When installing Python, be sure to check the "Add Python 3.x to PATH" box.
+
+Ensure that the following Python packages are installed:
 
 opencv-python
 tkinter
@@ -13,3 +15,6 @@ argparse
 datetime
 shutil
 matplotlib
+ttkthemes
+
+You can do this automatically by running the 
