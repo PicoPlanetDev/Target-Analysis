@@ -26,3 +26,5 @@ To score multiple targets:
     For example:
     data-Sigmond03January20211.csv
 6. To view data for all targets, open the data.csv file in the data folder.
+
+To hide the black command prompt that appears when running this program, rename "gui.py" to "gui.pyw"

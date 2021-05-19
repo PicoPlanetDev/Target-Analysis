@@ -248,7 +248,8 @@ def analyzeTarget():
 
     label.config(text="Done")
 
-    filemenu.entryconfigure(5, state=NORMAL)
+    # Make sure to count which entry this is! Starts at ZERO not one.
+    filemenu.entryconfigure(4, state=NORMAL)
 
     #showOutput()
 
