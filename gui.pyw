@@ -255,6 +255,8 @@ def analyzeTarget():
 
 # Shows the results of the program in a separate window and provides buttons for opening CSV files
 def showOutput():
+    label.config(text="Showing output")
+
     #region Create Toplevel window
     targetWindow = tk.Toplevel(root)
     targetWindow.minsize(525,725)
@@ -427,6 +429,8 @@ def setInfoFromFile(file):
 
     targetNumVar.set(filename[-6])
 
+    label.config(text="Set date to: " + monthVar.get() + " " + dayVar.get() + " " + yearVar.get() + " with target number " + targetNumVar.get())
+
 # Sets file options from today's date
 def setInfoFromToday():
     today = datetime.datetime.now()
@@ -434,6 +438,7 @@ def setInfoFromToday():
     dayVar.set(today.strftime("%d"))
     yearVar.set(today.strftime("%Y"))
     targetNumVar.set("1")
+    label.config(text="Set date to: " + monthVar.get() + " " + dayVar.get() + " " + yearVar.get() + " with target number " + targetNumVar.get())
 
 # Delete all files in the data folder
 def clearData():
@@ -442,6 +447,8 @@ def clearData():
 
     shutil.rmtree(os.getcwd()+"\images\output")
     os.mkdir(os.getcwd()+"\images\output")
+
+    label.config(text="/data and /images/output directories cleared")
 
 # Derived from improved.py
 def analyzeImage(image):
