@@ -129,3 +129,15 @@ images/**
 
 # all data
 data/**
+
+# exclude all images
+images/*
+
+# but keep folder
+!images/.gitkeep 
+
+# exclude all data
+data/*
+
+# but keep folder
+!data/.gitkeep
