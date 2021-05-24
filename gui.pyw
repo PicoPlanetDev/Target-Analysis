@@ -67,6 +67,8 @@ def loadImageRight():
 def cropRight(image):
     label.config(text="Cropping right side...")
 
+    checkOutputDir()
+
     #region Crop the image
     y=275
     x=720
@@ -105,8 +107,6 @@ def cropRight(image):
     crop6 = image[y:y+h, x:x+w]
     #endregion
 
-    checkOutputDir()
-
     # Save the cropped sections
     cv2.imwrite("images/output/top-mid.jpg", crop1)
     cv2.imwrite("images/output/top-right.jpg", crop2)
@@ -143,6 +143,8 @@ def cropRight(image):
 def cropLeft(image):
     label.config(text="Cropping left side...")
 
+    checkOutputDir()
+
     # Flips the image vertically and horizontally before cropping
     verticalFlippedImage = cv2.flip(image, -1)
     cv2.imwrite("images/output/vertical-flipped.jpg", verticalFlippedImage)
@@ -172,8 +174,6 @@ def cropLeft(image):
     w=580
     crop5 = verticalFlippedImage[y:y+h, x:x+w]
     #endregion
-
-    checkOutputDir()
 
     # Save the cropped sections
     cv2.imwrite("images/output/top-left.jpg", crop2)
