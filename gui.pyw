@@ -105,6 +105,8 @@ def cropRight(image):
     crop6 = image[y:y+h, x:x+w]
     #endregion
 
+    checkOutputDir()
+
     # Save the cropped sections
     cv2.imwrite("images/output/top-mid.jpg", crop1)
     cv2.imwrite("images/output/top-right.jpg", crop2)
@@ -170,6 +172,8 @@ def cropLeft(image):
     w=580
     crop5 = verticalFlippedImage[y:y+h, x:x+w]
     #endregion
+
+    checkOutputDir()
 
     # Save the cropped sections
     cv2.imwrite("images/output/top-left.jpg", crop2)
@@ -453,6 +457,12 @@ def clearData():
     os.mkdir(os.getcwd()+"\images\output")
 
     label.config(text="/data and /images/output directories cleared")
+
+def checkOutputDir():
+    path = '"' + os.getcwd() + "\images\output" + '"'
+    print(path)
+    if os.path.isdir(path) == False:
+        os.mkdir(path)
 
 # Derived from improved.py
 def analyzeImage(image):
