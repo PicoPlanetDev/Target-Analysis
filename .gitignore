@@ -134,7 +134,10 @@ data/**
 images/*
 
 # but keep folder
-!images/.gitkeep 
+!images/.gitkeep
+
+# and keep output
+!images/output/.gitkeep
 
 # exclude all data
 data/*

@@ -5,6 +5,9 @@ A target analysis system offering insights into accuracy
 Currently, the target analysis Python script allows you to automatically:
 - Score a target
 - Save data to a CSV file
+- Custom, From File, and Today options for date
+- Batch analysis
+- 
 
 ## Installation
 1. Install Python 3.9 from this page: https://www.python.org/downloads/release/python-395/
@@ -12,24 +15,8 @@ If the computer used runs Windows, please select the bottom option at the bottom
 2. Run the installer, making sure to check the "Add Python 3.x to PATH" box.
 3. Click the green ```↓ Code``` button at the top right of this Github page and select Download ZIP.
 4. Extract the zipped folder to a prominent location, such as the Desktop or Documents directory.
-5. Open a command prompt window by pressing <kbd>⊞ Win</kbd> + <kbd>R</kbd>
-6. Type ```cmd``` then press ```OK```
-7. Type into the command prompt
-```pip install PACKAGE```
-where PACKAGE is replaced with each of the following packages:
-
-- ```opencv-python```
-- ```tkinter```
-- ```pillow```
-- ```os```
-- ```csv```
-- ```numpy```
-- ```math```
-- ```argparse```
-- ```datetime```
-- ```shutil```
-- ```matplotlib```
-- ```ttkthemes```
+5. Double click to run ```install_dependencies.bat```
+6. Double click to run ```gui.pyw``` to run the analysis software.
 
 ## Documentation
 ### Information
@@ -130,3 +117,19 @@ To score multiple targets:
 6. To view data for all targets, open the data.csv file in the data folder.
 
 To hide the black command prompt that appears when running this program, rename "gui.py" to "gui.pyw"
+
+### Folder structure
+```Target-Analysis
+├───assets
+├───data
+├───help
+├───images
+│   └───output
+└───old```
+
+**assets** - do not touch
+**data** - contains output CSV files. Clear them manually by deleting them, or by using File -> Clear Data inside the software
+**help** - contains some documentation
+**images** - put targets that need to be scored here
+**output** - do not touch, files inside are automatically overwritten
+**old* - contains older versions of this software that have been superseded by the current version. I do not reccomend using them ;-)
