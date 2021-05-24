@@ -459,7 +459,7 @@ def clearData():
     label.config(text="/data and /images/output directories cleared")
 
 def checkOutputDir():
-    path = '"' + os.getcwd() + "\images\output" + '"'
+    path = os.getcwd() + "\images\output"
     print(path)
     if os.path.isdir(path) == False:
         os.mkdir(path)
