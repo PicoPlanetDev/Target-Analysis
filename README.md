@@ -10,10 +10,11 @@ Currently, the target analysis Python script allows you to automatically:
 1. Install Python 3.9 from this page: https://www.python.org/downloads/release/python-395/
 If the computer used runs Windows, please select the bottom option at the bottom of the page: Windows Installer (64-bit).
 2. Run the installer, making sure to check the "Add Python 3.x to PATH" box.
-3. Click the green [↓ Code] button at the top right of this Github page and select Download ZIP.
+3. Click the green ```↓ Code``` button at the top right of this Github page and select Download ZIP.
 4. Extract the zipped folder to a prominent location, such as the Desktop or Documents directory.
 5. Open a command prompt window by pressing <kbd>⊞ Win</kbd> + <kbd>R</kbd>
-6. Type into the command prompt
+6. Type ```cmd``` then press ```OK```
+7. Type into the command prompt
 ```pip install PACKAGE```
 where PACKAGE is replaced with each of the following packages:
 
