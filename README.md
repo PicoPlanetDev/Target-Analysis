@@ -17,18 +17,18 @@ If the computer used runs Windows, please select the bottom option at the bottom
 ```pip install PACKAGE```
 where PACKAGE is replaced with each of the following packages:
 
-- opencv-python
-- tkinter
-- pillow
-- os
-- csv
-- numpy
-- math
-- argparse
-- datetime
-- shutil
-- matplotlib
-- ttkthemes
+- ```opencv-python```
+- ```tkinter```
+- ```pillow```
+- ```os```
+- ```csv```
+- ```numpy```
+- ```math```
+- ```argparse```
+- ```datetime```
+- ```shutil```
+- ```matplotlib```
+- ```ttkthemes```
 
 ## Documentation
 ### Information
