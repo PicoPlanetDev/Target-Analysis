@@ -4,17 +4,17 @@ Install Python 3. This project was built using Python 3.9, so that is recommende
 
 Ensure that the following Python packages are installed:
 
-opencv-python
-tkinter
-pillow
-os
-csv
-numpy
-math
-argparse
-datetime
-shutil
-matplotlib
-ttkthemes
+- opencv-python
+- tkinter
+- pillow
+- os
+- csv
+- numpy
+- math
+- argparse
+- datetime
+- shutil
+- matplotlib
+- ttkthemes
 
 You can do this automatically by running the install_dependencies.bat file in the Target-Analysis-main directory.

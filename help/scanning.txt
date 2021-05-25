@@ -11,3 +11,5 @@ If you would like to use the Open Folder operation or automatic information pars
 <2 number day><3 letter shortened month><Year><left side or right><target number>.jpeg
 For example:
 "03jan2021left1.jpeg" and "03jan2021right1.jpeg"
+
+**See https://github.com/PicoPlanetDev/Target-Analysis/blob/main/help/scanner-digital.png for a diagram.**
