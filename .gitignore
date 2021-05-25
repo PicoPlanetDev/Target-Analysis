@@ -139,6 +139,9 @@ images/*
 # and keep output
 !images/output/.gitkeep
 
+!image/03jan2021left1.jpeg
+!image/03jan2021right1.jpeg
+
 # exclude all data
 data/*
 
