@@ -63,6 +63,98 @@ def loadImageRight():
 
     cropRight(rightImage)
 
+def loadSingleImage():
+    imageFile = filedialog.askopenfilename()
+    singleImage = cv2.imread(imageFile)
+
+    if useFileInfo.get() is True:
+        setInfoFromFile(imageFile)
+
+    label.config(text="Single image loaded")
+
+    cropSingle(singleImage)
+
+def cropSingle(image):
+    label.config(text="Cropping single image...")
+
+    checkOutputDir()
+
+    dsize = 2982,3408
+    resizedImage = cv2.resize(image, dsize, interpolation = cv2.INTER_AREA)
+
+    cv2.imwrite("images/output/resized.jpg", resizedImage)
+
+    y=270
+    x=1235
+    h=540
+    w=540
+    crop1 = resizedImage[y:y+h, x:x+w]
+
+    y=270
+    x=2230
+    h=540
+    w=540
+    crop2 = resizedImage[y:y+h, x:x+w]
+
+    y=1030
+    x=2230
+    h=540
+    w=540
+    crop3 = resizedImage[y:y+h, x:x+w]
+
+    y=1785
+    x=2230
+    h=540
+    w=540
+    crop4 = resizedImage[y:y+h, x:x+w]
+
+    y=2550
+    x=2230
+    h=540
+    w=540
+    crop5 = resizedImage[y:y+h, x:x+w]
+
+    y=2550
+    x=1235
+    h=540
+    w=540
+    crop6 = resizedImage[y:y+h, x:x+w]
+
+    y=2550
+    x=250
+    h=540
+    w=540
+    crop7 = resizedImage[y:y+h, x:x+w]
+
+    y=1795
+    x=250
+    h=540
+    w=540
+    crop8 = resizedImage[y:y+h, x:x+w]
+
+    y=1050
+    x=250
+    h=540
+    w=540
+    crop9 = resizedImage[y:y+h, x:x+w]
+
+    y=270
+    x=250
+    h=540
+    w=540
+    crop10 = resizedImage[y:y+h, x:x+w]
+
+    cv2.imwrite("images/output/top-mid.jpg", crop1)
+    cv2.imwrite("images/output/top-right.jpg", crop2)
+    cv2.imwrite("images/output/upper-right.jpg", crop3)
+    cv2.imwrite("images/output/lower-right.jpg", crop4)
+    cv2.imwrite("images/output/bottom-right.jpg", crop5)
+    cv2.imwrite("images/output/bottom-mid.jpg", crop6)
+    cv2.imwrite("images/output/bottom-left.jpg", crop7)
+    cv2.imwrite("images/output/lower-left.jpg", crop8)
+    cv2.imwrite("images/output/upper-left.jpg", crop9)
+    cv2.imwrite("images/output/top-left.jpg", crop10)
+
 # Crop image for right side of the target and start analysis process
 def cropRight(image):
     label.config(text="Cropping right side...")
@@ -559,7 +651,7 @@ def analyzeImage(image):
         if area<1500 and area>200:
 
             # Draw the detected contour for debugging
-            #cv2.drawContours(output,[contour],0,(255,0,0),2)
+            cv2.drawContours(output,[contour],0,(255,0,0),2)
 
             # Create an enclosing circle that can represent the bullet hole
 
@@ -639,6 +731,7 @@ filemenu.add_command(label="🎯 Analyze target", command=analyzeTarget)
 filemenu.add_command(label="🗃 Open Folder", command=openFolder)
 filemenu.add_command(label="🗂 Show in Explorer", command=showFolder)
 filemenu.add_command(label="💯 Show Output", command=showOutput, state=DISABLED)
+filemenu.add_command(label="Load single image", command=loadSingleImage)
 filemenu.add_command(label="⚠ Clear data", command=clearData)
 filemenu.add_separator()
 filemenu.add_command(label="❌ Exit", command=root.quit)
