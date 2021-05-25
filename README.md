@@ -7,7 +7,7 @@ Currently, the target analysis Python script allows you to automatically:
 - Save data to a CSV file
 - Custom, From File, and Today options for date
 - Batch analysis
-- 
+- Excel ready output
 
 ## Installation
 1. Install Python 3.9 from this page: https://www.python.org/downloads/release/python-395/
@@ -17,6 +17,7 @@ If the computer used runs Windows, please select the bottom option at the bottom
 4. Extract the zipped folder to a prominent location, such as the Desktop or Documents directory.
 5. Double click to run ```install_dependencies.bat```
 6. Double click to run ```gui.pyw``` to run the analysis software.
+7. The images folder includes two scanned targets to test functionality. Run the software (see the Usage section) and click Show Output, ensuring that a score of 94-4X is displayed.
 
 ## Documentation
 ### Information
