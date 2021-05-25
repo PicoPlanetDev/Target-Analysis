@@ -22,7 +22,7 @@ If the computer used runs Windows, please select the bottom option at the bottom
 ## Documentation
 ### Information
 
-Created by Sigmond Kukla for the Mt. Lebanon Rifle Team from Thursday, May 6 to Sunday, May 23 of the year 2021.
+Created by Sigmond Kukla for the Mt. Lebanon Rifle Teamin May of 2021.
 
 Future people: Is COVID over yet?
 
