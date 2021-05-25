@@ -74,10 +74,25 @@ def loadSingleImage():
 
     cropSingle(singleImage)
 
+# def singleImageClicked(event, x, y, flags, params):
+#     if event == cv2.EVENT_LBUTTONDOWN:
+#         singleImageClickX.append(x)
+#         singleImageClickY.append(y)
+
 def cropSingle(image):
     label.config(text="Cropping single image...")
 
     checkOutputDir()
+
+    # global singleImageClickX
+    # singleImageClickX = []
+
+    # global singleImageClickY
+    # singleImageClickY = []
+
+    # cv2.imshow("Single Image", image)
+    # cv2.setMouseCallback('image', singleImageClicked)
+    # cv2.waitKey(0)
 
     dsize = 2982,3408
     resizedImage = cv2.resize(image, dsize, interpolation = cv2.INTER_AREA)
