@@ -738,7 +738,7 @@ def analyzeImage(image):
             holeCenter = (int(holeX),int(holeY))
             holeRadius = int(holeRadius)
             #print(holeRadius)
-            if holeRadius < 100:
+            if holeRadius < 40:
                 #cv2.circle(output,holeCenter,holeRadius,(0,255,0),2) # Enclosing circle
                 cv2.circle(output, holeCenter, 1, (0, 0, 255), 3) # Dot at the center
 
