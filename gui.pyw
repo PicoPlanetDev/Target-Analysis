@@ -75,14 +75,67 @@ def loadSingleImage():
 
     cropSingle(singleImage)
 
-# Helper function for cropSingle - Appends to list clicked points on the image
-def singleImageClicked(event, x, y, flags, params):
-    if event == cv2.EVENT_LBUTTONDOWN:
-        singleImageClickPosition.append((x*5,y*5))
-        #print("Appended position " + str(x) + "," + str(y))
-
 # Runs perspective transform to the image and crops it to 10 output images
 def cropSingle(image):
+    # Helper function for four_point_transform - puts points in order in a clockwise fashion with the top left point listed first
+    def order_points(pts):
+        # initialzie a list of coordinates that will be ordered
+        # such that the first entry in the list is the top-left,
+        # the second entry is the top-right, the third is the
+        # bottom-right, and the fourth is the bottom-left
+        rect = np.zeros((4, 2), dtype = "float32")
+        # the top-left point will have the smallest sum, whereas
+        # the bottom-right point will have the largest sum
+        s = pts.sum(axis = 1)
+        rect[0] = pts[np.argmin(s)]
+        rect[2] = pts[np.argmax(s)]
+        # now, compute the difference between the points, the
+        # top-right point will have the smallest difference,
+        # whereas the bottom-left will have the largest difference
+        diff = np.diff(pts, axis = 1)
+        rect[1] = pts[np.argmin(diff)]
+        rect[3] = pts[np.argmax(diff)]
+        # return the ordered coordinates
+        return rect
+    # Helper function for cropSingle - Calculates perspective transform for an image
+    def four_point_transform(image, pts):
+        # obtain a consistent order of the points and unpack them
+        # individually
+        rect = order_points(pts)
+        (tl, tr, br, bl) = rect
+        # compute the width of the new image, which will be the
+        # maximum distance between bottom-right and bottom-left
+        # x-coordiates or the top-right and top-left x-coordinates
+        widthA = np.sqrt(((br[0] - bl[0]) ** 2) + ((br[1] - bl[1]) ** 2))
+        widthB = np.sqrt(((tr[0] - tl[0]) ** 2) + ((tr[1] - tl[1]) ** 2))
+        maxWidth = max(int(widthA), int(widthB))
+        # compute the height of the new image, which will be the
+        # maximum distance between the top-right and bottom-right
+        # y-coordinates or the top-left and bottom-left y-coordinates
+        heightA = np.sqrt(((tr[0] - br[0]) ** 2) + ((tr[1] - br[1]) ** 2))
+        heightB = np.sqrt(((tl[0] - bl[0]) ** 2) + ((tl[1] - bl[1]) ** 2))
+        maxHeight = max(int(heightA), int(heightB))
+        # now that we have the dimensions of the new image, construct
+        # the set of destination points to obtain a "birds eye view",
+        # (i.e. top-down view) of the image, again specifying points
+        # in the top-left, top-right, bottom-right, and bottom-left
+        # order
+        dst = np.array([
+            [0, 0],
+            [maxWidth - 1, 0],
+            [maxWidth - 1, maxHeight - 1],
+            [0, maxHeight - 1]], dtype = "float32")
+        # compute the perspective transform matrix and then apply it
+        M = cv2.getPerspectiveTransform(rect, dst)
+        warped = cv2.warpPerspective(image, M, (maxWidth, maxHeight))
+        # return the warped image
+        return warped
+    # Helper function for cropSingle - Appends to list clicked points on the image
+    def singleImageClicked(event, x, y, flags, params):
+        if event == cv2.EVENT_LBUTTONDOWN:
+            singleImageClickPosition.append((x*5,y*5))
+            #print("Appended position " + str(x) + "," + str(y))
+
     copy = image.copy()
 
     label.config(text="Cropping single image...")
@@ -178,61 +231,6 @@ def cropSingle(image):
     cv2.imwrite("images/output/lower-left.jpg", crop8)
     cv2.imwrite("images/output/upper-left.jpg", crop9)
     cv2.imwrite("images/output/top-left.jpg", crop10)
-
-# Helper function for four_point_transform - puts points in order in a clockwise fashion with the top left point listed first
-def order_points(pts):
-	# initialzie a list of coordinates that will be ordered
-	# such that the first entry in the list is the top-left,
-	# the second entry is the top-right, the third is the
-	# bottom-right, and the fourth is the bottom-left
-	rect = np.zeros((4, 2), dtype = "float32")
-	# the top-left point will have the smallest sum, whereas
-	# the bottom-right point will have the largest sum
-	s = pts.sum(axis = 1)
-	rect[0] = pts[np.argmin(s)]
-	rect[2] = pts[np.argmax(s)]
-	# now, compute the difference between the points, the
-	# top-right point will have the smallest difference,
-	# whereas the bottom-left will have the largest difference
-	diff = np.diff(pts, axis = 1)
-	rect[1] = pts[np.argmin(diff)]
-	rect[3] = pts[np.argmax(diff)]
-	# return the ordered coordinates
-	return rect
-
-# Helper function for cropSingle - Calculates perspective transform for an image
-def four_point_transform(image, pts):
-	# obtain a consistent order of the points and unpack them
-	# individually
-	rect = order_points(pts)
-	(tl, tr, br, bl) = rect
-	# compute the width of the new image, which will be the
-	# maximum distance between bottom-right and bottom-left
-	# x-coordiates or the top-right and top-left x-coordinates
-	widthA = np.sqrt(((br[0] - bl[0]) ** 2) + ((br[1] - bl[1]) ** 2))
-	widthB = np.sqrt(((tr[0] - tl[0]) ** 2) + ((tr[1] - tl[1]) ** 2))
-	maxWidth = max(int(widthA), int(widthB))
-	# compute the height of the new image, which will be the
-	# maximum distance between the top-right and bottom-right
-	# y-coordinates or the top-left and bottom-left y-coordinates
-	heightA = np.sqrt(((tr[0] - br[0]) ** 2) + ((tr[1] - br[1]) ** 2))
-	heightB = np.sqrt(((tl[0] - bl[0]) ** 2) + ((tl[1] - bl[1]) ** 2))
-	maxHeight = max(int(heightA), int(heightB))
-	# now that we have the dimensions of the new image, construct
-	# the set of destination points to obtain a "birds eye view",
-	# (i.e. top-down view) of the image, again specifying points
-	# in the top-left, top-right, bottom-right, and bottom-left
-	# order
-	dst = np.array([
-		[0, 0],
-		[maxWidth - 1, 0],
-		[maxWidth - 1, maxHeight - 1],
-		[0, maxHeight - 1]], dtype = "float32")
-	# compute the perspective transform matrix and then apply it
-	M = cv2.getPerspectiveTransform(rect, dst)
-	warped = cv2.warpPerspective(image, M, (maxWidth, maxHeight))
-	# return the warped image
-	return warped
 
 # Crop image for right side of the target and start analysis process
 def cropRight(image):
@@ -434,8 +432,8 @@ def showOutput():
 
     #region Create Toplevel window
     targetWindow = tk.Toplevel(root)
-    targetWindow.minsize(525,725)
-    targetWindow.geometry("525x710")
+    targetWindow.minsize(525,740)
+    targetWindow.geometry("525x740")
     targetWindow.iconbitmap("assets/icon.ico")
     targetWindow.title("Target Analysis")
     #endregion
@@ -821,7 +819,6 @@ helpmenu = tk.Menu(menubar, tearoff=0)
 helpmenu.add_command(label="Usage", command=lambda: openFile('"' + os.getcwd() + "\help\\" + "usage.txt" + '"'))
 helpmenu.add_command(label="Scanning", command=lambda: openFile('"' + os.getcwd() + "\help\\" + "scanning.txt" + '"'))
 helpmenu.add_command(label="Scanning diagram", command=lambda: openFile('"' + os.getcwd() + "\help\\" + "scanner-digital.png" + '"'))
-helpmenu.add_separator()
 helpmenu.add_command(label="Measurements", command=lambda: openFile('"' + os.getcwd() + "\help\\" + "measurements.txt" + '"'))
 helpmenu.add_command(label="Information", command=lambda: openFile('"' + os.getcwd() + "\help\\" + "information.txt" + '"'))
 menubar.add_cascade(label="Help", menu=helpmenu)
