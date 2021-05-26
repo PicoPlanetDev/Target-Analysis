@@ -33,12 +33,12 @@ RW1vcnkgaXMgY3V0ZS4=
 *Disclaimer: This might not actually be what these rings are called... I'm just going off of what I used in the code.
 
 Measurements used in the target analysis system (radius):
-Outer ring   - 46.150 millimeters
-Five ring    - 37.670 millimeters
-Six ring     - 29.210 millimeters
-Seven ring   - 20.750 millimeters
-Eight ring   - 12.270 millimeters
-Nine ring    - 3.810 millimeters
+- Outer ring   - 46.150 millimeters
+- Five ring    - 37.670 millimeters
+- Six ring     - 29.210 millimeters
+- Seven ring   - 20.750 millimeters
+- Eight ring   - 12.270 millimeters
+- Nine ring    - 3.810 millimeters
 
 Scoring spindle on scoring gauge uses radius 2.8 millimeters (equivalent to ⌀5.6mm)
 
@@ -126,11 +126,12 @@ To hide the black command prompt that appears when running this program, rename 
 ├───help
 ├───images
 │   └───output
-└───old```
+└───old
+```
 
 **assets** - do not touch
 **data** - contains output CSV files. Clear them manually by deleting them, or by using File -> Clear Data inside the software
 **help** - contains some documentation
 **images** - put targets that need to be scored here
 **output** - do not touch, files inside are automatically overwritten
-**old* - contains older versions of this software that have been superseded by the current version. I do not reccomend using them ;-)
+**old** - contains older versions of this software that have been superseded by the current version. I do not reccomend using them ;-)
