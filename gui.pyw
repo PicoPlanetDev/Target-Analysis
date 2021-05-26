@@ -161,62 +161,62 @@ def cropSingle(image):
 
     cv2.imwrite("images/output/resized.jpg", resizedImage)
 
-    y=270
-    x=1235
+    y=250
+    x=1215
     h=540
     w=540
     crop1 = resizedImage[y:y+h, x:x+w]
 
-    y=270
-    x=2230
+    y=250
+    x=2215
     h=540
     w=540
     crop2 = resizedImage[y:y+h, x:x+w]
 
-    y=1030
-    x=2230
+    y=1010
+    x=2215
     h=540
     w=540
     crop3 = resizedImage[y:y+h, x:x+w]
 
     y=1785
-    x=2230
+    x=2215
     h=540
     w=540
     crop4 = resizedImage[y:y+h, x:x+w]
 
     y=2550
-    x=2230
+    x=2215
     h=540
     w=540
     crop5 = resizedImage[y:y+h, x:x+w]
 
     y=2550
-    x=1235
+    x=1210
     h=540
     w=540
     crop6 = resizedImage[y:y+h, x:x+w]
 
     y=2550
-    x=250
+    x=205
     h=540
     w=540
     crop7 = resizedImage[y:y+h, x:x+w]
 
-    y=1795
-    x=250
+    y=1785
+    x=205
     h=540
     w=540
     crop8 = resizedImage[y:y+h, x:x+w]
 
-    y=1050
-    x=250
+    y=1010
+    x=205
     h=540
     w=540
     crop9 = resizedImage[y:y+h, x:x+w]
 
-    y=270
-    x=250
+    y=250
+    x=205
     h=540
     w=540
     crop10 = resizedImage[y:y+h, x:x+w]
@@ -697,6 +697,7 @@ def analyzeImage(image):
             pixelNine = pixelOuter*nine
 
             spindleRadius = spindleRadius*(pixelOuter/outer)
+            outerSpindleRadius = outerSpindleRadius*(pixelOuter/outer)
 
             cv2.circle(output, (a, b), int(pixelOuter), (0, 255, 0), 2)
             cv2.circle(output, (a, b), int(pixelFive), (0, 255, 0), 2)
@@ -777,6 +778,35 @@ def analyzeImage(image):
                     print("4")
                     cv2.putText(output, "4", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
                     droppedPoints += 4
+
+                # if distance+outerSpindleRadius < pixelEight:
+                #     print("X")
+                #     cv2.putText(output, "X", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                #     xCount += 1
+
+                # if distance+outerSpindleRadius > pixelEight and distance-outerSpindleRadius < pixelNine:
+                #     print("0")
+                #     cv2.putText(output, "0", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+
+                # if distance+outerSpindleRadius > pixelEight and distance-outerSpindleRadius > pixelNine and distance+outerSpindleRadius < pixelSeven:
+                #     print("1")
+                #     cv2.putText(output, "1", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                #     droppedPoints += 1
+
+                # if distance+outerSpindleRadius > pixelSeven and distance+outerSpindleRadius < pixelSix:
+                #     print("2")
+                #     cv2.putText(output, "2", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                #     droppedPoints += 2
+
+                # if distance+outerSpindleRadius > pixelSix and distance+outerSpindleRadius < pixelFive:
+                #     print("3")
+                #     cv2.putText(output, "3", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                #     droppedPoints += 3
+
+                # if distance+outerSpindleRadius > pixelFive and distance+outerSpindleRadius < pixelOuter:
+                #     print("4")
+                #     cv2.putText(output, "4", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                #     droppedPoints += 4
 
                 holeRatioX = (holeX-a) / pixelOuter
                 holeRatioY = (holeY-a) / pixelOuter
