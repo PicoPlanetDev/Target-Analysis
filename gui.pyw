@@ -432,8 +432,8 @@ def showOutput():
 
     #region Create Toplevel window
     targetWindow = tk.Toplevel(root)
-    targetWindow.minsize(525,740)
-    targetWindow.geometry("525x740")
+    targetWindow.minsize(525,750)
+    targetWindow.geometry("525x750")
     targetWindow.iconbitmap("assets/icon.ico")
     targetWindow.title("Target Analysis")
     #endregion
@@ -645,6 +645,7 @@ def analyzeImage(image):
     nine = 3.810/outer
 
     spindleRadius = 2.8
+    outerSpindleRadius = 4.5
     #endregion
 
     droppedPoints = 0
@@ -729,61 +730,63 @@ def analyzeImage(image):
         if area<1500 and area>200:
 
             # Draw the detected contour for debugging
-            cv2.drawContours(output,[contour],0,(255,0,0),2)
+            #cv2.drawContours(output,[contour],0,(255,0,0),2)
 
             # Create an enclosing circle that can represent the bullet hole
 
             (holeX,holeY),holeRadius = cv2.minEnclosingCircle(contour)
             holeCenter = (int(holeX),int(holeY))
             holeRadius = int(holeRadius)
+            #print(holeRadius)
+            if holeRadius < 100:
+                #cv2.circle(output,holeCenter,holeRadius,(0,255,0),2) # Enclosing circle
+                cv2.circle(output, holeCenter, 1, (0, 0, 255), 3) # Dot at the center
 
-            #cv2.circle(output,holeCenter,holeRadius,(0,255,0),2) # Enclosing circle
-            cv2.circle(output, holeCenter, 1, (0, 0, 255), 3) # Dot at the center
+                # Draw the spindle
+                cv2.circle(output,holeCenter,int(spindleRadius),(0,255,255),2)
+                #cv2.circle(output,holeCenter,int(outerSpindleRadius),(0,255,255),2)
 
-            # Draw the spindle
-            cv2.circle(output,holeCenter,int(spindleRadius),(0,255,255),2)
+                distance = ComputeDistance(holeX, holeY, a, b)
 
-            distance = ComputeDistance(holeX, holeY, a, b)
+                # Currently only scores target to a 4
+                if distance-spindleRadius < pixelNine:
+                    print("X")
+                    cv2.putText(output, "X", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    xCount += 1
 
-            # Currently only scores target to a 4
-            if distance-spindleRadius < pixelNine:
-                print("X")
-                cv2.putText(output, "X", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                xCount += 1
+                if distance+spindleRadius < pixelEight and distance-spindleRadius > pixelNine:
+                    print("0")
+                    cv2.putText(output, "0", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
 
-            if distance+spindleRadius < pixelEight and distance-spindleRadius > pixelNine:
-                print("0")
-                cv2.putText(output, "0", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                if distance+spindleRadius > pixelEight and distance+spindleRadius < pixelSeven:
+                    print("1")
+                    cv2.putText(output, "1", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    droppedPoints += 1
 
-            if distance+spindleRadius > pixelEight and distance+spindleRadius < pixelSeven:
-                print("1")
-                cv2.putText(output, "1", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                droppedPoints += 1
+                if distance+spindleRadius > pixelSeven and distance+spindleRadius < pixelSix:
+                    print("2")
+                    cv2.putText(output, "2", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    droppedPoints += 2
 
-            if distance+spindleRadius > pixelSeven and distance+spindleRadius < pixelSix:
-                print("2")
-                cv2.putText(output, "2", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                droppedPoints += 2
+                if distance+spindleRadius > pixelSix and distance+spindleRadius < pixelFive:
+                    print("3")
+                    cv2.putText(output, "3", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    droppedPoints += 3
 
-            if distance+spindleRadius > pixelSix and distance+spindleRadius < pixelFive:
-                print("3")
-                cv2.putText(output, "3", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                droppedPoints += 3
+                if distance+spindleRadius > pixelFive and distance+spindleRadius < pixelOuter:
+                    print("4")
+                    cv2.putText(output, "4", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    droppedPoints += 4
 
-            if distance+spindleRadius > pixelFive and distance+spindleRadius < pixelOuter:
-                print("4")
-                cv2.putText(output, "4", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                droppedPoints += 4
+                holeRatioX = (holeX-a) / pixelOuter
+                holeRatioY = (holeY-a) / pixelOuter
 
-            holeRatioX = (holeX-a) / pixelOuter
-            holeRatioY = (holeY-a) / pixelOuter
+                global csvName
 
-            global csvName
-
-            with open(csvName, 'a', newline="") as csvfile:
-                filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-                filewriter.writerow([image, droppedPoints, xCount, holeX, holeY, distance, holeRatioX, holeRatioY])
-                csvfile.close()
+                with open(csvName, 'a', newline="") as csvfile:
+                    filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                    filewriter.writerow([image, droppedPoints, xCount, holeX, holeY, distance, holeRatioX, holeRatioY])
+                    csvfile.close()
     #endregion
 
     cv2.imshow("output", output) # Optional but make sure to use waitkey below if enabled, or else only image will show up.
