@@ -17,6 +17,7 @@ import datetime
 import shutil
 from numpy.core.fromnumeric import var
 import matplotlib.pyplot as plt
+import matplotlib
 #endregion
 
 # Loads an image for the left side of the target
@@ -686,6 +687,13 @@ def showTrends():
                         textcoords="offset points", # how to position the text
                         xytext=(-15,0), # distance from text to points (x,y)
                         ha='center') # horizontal alignment can be left, right or center
+
+        datesNum = matplotlib.dates.datestr2num(dates)
+
+        z = np.polyfit(datesNum, scores, 1)
+        p = np.poly1d(z)
+
+        axs[0].plot(dates,p(datesNum), 'r--')
 
         axs[0].set_xlabel('Date')
         axs[1].set_xlabel('Date')
