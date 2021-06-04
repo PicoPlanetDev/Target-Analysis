@@ -1,5 +1,5 @@
 #region Import libraries
-from tkinter.constants import BOTH, BOTTOM, CENTER, DISABLED, FLAT, HORIZONTAL, LEFT, NORMAL, NSEW, RIGHT, SOLID, SUNKEN, TOP, X
+from tkinter.constants import BOTH, BOTTOM, CENTER, DISABLED, FLAT, HORIZONTAL, LEFT, NORMAL, NSEW, RIDGE, RIGHT, SOLID, SUNKEN, TOP, X
 import cv2
 import tkinter as tk
 from tkinter import ttk
@@ -460,6 +460,7 @@ def showOutput():
     openDataCSVButton = ttk.Button(outputTopFrame, text="Open data CSV", command=lambda: openFile('"' + os.getcwd() + "/data/data.csv" + '"'))
     openDataCSVButton.grid(row=0, column=2)
     outputTopFrame.grid_columnconfigure(2, weight=1)
+    #endregion
 
     #region Create canvases and images for each bull
     topLeftCanvas = tk.Canvas(outputBottomFrame, width=170,height=170)
@@ -574,6 +575,136 @@ def openFolder():
             if fileNum == 2:
                 analyzeTarget()
                 fileNum = 0
+
+# Allows viewing of trends from existing data files
+def showTrends():
+    label.config(text="Showing trends window")
+
+    #region Create Toplevel window
+    trendsWindow = tk.Toplevel(root)
+    trendsWindow.minsize(250,100)
+    trendsWindow.geometry("250x100")
+    trendsWindow.iconbitmap("assets/icon.ico")
+    trendsWindow.title("Target Analysis")
+    #endregion
+
+    def showMostMissed():
+        bulls = [0,0,0,0,0,0,0,0,0,0]
+        folder = filedialog.askdirectory()
+        for file in os.listdir(folder):
+            if not "data.csv" in file and not ".gitkeep" in file:
+                with open("data/" + file) as csv_file:
+                    csv_reader = csv.reader(csv_file, delimiter=',')
+                    line_count = 0
+                    for row in csv_reader:
+                        #print(line_count)
+                        if line_count != 0 and line_count <= 10:
+                            bulls[line_count-1] += int(row[1])
+                        line_count += 1
+                    csv_file.close()
+        #print(bulls)
+
+        frame = ttk.Frame(trendsWindow)
+        frame.pack(pady=5)
+        trendsWindow.geometry("250x300")
+
+        mostMissedLabel = ttk.Label(frame, text="Most missed is highest number")
+        mostMissedLabel.grid(row=0, column=0, columnspan=3)
+
+        label1 = ttk.Label(frame, text=str(bulls[0]), borderwidth=2, relief=RIDGE, padding=10)
+        label1.grid(row=1,column=0)
+
+        label2 = ttk.Label(frame, text=str(bulls[1]), borderwidth=2, relief=RIDGE, padding=10)
+        label2.grid(row=2,column=0)
+
+        label3 = ttk.Label(frame, text=str(bulls[2]), borderwidth=2, relief=RIDGE, padding=10)
+        label3.grid(row=3,column=0)
+
+        label4 = ttk.Label(frame, text=str(bulls[3]), borderwidth=2, relief=RIDGE, padding=10)
+        label4.grid(row=4,column=0)
+
+        label5 = ttk.Label(frame, text=str(bulls[4]), borderwidth=2, relief=RIDGE, padding=10)
+        label5.grid(row=1,column=1)
+
+        label6 = ttk.Label(frame, text=str(bulls[5]), borderwidth=2, relief=RIDGE, padding=10)
+        label6.grid(row=1,column=2)
+
+        label7 = ttk.Label(frame, text=str(bulls[6]), borderwidth=2, relief=RIDGE, padding=10)
+        label7.grid(row=2,column=2)
+
+        label8 = ttk.Label(frame, text=str(bulls[7]), borderwidth=2, relief=RIDGE, padding=10)
+        label8.grid(row=3,column=2)
+
+        label9 = ttk.Label(frame, text=str(bulls[8]), borderwidth=2, relief=RIDGE, padding=10)
+        label9.grid(row=4,column=2)
+
+        label10 = ttk.Label(frame, text=str(bulls[9]), borderwidth=2, relief=RIDGE, padding=10)
+        label10.grid(row=4,column=1)
+    
+    def showTrendGraph():
+        dataCSV = filedialog.askopenfilename()
+
+        dates = []
+        scores = []
+        xCount = []
+        with open(dataCSV) as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=',')
+            line_count = 0
+            for row in csv_reader:
+                if line_count != 0:
+                    dates.append(row[1])
+                    scores.append(row[3])
+                    xCount.append(row[4])
+                line_count += 1
+            csv_file.close()
+        
+        sortedZipped = sorted(zip(dates,scores,xCount), key=lambda date: datetime.datetime.strptime(date[0], "%d %B %Y"))
+
+        dates,scores,xCount = map(list,zip(*sortedZipped))
+
+        scores = list(map(int, scores))
+        xCount = list(map(int, xCount))
+
+        fig,axs = plt.subplots(2)
+
+        axs[0].plot(dates,scores, marker='o', color = 'blue')
+
+        axs[1].plot(dates,xCount, marker='x', color = 'orange')
+
+        for x,y in zip(dates,scores):
+            label = y
+            axs[0].annotate(label, # this is the text
+                        (x,y), # this is the point to label
+                        textcoords="offset points", # how to position the text
+                        xytext=(-15,0), # distance from text to points (x,y)
+                        ha='center') # horizontal alignment can be left, right or center
+
+        for x,y in zip(dates,xCount):
+            label = str(y) + "X"
+            axs[1].annotate(label, # this is the text
+                        (x,y), # this is the point to label
+                        textcoords="offset points", # how to position the text
+                        xytext=(-15,0), # distance from text to points (x,y)
+                        ha='center') # horizontal alignment can be left, right or center
+
+        axs[0].set_xlabel('Date')
+        axs[1].set_xlabel('Date')
+
+        axs[0].set_ylabel('Score')
+        axs[1].set_ylabel('X Count')
+
+        axs[0].xaxis.set_tick_params(rotation=40)
+        axs[1].xaxis.set_tick_params(rotation=40)
+
+        plt.subplots_adjust(hspace=0.8)
+
+        plt.show()
+
+    loadFolderButton = ttk.Button(trendsWindow, text="Load Folder (for most missed)", command=showMostMissed)
+    loadFolderButton.pack(padx=10, pady=10)
+
+    loadCSVButton = ttk.Button(trendsWindow, text="Load CSV (for graph)", command=showTrendGraph)
+    loadCSVButton.pack(padx=10, pady=0)
 
 # Sets file options by parsing a correctly-named target         
 def setInfoFromFile(file):
@@ -726,12 +857,12 @@ def analyzeImage(image):
     for contour in contours:
         # Get the area of the contours
         area = cv2.contourArea(contour)
-
+        print(area)
         # Check if area is between max and min values for a bullet hole. Area is usually about 1000
         if area<1500 and area>200:
 
             # Draw the detected contour for debugging
-            #cv2.drawContours(output,[contour],0,(255,0,0),2)
+            cv2.drawContours(output,[contour],0,(255,0,0),2)
 
             # Create an enclosing circle that can represent the bullet hole
 
@@ -843,6 +974,7 @@ filemenu.add_command(label="🎯 Analyze target", command=analyzeTarget)
 filemenu.add_command(label="🗃 Open Folder", command=openFolder)
 filemenu.add_command(label="🗂 Show in Explorer", command=showFolder)
 filemenu.add_command(label="💯 Show Output", command=showOutput, state=DISABLED)
+filemenu.add_command(label="📈 Show Trends", command=showTrends)
 filemenu.add_command(label="⚠ Clear data", command=clearData)
 filemenu.add_separator()
 filemenu.add_command(label="❌ Exit", command=root.quit)
