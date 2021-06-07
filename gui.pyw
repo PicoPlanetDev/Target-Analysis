@@ -76,6 +76,27 @@ def loadSingleImage():
 
     cropSingle(singleImage)
 
+def loadOutdoorBull():
+    imageFile = filedialog.askopenfilename()
+    singleImage = cv2.imread(imageFile)
+
+    if useFileInfo.get() is True:
+        setInfoFromFile(imageFile)
+
+    label.config(text="Single image loaded")
+
+    checkOutputDir()
+
+    dsize = (int(singleImage.shape[1] * 0.2), int(singleImage.shape[0] * 0.2))
+    resized = cv2.resize(singleImage, dsize)
+
+    cv2.imwrite("images/output/outdoorBull.jpg", resized)
+
+    global csvName
+    csvName = "data/data-" + nameVar.get() + dayVar.get() + monthVar.get() + yearVar.get() + targetNumVar.get() + ".csv"
+
+    analyzeOutdoorImage("images/output/outdoorBull.jpg")
+
 # Runs perspective transform to the image and crops it to 10 output images
 def cropSingle(image):
     # Helper function for four_point_transform - puts points in order in a clockwise fashion with the top left point listed first
@@ -545,10 +566,6 @@ def openFile(file):
     label.config(text="Opening file " + str(file))
     os.system(file)
 
-# Basic implementation of the distance formula
-def ComputeDistance(x1, y1, x2, y2):
-    return math.sqrt(((x2 - x1) ** 2)+((y2 - y1) ** 2))
-
 # Create a template CSV file
 def createCSV():
     with open('data/data.csv', 'x', newline="") as csvfile:
@@ -774,7 +791,178 @@ def checkOutputDir():
         os.mkdir(path)
 
 # Derived from improved.py
+def analyzeOutdoorImage(image):
+    # Basic implementation of the distance formula
+    def ComputeDistance(x1, y1, x2, y2):
+        return math.sqrt(((x2 - x1) ** 2)+((y2 - y1) ** 2))
+
+    #region multipliers are from NRA A-23 target in inches
+    outer = 5.89
+    six = 4.89/outer
+    seven = 3.89/outer
+    eight = 2.89/outer
+    nine = 1.89/outer
+    ten = 0.89/outer
+    xRing = 0.39/outer
+
+    spindleRadius = 0.11 # These are still in mm oof
+    outerSpindleRadius = 0.177 # I might need to fix this
+    #endregion
+
+    droppedPoints = 0
+    xCount = 0
+
+    img = cv2.imread(image)
+    output = img.copy()
+
+    #region Identify the target's outer ring
+    # Convert the image to grayscale
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    
+    # Blur using 3 * 3 kernel
+    gray_blurred = cv2.blur(gray, (3, 3))
+    #cv2.imshow("gray_blurred", gray_blurred)
+
+    #threshold_image=cv2.inRange(gray_blurred, 100, 255)
+    #cv2.imshow("threshold_image", threshold_image)
+    
+    # Apply Hough transform on the blurred image.
+    detected_circles = cv2.HoughCircles(gray_blurred, cv2.HOUGH_GRADIENT, 1.4, 200, minRadius = 130)
+    
+    # Draw circles that are detected
+    if detected_circles is not None:
+    
+        # Convert the circle parameters a, b and r to integers
+        detected_circles = np.uint16(np.around(detected_circles))
+    
+        for pt in detected_circles[0, :]:
+            a, b, r = pt[0], pt[1], pt[2]
+
+            # Draw a small circle (of radius 1) to show the center.
+            cv2.circle(output, (a, b), 1, (0, 0, 255), 3)
+            pixelOuter = r
+
+            # Perform a calculation to determine if the system detected the wrong ring, and if so, correct the error
+            height, width, channels = img.shape
+            # These need to be recalculated for the outdoor targets
+            # if r/width < 0.4 and r/width > 0.35:
+            #     pixelOuter = outer/37.670 * r
+            
+            # if r/width < 0.35:
+            #     pixelOuter = outer/29.210 * r
+
+            pixelSix = pixelOuter*six
+            pixelSeven = pixelOuter*seven
+            pixelEight = pixelOuter*eight
+            pixelNine = pixelOuter*nine
+            pixelTen = pixelOuter*ten
+            pixelX = pixelOuter*xRing
+
+            spindleRadius = spindleRadius*(pixelOuter/outer)
+            #print(spindleRadius)
+            outerSpindleRadius = outerSpindleRadius*(pixelOuter/outer)
+
+            cv2.circle(output, (a, b), int(pixelOuter), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixelSix), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixelSeven), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixelEight), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixelNine), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixelTen), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixelX), (0, 255, 0), 2)
+
+            # Draw a small circle to show the center.
+            cv2.circle(output, (a, b), 1, (0, 0, 255), 3)
+    #endregion
+
+    #region Identify the hole in the target
+    # Make the image binary using a threshold
+    img_thresholded = cv2.inRange(img, (100, 100, 100), (255, 255, 255))
+    #cv2.imshow('Image Thresholded', img_thresholded)
+
+    # Remove noise from the binary image using the opening operation
+    kernel = np.ones((4,4),np.uint8)
+    opening = cv2.morphologyEx(img_thresholded, cv2.MORPH_OPEN, kernel)
+    #cv2.imshow('opening',opening)
+
+    # Find contours based on the denoised image
+    contours, hierarchy = cv2.findContours(opening.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+
+    for contour in contours:
+        # Get the area of the contours
+        area = cv2.contourArea(contour)
+        print(area)
+        # Check if area is between max and min values for a bullet hole. Area is usually about 1000
+        if area<100 and area>50:
+            # Draw the detected contour for debugging
+            cv2.drawContours(output,[contour],0,(255,0,0),2)
+
+            # Create an enclosing circle that can represent the bullet hole
+
+            (holeX,holeY),holeRadius = cv2.minEnclosingCircle(contour)
+            holeCenter = (int(holeX),int(holeY))
+            holeRadius = int(holeRadius)
+            print("HoleRadius: " + str(holeRadius))
+            if holeRadius < 40:
+                #cv2.circle(output,holeCenter,holeRadius,(0,255,0),2) # Enclosing circle
+                cv2.circle(output, holeCenter, 1, (0, 0, 255), 3) # Dot at the center
+
+                # Draw the spindle
+                cv2.circle(output,holeCenter,int(spindleRadius),(0,255,255),2)
+                #cv2.circle(output,holeCenter,int(outerSpindleRadius),(0,255,255),2)
+
+                distance = ComputeDistance(holeX, holeY, a, b)
+
+                # Currently only scores target to a 4
+                if distance-spindleRadius < pixelX:
+                    print("X")
+                    cv2.putText(output, "X", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    xCount += 1
+
+                if distance+spindleRadius < pixelTen and distance-spindleRadius > pixelX:
+                    print("0")
+                    cv2.putText(output, "0", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+
+                if distance-spindleRadius > pixelTen and distance+spindleRadius < pixelNine:
+                    print("1")
+                    cv2.putText(output, "1", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    droppedPoints += 1
+
+                if distance-spindleRadius > pixelNine and distance+spindleRadius < pixelEight:
+                    print("2")
+                    cv2.putText(output, "2", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    droppedPoints += 2
+
+                if distance-spindleRadius > pixelEight and distance+spindleRadius < pixelSeven:
+                    print("3")
+                    cv2.putText(output, "3", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    droppedPoints += 3
+
+                if distance-spindleRadius > pixelSeven and distance+spindleRadius < pixelSix:
+                    print("4")
+                    cv2.putText(output, "4", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    droppedPoints += 4
+
+                holeRatioX = (holeX-a) / pixelOuter
+                holeRatioY = (holeY-a) / pixelOuter
+
+                global csvName
+
+                with open(csvName, 'a', newline="") as csvfile:
+                    filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                    filewriter.writerow([image, droppedPoints, xCount, holeX, holeY, distance, holeRatioX, holeRatioY])
+                    csvfile.close()
+    #endregion
+
+    cv2.imshow("output", output) # Optional but make sure to use waitkey below if enabled, or else only image will show up.
+    cv2.waitKey(0)
+    cv2.imwrite(image + "-output.jpg", output)
+
+# Derived from improved.py
 def analyzeImage(image):
+    # Basic implementation of the distance formula
+    def ComputeDistance(x1, y1, x2, y2):
+        return math.sqrt(((x2 - x1) ** 2)+((y2 - y1) ** 2))
+
     #region multipliers are from NRA A-17 target in millimeters
     outer = 46.150
     five = 37.670/outer
@@ -983,6 +1171,8 @@ filemenu.add_command(label="🗃 Open Folder", command=openFolder)
 filemenu.add_command(label="🗂 Show in Explorer", command=showFolder)
 filemenu.add_command(label="💯 Show Output", command=showOutput, state=DISABLED)
 filemenu.add_command(label="📈 Show Trends", command=showTrends)
+filemenu.add_command(label="Load Outdoor", command=loadOutdoorBull)
+filemenu.add_separator()
 filemenu.add_command(label="⚠ Clear data", command=clearData)
 filemenu.add_separator()
 filemenu.add_command(label="❌ Exit", command=root.quit)
