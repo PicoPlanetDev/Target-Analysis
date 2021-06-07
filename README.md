@@ -12,7 +12,7 @@ Currently, the target analysis Python script allows you to automatically:
 ## Installation
 1. Install Python 3.9 from this page: https://www.python.org/downloads/release/python-395/
 If the computer used runs Windows, please select the bottom option at the bottom of the page: Windows Installer (64-bit).
-2. Run the installer, making sure to check the "Add Python 3.x to PATH" box.
+2. Run the installer, **making sure to check the "Add Python 3.x to PATH" box**.
 3. Click the green ```↓ Code``` button at the top right of this Github page and select Download ZIP.
 4. Extract the zipped folder to a prominent location, such as the Desktop or Documents directory.
 5. Double click to run ```install_dependencies.bat```
@@ -64,7 +64,7 @@ Ensure that the following Python packages are installed:
 - matplotlib
 - ttkthemes
 
-You can do this automatically by running the install_dependencies.bat file in the Target-Analysis-main directory.
+You can do this automatically by **running the install_dependencies.bat** script in the Target-Analysis-main directory.
 
 ### Scanning
 
@@ -117,7 +117,17 @@ To score multiple targets:
     data-Sigmond03January20211.csv
 6. To view data for all targets, open the data.csv file in the data folder.
 
-To hide the black command prompt that appears when running this program, rename "gui.py" to "gui.pyw"
+To view results for a scanned target:
+1. Analyze the target
+2. Click File -> Show Output
+
+To view trends across multiple scanned targets:
+1. Analyze multiple targets (preferably 10 or more, shot on different days)
+Using the Open Folder option is a quick way to do this.
+The ouput files (for example ```data-Sigmond03January20211.csv``` and ```data.csv```) can be copied to a separate folder to distinguish them from other people's targets.
+2. Click File -> Show Trends
+3. To view the most and least missed bulls on the target, click the ```Load Folder (for most missed)``` option. Select the data folder, or the folder that you copied the saved CSV files to. Make sure that there is nothing in the folder that is not named ```data.csv```, ```data-<name><day><month><year><target number>.csv```, or ```.gitkeep```.
+To view a graph of score and X count across dates, click ```Load CSV (for graph)``` and select a CSV named specifically ```data.csv```.
 
 ### Folder structure
 ```Target-Analysis
