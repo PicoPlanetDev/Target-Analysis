@@ -22,7 +22,7 @@ If the computer used runs Windows, please select the bottom option at the bottom
 ## Documentation
 ### Information
 
-Created by Sigmond Kukla for the Mt. Lebanon Rifle Team in May of 2021.
+Created by Sigmond Kukla for the Mt. Lebanon Rifle Team in May (and June too 😉) of 2021.
 
 Future people: Is COVID over yet?
 
