@@ -38,7 +38,7 @@ def loadImageLeft():
 
     label.config(text="Right image loaded")
 
-    root.geometry("500x470")
+    root.geometry("500x500")
 
     cropLeft(leftImage)
 
@@ -60,7 +60,7 @@ def loadImageRight():
 
     label.config(text="Left image loaded")
 
-    root.geometry("500x470")
+    root.geometry("500x500")
 
     cropRight(rightImage)
 
@@ -75,6 +75,26 @@ def loadSingleImage():
     label.config(text="Single image loaded")
 
     cropSingle(singleImage)
+
+def loadImageOrion():
+    orionSingleCanvas.delete("all")
+    imageFile = filedialog.askopenfilename()
+    singleImage = cv2.imread(imageFile)
+
+    if useFileInfo.get() is True:
+        setInfoFromFile(imageFile)
+
+    orionSingleCanvas.grid(row = 0, column = 1)
+    
+    global orionPreview
+    orionPreview = ImageTk.PhotoImage(Image.open(imageFile).resize((230, 350), Image.ANTIALIAS))
+    orionSingleCanvas.create_image(0, 0, anchor="nw", image=orionPreview)
+
+    label.config(text="Orion single image loaded")
+
+    root.geometry("500x500")
+
+    cropOrion(singleImage)
 
 def loadOutdoorBull():
     imageFile = filedialog.askopenfilename()
@@ -96,6 +116,82 @@ def loadOutdoorBull():
     csvName = "data/data-" + nameVar.get() + dayVar.get() + monthVar.get() + yearVar.get() + targetNumVar.get() + ".csv"
 
     analyzeOutdoorImage("images/output/outdoorBull.jpg")
+
+# Crop image for orion target
+def cropOrion(image):
+    label.config(text="Cropping Orion image...")
+    checkOutputDir()
+
+    y=425
+    x=1070
+    h=400
+    w=400
+    crop1 = image[y:y+h, x:x+w]
+
+    y=425
+    x=1920
+    h=400
+    w=400
+    crop2 = image[y:y+h, x:x+w]
+
+    y=1175
+    x=1920
+    h=400
+    w=400
+    crop3 = image[y:y+h, x:x+w]
+
+    y=1925
+    x=1920
+    h=400
+    w=400
+    crop4 = image[y:y+h, x:x+w]
+
+    y=2680
+    x=1920
+    h=400
+    w=400
+    crop5 = image[y:y+h, x:x+w]
+
+    y=2680
+    x=1070
+    h=400
+    w=400
+    crop6 = image[y:y+h, x:x+w]
+
+    y=420
+    x=225
+    h=400
+    w=400
+    crop7 = image[y:y+h, x:x+w]
+
+    y=1175
+    x=225
+    h=400
+    w=400
+    crop8 = image[y:y+h, x:x+w]
+
+    y=1925
+    x=225
+    h=400
+    w=400
+    crop9 = image[y:y+h, x:x+w]
+
+    y=2680
+    x=225
+    h=400
+    w=400
+    crop10 = image[y:y+h, x:x+w]
+
+    cv2.imwrite("images/output/top-mid.jpg", crop1)
+    cv2.imwrite("images/output/top-right.jpg", crop2)
+    cv2.imwrite("images/output/upper-right.jpg", crop3)
+    cv2.imwrite("images/output/lower-right.jpg", crop4)
+    cv2.imwrite("images/output/bottom-right.jpg", crop5)
+    cv2.imwrite("images/output/bottom-mid.jpg", crop6)
+    cv2.imwrite("images/output/top-left.jpg", crop7)
+    cv2.imwrite("images/output/upper-left.jpg", crop8)
+    cv2.imwrite("images/output/lower-left.jpg", crop9)
+    cv2.imwrite("images/output/bottom-left.jpg", crop10)
 
 # Runs perspective transform to the image and crops it to 10 output images
 def cropSingle(image):
@@ -418,6 +514,63 @@ def analyzeTarget():
     analyzeImage("images/output/lower-right.jpg")
     analyzeImage("images/output/bottom-right.jpg")
     analyzeImage("images/output/bottom-mid.jpg")
+
+    global score, xCount
+    score = 100
+    xCount = 0
+
+    with open(csvName) as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        line_count = 0
+        for row in csv_reader:
+            if line_count != 0:
+                score -= int(row[1])
+                xCount += int(row[2])
+            line_count += 1
+    
+    #print(str(os.getcwd()) +"data\data.csv")
+    if not os.path.exists(str(os.getcwd()) +"\data\data.csv"):
+        createCSV()
+
+    with open("data/data.csv", 'a', newline="") as csvfile:
+                filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                filewriter.writerow([nameVar.get(), dayVar.get() + " " + monthVar.get() + " " + yearVar.get(), targetNumVar.get(), score, xCount])
+                csvfile.close()
+
+    label.config(text="Done")
+
+    # Make sure to count which entry this is! Starts at ZERO not one.
+    filemenu.entryconfigure(6, state=NORMAL)
+
+    #showOutput()
+
+# Runs the analyzeImage function for every image that has been cropped out
+def analyzeTargetOrion():
+    label.config(text="Analyzing Orion target...")
+
+    global csvName
+    csvName = "data/data-" + nameVar.get() + dayVar.get() + monthVar.get() + yearVar.get() + targetNumVar.get() + ".csv"
+
+    #print(str(os.getcwd())+"\\"+csvName)
+    if os.path.exists(str(os.getcwd()) +"\\" + csvName):
+        #print("CSV already exists. Removing old version")
+        os.remove(os.getcwd() + "\\" + csvName)
+    
+    with open(csvName, 'x', newline="") as csvfile:
+        filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        filewriter.writerow(["Image", "Dropped", "X", "HoleX", "HoleY", "Distance", "HoleRatioX", "HoleRatioY"])
+        csvfile.close()
+
+    analyzeOrionImage("images/output/top-left.jpg")
+    analyzeOrionImage("images/output/upper-left.jpg")
+    analyzeOrionImage("images/output/lower-left.jpg")
+    analyzeOrionImage("images/output/bottom-left.jpg")
+    analyzeOrionImage("images/output/top-mid.jpg")
+    analyzeOrionImage("images/output/top-right.jpg")
+    analyzeOrionImage("images/output/upper-right.jpg")
+    analyzeOrionImage("images/output/lower-right.jpg")
+    analyzeOrionImage("images/output/bottom-right.jpg")
+    analyzeOrionImage("images/output/bottom-mid.jpg")
 
     global score, xCount
     score = 100
@@ -821,7 +974,7 @@ def analyzeOutdoorImage(image):
     
     # Blur using 3 * 3 kernel
     gray_blurred = cv2.blur(gray, (3, 3))
-    #cv2.imshow("gray_blurred", gray_blurred)
+    cv2.imshow("gray_blurred", gray_blurred)
 
     #threshold_image=cv2.inRange(gray_blurred, 100, 255)
     #cv2.imshow("threshold_image", threshold_image)
@@ -892,7 +1045,7 @@ def analyzeOutdoorImage(image):
         area = cv2.contourArea(contour)
         print(area)
         # Check if area is between max and min values for a bullet hole. Area is usually about 1000
-        if area<100 and area>50:
+        if area<200 and area>50:
             # Draw the detected contour for debugging
             cv2.drawContours(output,[contour],0,(255,0,0),2)
 
@@ -1106,34 +1259,171 @@ def analyzeImage(image):
                     cv2.putText(output, "4", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
                     droppedPoints += 4
 
-                # if distance+outerSpindleRadius < pixelEight:
-                #     print("X")
-                #     cv2.putText(output, "X", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                #     xCount += 1
+                holeRatioX = (holeX-a) / pixelOuter
+                holeRatioY = (holeY-a) / pixelOuter
 
-                # if distance+outerSpindleRadius > pixelEight and distance-outerSpindleRadius < pixelNine:
-                #     print("0")
-                #     cv2.putText(output, "0", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                global csvName
 
-                # if distance+outerSpindleRadius > pixelEight and distance-outerSpindleRadius > pixelNine and distance+outerSpindleRadius < pixelSeven:
-                #     print("1")
-                #     cv2.putText(output, "1", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                #     droppedPoints += 1
+                with open(csvName, 'a', newline="") as csvfile:
+                    filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                    filewriter.writerow([image, droppedPoints, xCount, holeX, holeY, distance, holeRatioX, holeRatioY])
+                    csvfile.close()
+    #endregion
 
-                # if distance+outerSpindleRadius > pixelSeven and distance+outerSpindleRadius < pixelSix:
-                #     print("2")
-                #     cv2.putText(output, "2", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                #     droppedPoints += 2
+    cv2.imshow("output", output) # Optional but make sure to use waitkey below if enabled, or else only image will show up.
+    cv2.waitKey(0)
+    cv2.imwrite(image + "-output.jpg", output)
 
-                # if distance+outerSpindleRadius > pixelSix and distance+outerSpindleRadius < pixelFive:
-                #     print("3")
-                #     cv2.putText(output, "3", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                #     droppedPoints += 3
+def analyzeOrionImage(image):
+    # Basic implementation of the distance formula
+    def ComputeDistance(x1, y1, x2, y2):
+        return math.sqrt(((x2 - x1) ** 2)+((y2 - y1) ** 2))
 
-                # if distance+outerSpindleRadius > pixelFive and distance+outerSpindleRadius < pixelOuter:
-                #     print("4")
-                #     cv2.putText(output, "4", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                #     droppedPoints += 4
+    #region multipliers are from NRA A-17 target in millimeters
+    outer = 33.38
+    four = 28.5/outer
+    five = 23.63/outer
+    six = 18.75/outer
+    seven = 13.87/outer
+    eight = 9/outer
+    nine = 4.12/outer
+    ten = 0.76/outer
+
+    outerSpindleRadius = 4.5
+    #endregion
+
+    droppedPoints = 0
+    xCount = 0
+
+    img = cv2.imread(image)
+    output = img.copy()
+
+    #region Identify the target's outer ring
+    # Convert the image to grayscale
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    
+    # Blur using 3 * 3 kernel
+    gray_blurred = cv2.blur(gray, (3, 3))
+    #cv2.imshow("gray_blurred", gray_blurred)
+
+    #threshold_image=cv2.inRange(gray_blurred, 100, 255)
+    #cv2.imshow("threshold_image", threshold_image)
+    
+    # Apply Hough transform on the blurred image.
+    detected_circles = cv2.HoughCircles(gray_blurred, cv2.HOUGH_GRADIENT, 1.4, 200, minRadius = 130)
+    
+    # Draw circles that are detected
+    if detected_circles is not None:
+    
+        # Convert the circle parameters a, b and r to integers
+        detected_circles = np.uint16(np.around(detected_circles))
+    
+        for pt in detected_circles[0, :]:
+            a, b, r = pt[0], pt[1], pt[2]
+
+            # Draw a small circle (of radius 1) to show the center.
+            cv2.circle(output, (a, b), 1, (0, 0, 255), 3)
+
+            pixelOuter = r
+
+            # Perform a calculation to determine if the system detected the wrong ring, and if so, correct the error
+            height, width, channels = img.shape
+            # if r/width < 0.4 and r/width > 0.35:
+            #     pixelOuter = outer/37.670 * r
+            
+            # if r/width < 0.35:
+            #     pixelOuter = outer/29.210 * r
+
+            pixelFour = pixelOuter*four
+            pixelFive = pixelOuter*five
+            pixelSix = pixelOuter*six
+            pixelSeven = pixelOuter*seven
+            pixelEight = pixelOuter*eight
+            pixelNine = pixelOuter*nine
+            pixelTen = pixelOuter*ten
+
+            outerSpindleRadius = outerSpindleRadius*(pixelOuter/outer)
+
+            cv2.circle(output, (a, b), int(pixelOuter), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixelFour), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixelFive), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixelSix), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixelSeven), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixelEight), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixelNine), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixelTen), (0, 255, 0), 2)
+
+            # Draw a small circle to show the center.
+            cv2.circle(output, (a, b), 1, (0, 0, 255), 3)
+    #endregion
+
+    #region Identify the hole in the target
+    # Make the image binary using a threshold
+    img_thresholded = cv2.inRange(img, (100, 100, 100), (255, 255, 255))
+    #cv2.imshow('Image Thresholded', img_thresholded)
+
+    # Remove noise from the binary image using the opening operation
+    kernel = np.ones((10,10),np.uint8)
+    opening = cv2.morphologyEx(img_thresholded, cv2.MORPH_OPEN, kernel)
+    #cv2.imshow('opening',opening)
+
+    # Find contours based on the denoised image
+    contours, hierarchy = cv2.findContours(opening.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+
+    for contour in contours:
+        # Get the area of the contours
+        area = cv2.contourArea(contour)
+        print(area)
+        # Check if area is between max and min values for a bullet hole. Area is usually about 1000
+        if area<1500 and area>200:
+
+            # Draw the detected contour for debugging
+            cv2.drawContours(output,[contour],0,(255,0,0),2)
+
+            # Create an enclosing circle that can represent the bullet hole
+
+            (holeX,holeY),holeRadius = cv2.minEnclosingCircle(contour)
+            holeCenter = (int(holeX),int(holeY))
+            holeRadius = int(holeRadius)
+            #print(holeRadius)
+            if holeRadius < 40:
+                #cv2.circle(output,holeCenter,holeRadius,(0,255,0),2) # Enclosing circle
+                cv2.circle(output, holeCenter, 1, (0, 0, 255), 3) # Dot at the center
+
+                # Draw the spindle
+                cv2.circle(output,holeCenter,int(outerSpindleRadius),(0,255,255),2)
+
+                distance = ComputeDistance(holeX, holeY, a, b)
+
+                # Currently only scores target to a 4
+                if distance-outerSpindleRadius <= pixelTen:
+                    print("X")
+                    cv2.putText(output, "X", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    xCount += 1
+
+                if distance-outerSpindleRadius < pixelNine and distance+outerSpindleRadius < pixelSeven:
+                    print("0")
+                    cv2.putText(output, "0", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+
+                if distance-outerSpindleRadius < pixelEight and distance+outerSpindleRadius < pixelSix:
+                    print("1")
+                    cv2.putText(output, "1", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    droppedPoints += 1
+
+                if distance-outerSpindleRadius < pixelSeven and distance+outerSpindleRadius < pixelFive:
+                    print("2")
+                    cv2.putText(output, "2", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    droppedPoints += 2
+
+                if distance-outerSpindleRadius < pixelSix and distance+outerSpindleRadius < pixelFour:
+                    print("3")
+                    cv2.putText(output, "3", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    droppedPoints += 3
+                
+                if distance-outerSpindleRadius < pixelFive and distance+outerSpindleRadius < pixelOuter:
+                    print("4")
+                    cv2.putText(output, "4", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    droppedPoints += 4
 
                 holeRatioX = (holeX-a) / pixelOuter
                 holeRatioY = (holeY-a) / pixelOuter
@@ -1153,8 +1443,8 @@ def analyzeImage(image):
 #region Initialize tkinter
 #root = tk.Tk()
 root = ThemedTk(theme="breeze")
-root.minsize(500,170)
-root.geometry("500x170")
+root.minsize(500,300)
+root.geometry("500x300")
 root.iconbitmap("assets/icon.ico")
 root.title("Target Analysis")
 #endregion
@@ -1171,7 +1461,7 @@ filemenu.add_command(label="🗃 Open Folder", command=openFolder)
 filemenu.add_command(label="🗂 Show in Explorer", command=showFolder)
 filemenu.add_command(label="💯 Show Output", command=showOutput, state=DISABLED)
 filemenu.add_command(label="📈 Show Trends", command=showTrends)
-filemenu.add_command(label="Load Outdoor", command=loadOutdoorBull)
+filemenu.add_command(label="(Experimental) Load Outdoor", command=loadOutdoorBull)
 filemenu.add_separator()
 filemenu.add_command(label="⚠ Clear data", command=clearData)
 filemenu.add_separator()
@@ -1196,11 +1486,27 @@ topFrame.pack(fill=X)
 optionsFrame = ttk.Frame(root)
 optionsFrame.pack(side=tk.TOP, pady=10)
 
-buttonsFrame = ttk.Frame(root)
+tabControl = ttk.Notebook(root)
+
+tab1indoor = ttk.Frame(tabControl)
+tab2orion = ttk.Frame(tabControl)
+
+tabControl.add(tab1indoor, text ='NRA A-17')
+tabControl.add(tab2orion, text ='NRA/USAS-50')
+
+tabControl.pack(side=tk.TOP)
+
+buttonsFrame = ttk.Frame(tab1indoor)
 buttonsFrame.pack(side=tk.TOP)
 
-bottomFrame = ttk.Frame(root)
+bottomFrame = ttk.Frame(tab1indoor)
 bottomFrame.pack(side=tk.TOP)
+
+orionButtonsFrame = ttk.Frame(tab2orion)
+orionButtonsFrame.pack(side=tk.TOP)
+
+orionBottomFrame = ttk.Frame(tab2orion)
+orionBottomFrame.pack(side=tk.TOP)
 #endregion
 
 #region Label at top of the frame alerts the user to the program's actions uses topFrame
@@ -1261,12 +1567,25 @@ rightImageButton = ttk.Button(buttonsFrame, text = "Select right image", command
 rightImageButton.grid(row=0, column=2, padx=5, pady=5)
 #endregion
 
+#region Add buttons for ORION loading images and analyzing the target uses buttonsFrame
+loadImageButton = ttk.Button(orionButtonsFrame, text = "Select image", command = loadImageOrion)
+loadImageButton.grid(row=0, column=0, padx=5, pady=5)
+
+analyzeOrionTargetButton = ttk.Button(orionButtonsFrame, text = "Analyze target", command = analyzeTargetOrion)
+analyzeOrionTargetButton.grid(row=0, column=1, padx=5, pady=5)
+#endregion
+
 #region Add canvases uses bottomFrame
 leftCanvas = tk.Canvas(bottomFrame, width=230,height=300)
 leftCanvas.grid(row = 0, column = 0)
 
 rightCanvas = tk.Canvas(bottomFrame, width=230,height=300)
 rightCanvas.grid(row = 0, column = 1)
+#endregion
+
+#region Add canvases uses bottomFrame ORION
+orionSingleCanvas = tk.Canvas(orionBottomFrame, width=230,height=300)
+orionSingleCanvas.grid(row = 0, column = 0)
 #endregion
 
 tk.mainloop()
