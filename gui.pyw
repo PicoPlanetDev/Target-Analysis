@@ -1283,17 +1283,26 @@ def analyzeOrionImage(image):
         return math.sqrt(((x2 - x1) ** 2)+((y2 - y1) ** 2))
 
     #region multipliers are from NRA/USAS-50 target in millimeters
-    outer = 33.38
-    four = 28.5/outer
-    five = 23.63/outer
-    six = 18.75/outer
-    seven = 13.87/outer
-    eight = 9/outer
-    nine = 4.12/outer
-    ten = 0.76/outer
+    # outer = 33.38
+    # four = 28.5/outer
+    # five = 23.63/outer
+    # six = 18.75/outer
+    # seven = 13.87/outer
+    # eight = 9/outer
+    # nine = 4.12/outer
+    # ten = 0.76/outer
+
+    outer = 33.63
+    four = 28.75/outer
+    five = 23.88/outer
+    six = 19/outer
+    seven = 14.12/outer
+    eight = 9.25/outer
+    nine = 4.37/outer
+    ten = 1.01/outer
 
     innerSpindleRadius = 2.83
-    outerSpindleRadius = 4.5
+    outerSpindleRadius = 4.49
     #endregion
 
     droppedPoints = 0
@@ -1395,12 +1404,12 @@ def analyzeOrionImage(image):
             #print("Hole radius: " + str(holeRadius))
 
             # compute the center of the contour (different way than enclosing circle) (I don't even understand how it works)
-            M = cv2.moments(contour)
-            cX = int(M["m10"] / M["m00"])
-            cY = int(M["m01"] / M["m00"])
+            # M = cv2.moments(contour)
+            # cX = int(M["m10"] / M["m00"])
+            # cY = int(M["m01"] / M["m00"])
             
-            holeX = cX
-            holeY = cY
+            # holeX = cX
+            # holeY = cY
 
             holeCenter = (int(holeX),int(holeY))
 
@@ -1410,40 +1419,72 @@ def analyzeOrionImage(image):
 
                 # Draw the spindle
                 cv2.circle(output,holeCenter,int(outerSpindleRadius),(0,255,255),2)
-                cv2.circle(output,holeCenter,int(innerSpindleRadius),(255,255,0),2)
+                #cv2.circle(output,holeCenter,int(innerSpindleRadius),(255,255,0),2)
 
                 distance = ComputeDistance(holeX, holeY, a, b)
                 print("Distance: " + str(distance))
+                print("D-O: " + str(distance-outerSpindleRadius))
+                print("D+O: " + str(distance+outerSpindleRadius))
+                print("pixelTen: " + str(pixelTen))
+                print("pixelNine: " + str(pixelNine))
+                print("pixelEight: " + str(pixelEight))
+                print("pixelSeven: " + str(pixelSeven))
 
-                # Currently only scores target to a 4
-                if distance-innerSpindleRadius <= pixelTen:
+                if  distance-outerSpindleRadius <= pixelTen:
                     print("X")
                     cv2.putText(output, "X", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
                     xCount += 1
+                else:
+                    if distance+outerSpindleRadius <= pixelSeven:
+                        print("0")
+                        cv2.putText(output, "0", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    else:
+                        if distance+outerSpindleRadius <= pixelSix:
+                            print("1")
+                            cv2.putText(output, "1", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                            droppedPoints += 1
+                        else:
+                            if distance+outerSpindleRadius <= pixelFive:
+                                print("2")
+                                cv2.putText(output, "2", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                                droppedPoints += 2
+                            else:
+                                if distance+outerSpindleRadius <= pixelFour:
+                                    print("3")
+                                    cv2.putText(output, "3", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                                    droppedPoints += 3
+                                else:
+                                    print("Score more than 4 or low confidence: PLEASE PLUG MANUALLY")
 
-                if distance-innerSpindleRadius > pixelTen and distance+outerSpindleRadius <= pixelSeven:
-                    print("0")
-                    cv2.putText(output, "0", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                # Currently only scores target to a 4
+                # if distance-outerSpindleRadius <= pixelTen:
+                #     print("X")
+                #     cv2.putText(output, "X", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                #     xCount += 1
 
-                if distance-outerSpindleRadius > pixelNine and distance+outerSpindleRadius <= pixelEight:
-                    print("1")
-                    cv2.putText(output, "1", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                    droppedPoints += 1
+                # if distance-outerSpindleRadius > pixelTen and distance+outerSpindleRadius <= pixelSeven:
+                #     print("0")
+                #     cv2.putText(output, "0", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
 
-                if distance-outerSpindleRadius > pixelEight and distance+outerSpindleRadius <= pixelFive:
-                    print("2")
-                    cv2.putText(output, "2", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                    droppedPoints += 2
+                # if distance-outerSpindleRadius > pixelNine and distance+outerSpindleRadius <= pixelEight:
+                #     print("1")
+                #     cv2.putText(output, "1", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                #     droppedPoints += 1
 
-                if distance-outerSpindleRadius > pixelSeven and distance+outerSpindleRadius <= pixelFour:
-                    print("3")
-                    cv2.putText(output, "3", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                    droppedPoints += 3
+                # if distance-outerSpindleRadius > pixelEight and distance+outerSpindleRadius <= pixelFive:
+                #     print("2")
+                #     cv2.putText(output, "2", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                #     droppedPoints += 2
+
+                # if distance-outerSpindleRadius > pixelSeven and distance+outerSpindleRadius <= pixelFour:
+                #     print("3")
+                #     cv2.putText(output, "3", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                #     droppedPoints += 3
                 
-                if distance-outerSpindleRadius > pixelSix and distance+outerSpindleRadius <= pixelOuter:
-                    print("4")
-                    cv2.putText(output, "4", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                    droppedPoints += 4
+                # if distance-outerSpindleRadius > pixelSix and distance+outerSpindleRadius <= pixelOuter:
+                #     print("4")
+                #     cv2.putText(output, "4", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                #     droppedPoints += 4
 
                 holeRatioX = (holeX-a) / pixelOuter
                 holeRatioY = (holeY-a) / pixelOuter
