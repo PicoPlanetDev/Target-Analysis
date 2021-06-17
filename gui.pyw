@@ -540,7 +540,7 @@ def analyzeTarget():
     label.config(text="Done")
 
     # Make sure to count which entry this is! Starts at ZERO not one.
-    filemenu.entryconfigure(6, state=NORMAL)
+    filemenu.entryconfigure(1, state=NORMAL)
 
     #showOutput()
 
@@ -572,6 +572,9 @@ def analyzeTargetOrion():
     analyzeOrionImage("images/output/bottom-right.jpg")
     analyzeOrionImage("images/output/bottom-mid.jpg")
 
+    # Make sure to count which entry this is! Starts at ZERO not one.
+    filemenu.entryconfigure(1, state=NORMAL)
+
     global score, xCount
     score = 100
     xCount = 0
@@ -597,7 +600,7 @@ def analyzeTargetOrion():
     label.config(text="Done")
 
     # Make sure to count which entry this is! Starts at ZERO not one.
-    filemenu.entryconfigure(6, state=NORMAL)
+    filemenu.entryconfigure(1, state=NORMAL)
 
     #showOutput()
 
@@ -1124,7 +1127,7 @@ def analyzeImage(image):
     eight = 12.270/outer
     nine = 3.810/outer
 
-    spindleRadius = 2.8
+    spindleRadius = 2.83
     outerSpindleRadius = 4.5
     #endregion
 
@@ -1279,7 +1282,7 @@ def analyzeOrionImage(image):
     def ComputeDistance(x1, y1, x2, y2):
         return math.sqrt(((x2 - x1) ** 2)+((y2 - y1) ** 2))
 
-    #region multipliers are from NRA A-17 target in millimeters
+    #region multipliers are from NRA/USAS-50 target in millimeters
     outer = 33.38
     four = 28.5/outer
     five = 23.63/outer
@@ -1289,6 +1292,7 @@ def analyzeOrionImage(image):
     nine = 4.12/outer
     ten = 0.76/outer
 
+    innerSpindleRadius = 2.83
     outerSpindleRadius = 4.5
     #endregion
 
@@ -1303,7 +1307,7 @@ def analyzeOrionImage(image):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     
     # Blur using 3 * 3 kernel
-    gray_blurred = cv2.blur(gray, (3, 3))
+    gray_blurred = cv2.blur(gray, (2, 2))
     #cv2.imshow("gray_blurred", gray_blurred)
 
     #threshold_image=cv2.inRange(gray_blurred, 100, 255)
@@ -1328,11 +1332,13 @@ def analyzeOrionImage(image):
 
             # Perform a calculation to determine if the system detected the wrong ring, and if so, correct the error
             height, width, channels = img.shape
-            # if r/width < 0.4 and r/width > 0.35:
-            #     pixelOuter = outer/37.670 * r
-            
-            # if r/width < 0.35:
-            #     pixelOuter = outer/29.210 * r
+
+            print(str(r/width))
+            if r/width < 0.37 and r/width > 0.32:
+                pixelOuter = outer/23.63 * r
+                #print("Fixing radius proportions")
+            if r/width < 0.43 and r/width > 0.39:
+                pixelOuter = outer/28.5 * r
 
             pixelFour = pixelOuter*four
             pixelFive = pixelOuter*five
@@ -1343,6 +1349,7 @@ def analyzeOrionImage(image):
             pixelTen = pixelOuter*ten
 
             outerSpindleRadius = outerSpindleRadius*(pixelOuter/outer)
+            innerSpindleRadius = innerSpindleRadius*(pixelOuter/outer)
 
             cv2.circle(output, (a, b), int(pixelOuter), (0, 255, 0), 2)
             cv2.circle(output, (a, b), int(pixelFour), (0, 255, 0), 2)
@@ -1359,68 +1366,81 @@ def analyzeOrionImage(image):
 
     #region Identify the hole in the target
     # Make the image binary using a threshold
-    img_thresholded = cv2.inRange(img, (100, 100, 100), (255, 255, 255))
+    img_thresholded = cv2.inRange(img, (210, 210, 210), (255, 255, 255))
     #cv2.imshow('Image Thresholded', img_thresholded)
 
     # Remove noise from the binary image using the opening operation
-    kernel = np.ones((10,10),np.uint8)
+    kernel = np.ones((2,2),np.uint8)
     opening = cv2.morphologyEx(img_thresholded, cv2.MORPH_OPEN, kernel)
     #cv2.imshow('opening',opening)
 
     # Find contours based on the denoised image
     contours, hierarchy = cv2.findContours(opening.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-
+    #print("Contours: " + str(len(contours)))
     for contour in contours:
         # Get the area of the contours
         area = cv2.contourArea(contour)
-        print(area)
+        #print(area)
+        #cv2.drawContours(output,[contour],0,(255,0,0),2)
         # Check if area is between max and min values for a bullet hole. Area is usually about 1000
-        if area<1500 and area>200:
+        if area<5000 and area>200:
 
             # Draw the detected contour for debugging
-            cv2.drawContours(output,[contour],0,(255,0,0),2)
+            #cv2.drawContours(output,[contour],0,(255,0,0),2)
 
             # Create an enclosing circle that can represent the bullet hole
-
             (holeX,holeY),holeRadius = cv2.minEnclosingCircle(contour)
-            holeCenter = (int(holeX),int(holeY))
+            #holeCenter = (int(holeX),int(holeY))
             holeRadius = int(holeRadius)
-            #print(holeRadius)
+            #print("Hole radius: " + str(holeRadius))
+
+            # compute the center of the contour (different way than enclosing circle) (I don't even understand how it works)
+            M = cv2.moments(contour)
+            cX = int(M["m10"] / M["m00"])
+            cY = int(M["m01"] / M["m00"])
+            
+            holeX = cX
+            holeY = cY
+
+            holeCenter = (int(holeX),int(holeY))
+
             if holeRadius < 40:
                 #cv2.circle(output,holeCenter,holeRadius,(0,255,0),2) # Enclosing circle
                 cv2.circle(output, holeCenter, 1, (0, 0, 255), 3) # Dot at the center
 
                 # Draw the spindle
                 cv2.circle(output,holeCenter,int(outerSpindleRadius),(0,255,255),2)
+                cv2.circle(output,holeCenter,int(innerSpindleRadius),(255,255,0),2)
 
                 distance = ComputeDistance(holeX, holeY, a, b)
+                print("Distance: " + str(distance))
 
                 # Currently only scores target to a 4
-                if distance-outerSpindleRadius <= pixelTen:
+                if distance-innerSpindleRadius <= pixelTen:
                     print("X")
                     cv2.putText(output, "X", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
                     xCount += 1
 
-                if distance-outerSpindleRadius < pixelNine and distance+outerSpindleRadius < pixelSeven:
+                if distance-innerSpindleRadius > pixelTen and distance+outerSpindleRadius <= pixelSeven:
                     print("0")
                     cv2.putText(output, "0", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
 
-                if distance-outerSpindleRadius < pixelEight and distance+outerSpindleRadius < pixelSix:
+                if distance-outerSpindleRadius > pixelNine and distance+outerSpindleRadius <= pixelEight:
                     print("1")
                     cv2.putText(output, "1", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
                     droppedPoints += 1
 
-                if distance-outerSpindleRadius < pixelSeven and distance+outerSpindleRadius < pixelFive:
+                if distance-outerSpindleRadius > pixelEight and distance+outerSpindleRadius <= pixelFive:
                     print("2")
                     cv2.putText(output, "2", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
                     droppedPoints += 2
 
-                if distance-outerSpindleRadius < pixelSix and distance+outerSpindleRadius < pixelFour:
+                if distance-outerSpindleRadius > pixelSeven and distance+outerSpindleRadius <= pixelFour:
                     print("3")
                     cv2.putText(output, "3", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
                     droppedPoints += 3
                 
-                if distance-outerSpindleRadius < pixelFive and distance+outerSpindleRadius < pixelOuter:
+                if distance-outerSpindleRadius > pixelSix and distance+outerSpindleRadius <= pixelOuter:
                     print("4")
                     cv2.putText(output, "4", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
                     droppedPoints += 4
@@ -1453,11 +1473,11 @@ root.title("Target Analysis")
 menubar = tk.Menu(root)
 
 filemenu = tk.Menu(menubar, tearoff=0)
-filemenu.add_command(label="📁 Load left image", command=loadImageLeft)
-filemenu.add_command(label="📁 Load right image", command=loadImageRight)
-filemenu.add_command(label="📷 Load single image", command=loadSingleImage)
-filemenu.add_command(label="🎯 Analyze target", command=analyzeTarget)
-filemenu.add_command(label="🗃 Open Folder", command=openFolder)
+#filemenu.add_command(label="📁 Load left image", command=loadImageLeft)
+#filemenu.add_command(label="📁 Load right image", command=loadImageRight)
+#filemenu.add_command(label="📷 Load single image", command=loadSingleImage)
+#filemenu.add_command(label="🎯 Analyze target", command=analyzeTarget)
+#filemenu.add_command(label="🗃 Open Folder", command=openFolder)
 filemenu.add_command(label="🗂 Show in Explorer", command=showFolder)
 filemenu.add_command(label="💯 Show Output", command=showOutput, state=DISABLED)
 filemenu.add_command(label="📈 Show Trends", command=showTrends)
@@ -1565,6 +1585,9 @@ analyzeTargetButton.grid(row=0, column=1, padx=5, pady=5)
 
 rightImageButton = ttk.Button(buttonsFrame, text = "Select right image", command = loadImageRight)
 rightImageButton.grid(row=0, column=2, padx=5, pady=5)
+
+rightImageButton = ttk.Button(buttonsFrame, text = "Open folder", command = openFolder)
+rightImageButton.grid(row=0, column=3, padx=5, pady=5)
 #endregion
 
 #region Add buttons for ORION loading images and analyzing the target uses buttonsFrame
