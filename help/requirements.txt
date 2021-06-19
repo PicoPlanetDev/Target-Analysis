@@ -5,15 +5,8 @@ Install Python 3. This project was built using Python 3.9, so that is recommende
 Ensure that the following Python packages are installed:
 
 - opencv-python
-- tkinter
 - pillow
-- os
-- csv
 - numpy
-- math
-- argparse
-- datetime
-- shutil
 - matplotlib
 - ttkthemes
 

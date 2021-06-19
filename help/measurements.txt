@@ -3,6 +3,7 @@ Documentation - Measurements
 *Disclaimer: This might not actually be what these rings are called... I'm just going off of what I used in the code.
 
 Measurements used in the target analysis system (radius):
+NRA A-17 target:
 Outer ring   - 46.150 millimeters
 Five ring    - 37.670 millimeters
 Six ring     - 29.210 millimeters
@@ -10,7 +11,18 @@ Seven ring   - 20.750 millimeters
 Eight ring   - 12.270 millimeters
 Nine ring    - 3.810 millimeters
 
-Scoring spindle on scoring gauge uses radius 2.8 millimeters (equivalent to ⌀5.6mm)
+NRA/USAS-50 target:
+outer (three) = 33.38
+four = 28.5
+five = 23.63
+six = 18.75
+seven = 13.87
+eight = 9
+nine = 4.12
+ten = 0.76
+
+Inner scoring spindle on scoring gauge uses radius 2.8 millimeters (equivalent to ⌀5.6mm)
+Outer scoring spindle uses radius 4.5 millimeters (equivalent to ⌀9mm)
 
 All of these millimeter values are converted to pixel values through calibration to the detected outer ring of the target.
 The target analysis system uses Hough Circles to identify a large circle in the scanned image. If the ratio of the detected ring to the image size is incorrect, the circle will be multiplied to adjust it accordingly.
