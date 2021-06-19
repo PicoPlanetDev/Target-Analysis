@@ -14,7 +14,6 @@ import numpy as np
 import math
 import argparse
 import datetime
-import shutil
 from numpy.core.fromnumeric import var
 import matplotlib.pyplot as plt
 import matplotlib
@@ -750,6 +749,19 @@ def openFolder():
                 analyzeTarget()
                 fileNum = 0
 
+# Opens and analyzes all files in a folder
+def openFolderOrion():
+    label.config(text="Opening folder")
+    folder = filedialog.askdirectory()
+    for file in os.listdir(folder):
+        if file.endswith(".jpeg"):
+            path = os.getcwd() + "\images\\" + file
+            setInfoFromFile(file)
+            print(path)
+            fileImage = cv2.imread(path)
+            cropOrion(fileImage)
+            analyzeTargetOrion()
+
 # Allows viewing of trends from existing data files
 def showTrends():
     label.config(text="Showing trends window")
@@ -934,11 +946,17 @@ def setInfoFromToday():
 
 # Delete all files in the data folder
 def clearData():
-    shutil.rmtree(os.getcwd()+"\data")
-    os.mkdir(os.getcwd()+"\data")
-
-    shutil.rmtree(os.getcwd()+"\images\output")
-    os.mkdir(os.getcwd()+"\images\output")
+    path = str(os.getcwd()) + "\data"
+    print(path)
+    for file in os.listdir(path):
+        if file.endswith(".csv"):
+            os.remove(path + "\\" + file)
+    
+    path = str(os.getcwd()) + "\images\output"
+    print(path)
+    for file in os.listdir(path):
+        if file.endswith(".jpg"):
+            os.remove(path + "\\" + file)
 
     label.config(text="/data and /images/output directories cleared")
 
@@ -1286,23 +1304,23 @@ def analyzeOrionImage(image):
         return math.sqrt(((x2 - x1) ** 2)+((y2 - y1) ** 2))
 
     #region multipliers are from NRA/USAS-50 target in millimeters
-    # outer = 33.38
-    # four = 28.5/outer
-    # five = 23.63/outer
-    # six = 18.75/outer
-    # seven = 13.87/outer
-    # eight = 9/outer
-    # nine = 4.12/outer
-    # ten = 0.76/outer
+    outer = 33.38
+    four = 28.5/outer
+    five = 23.63/outer
+    six = 18.75/outer
+    seven = 13.87/outer
+    eight = 9/outer
+    nine = 4.12/outer
+    ten = 0.76/outer
 
-    outer = 33.63
-    four = 28.75/outer
-    five = 23.88/outer
-    six = 19/outer
-    seven = 14.12/outer
-    eight = 9.25/outer
-    nine = 4.37/outer
-    ten = 1.01/outer
+    # outer = 33.63
+    # four = 28.75/outer
+    # five = 23.88/outer
+    # six = 19/outer
+    # seven = 14.12/outer
+    # eight = 9.25/outer
+    # nine = 4.37/outer
+    # ten = 1.01/outer
 
     innerSpindleRadius = 2.83
     outerSpindleRadius = 4.49
@@ -1350,7 +1368,7 @@ def analyzeOrionImage(image):
                 pixelOuter = outer/23.63 * r
                 #print("Fixing radius proportions")
             if r/width < 0.43 and r/width > 0.39:
-                pixelOuter = outer/28.5 * r
+                pixelOuter = outer/28.75 * r
 
             pixelFour = pixelOuter*four
             pixelFive = pixelOuter*five
@@ -1612,6 +1630,9 @@ loadImageButton.grid(row=0, column=0, padx=5, pady=5)
 
 analyzeOrionTargetButton = ttk.Button(orionButtonsFrame, text = "Analyze target", command = analyzeTargetOrion)
 analyzeOrionTargetButton.grid(row=0, column=1, padx=5, pady=5)
+
+analyzeOrionTargetButton = ttk.Button(orionButtonsFrame, text = "Open folder", command = openFolderOrion)
+analyzeOrionTargetButton.grid(row=0, column=2, padx=5, pady=5)
 #endregion
 
 #region Add canvases uses bottomFrame
