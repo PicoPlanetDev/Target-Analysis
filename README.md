@@ -32,6 +32,8 @@ Documentation - Measurements
 
 *Disclaimer: This might not actually be what these rings are called... I'm just going off of what I used in the code.
 
+Measurements are from *NRA Smallbore Rifle Rules*
+
 Measurements used in the target analysis system (radius):
 NRA A-17 target:
 Outer ring   - 46.150 millimeters
