@@ -74,6 +74,7 @@ def loadSingleImage():
 
     cropSingle(singleImage)
 
+# Derived from loadSingleImage and loadImage<Left/Right>
 def loadImageOrion():
     orionSingleCanvas.delete("all")
     imageFile = filedialog.askopenfilename()
@@ -94,6 +95,7 @@ def loadImageOrion():
 
     cropOrion(singleImage)
 
+# Somewhat derived from loadSingleImage
 def loadOutdoorBull():
     imageFile = filedialog.askopenfilename()
     singleImage = cv2.imread(imageFile)
@@ -966,7 +968,7 @@ def checkOutputDir():
     if os.path.isdir(path) == False:
         os.mkdir(path)
 
-# Derived from improved.py
+# Derived from analyzeImage
 def analyzeOutdoorImage(image):
     # Basic implementation of the distance formula
     def ComputeDistance(x1, y1, x2, y2):
@@ -1297,6 +1299,7 @@ def analyzeImage(image):
     cv2.waitKey(0)
     cv2.imwrite(image + "-output.jpg", output)
 
+# Derived from analyzeImage
 def analyzeOrionImage(image):
     # Basic implementation of the distance formula
     def ComputeDistance(x1, y1, x2, y2):
