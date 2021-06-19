@@ -561,16 +561,16 @@ def analyzeTargetOrion():
         filewriter.writerow(["Image", "Dropped", "X", "HoleX", "HoleY", "Distance", "HoleRatioX", "HoleRatioY"])
         csvfile.close()
 
-    analyzeOrionImage("images/output/top-left.jpg")
-    analyzeOrionImage("images/output/upper-left.jpg")
-    analyzeOrionImage("images/output/lower-left.jpg")
-    analyzeOrionImage("images/output/bottom-left.jpg")
     analyzeOrionImage("images/output/top-mid.jpg")
     analyzeOrionImage("images/output/top-right.jpg")
     analyzeOrionImage("images/output/upper-right.jpg")
     analyzeOrionImage("images/output/lower-right.jpg")
     analyzeOrionImage("images/output/bottom-right.jpg")
     analyzeOrionImage("images/output/bottom-mid.jpg")
+    analyzeOrionImage("images/output/bottom-left.jpg")
+    analyzeOrionImage("images/output/lower-left.jpg")
+    analyzeOrionImage("images/output/upper-left.jpg")
+    analyzeOrionImage("images/output/top-left.jpg")
 
     # Make sure to count which entry this is! Starts at ZERO not one.
     filemenu.entryconfigure(1, state=NORMAL)
@@ -917,6 +917,9 @@ def setInfoFromFile(file):
     monthVar.set(month)
 
     targetNumVar.set(filename[-6])
+
+    if tabControl.tab(tabControl.select(), "text") == "NRA/USAS-50":
+        nameVar.set(filename[9:-6])
 
     label.config(text="Set date to: " + monthVar.get() + " " + dayVar.get() + " " + yearVar.get() + " with target number " + targetNumVar.get())
 
@@ -1375,7 +1378,7 @@ def analyzeOrionImage(image):
 
     #region Identify the hole in the target
     # Make the image binary using a threshold
-    img_thresholded = cv2.inRange(img, (210, 210, 210), (255, 255, 255))
+    img_thresholded = cv2.inRange(img, (200, 200, 200), (255, 255, 255))
     #cv2.imshow('Image Thresholded', img_thresholded)
 
     # Remove noise from the binary image using the opening operation
@@ -1430,7 +1433,7 @@ def analyzeOrionImage(image):
                 print("pixelEight: " + str(pixelEight))
                 print("pixelSeven: " + str(pixelSeven))
 
-                if  distance-outerSpindleRadius <= pixelTen:
+                if  distance-outerSpindleRadius <= pixelTen or distance+outerSpindleRadius <= pixelEight:
                     print("X")
                     cv2.putText(output, "X", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
                     xCount += 1
@@ -1455,36 +1458,8 @@ def analyzeOrionImage(image):
                                     droppedPoints += 3
                                 else:
                                     print("Score more than 4 or low confidence: PLEASE PLUG MANUALLY")
-
-                # Currently only scores target to a 4
-                # if distance-outerSpindleRadius <= pixelTen:
-                #     print("X")
-                #     cv2.putText(output, "X", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                #     xCount += 1
-
-                # if distance-outerSpindleRadius > pixelTen and distance+outerSpindleRadius <= pixelSeven:
-                #     print("0")
-                #     cv2.putText(output, "0", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-
-                # if distance-outerSpindleRadius > pixelNine and distance+outerSpindleRadius <= pixelEight:
-                #     print("1")
-                #     cv2.putText(output, "1", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                #     droppedPoints += 1
-
-                # if distance-outerSpindleRadius > pixelEight and distance+outerSpindleRadius <= pixelFive:
-                #     print("2")
-                #     cv2.putText(output, "2", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                #     droppedPoints += 2
-
-                # if distance-outerSpindleRadius > pixelSeven and distance+outerSpindleRadius <= pixelFour:
-                #     print("3")
-                #     cv2.putText(output, "3", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                #     droppedPoints += 3
-                
-                # if distance-outerSpindleRadius > pixelSix and distance+outerSpindleRadius <= pixelOuter:
-                #     print("4")
-                #     cv2.putText(output, "4", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                #     droppedPoints += 4
+                                    label.config(text="Bull " + str(image) + "low confidence")
+                                    
 
                 holeRatioX = (holeX-a) / pixelOuter
                 holeRatioY = (holeY-a) / pixelOuter
