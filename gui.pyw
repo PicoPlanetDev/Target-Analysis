@@ -12,7 +12,6 @@ import os
 import csv
 import numpy as np
 import math
-import argparse
 import datetime
 from numpy.core.fromnumeric import var
 import matplotlib.pyplot as plt
