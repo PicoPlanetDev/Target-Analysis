@@ -504,16 +504,16 @@ def analyzeTarget():
         filewriter.writerow(["Image", "Dropped", "X", "HoleX", "HoleY", "Distance", "HoleRatioX", "HoleRatioY"])
         csvfile.close()
 
-    analyzeImage("images/output/top-left.jpg")
-    analyzeImage("images/output/upper-left.jpg")
-    analyzeImage("images/output/lower-left.jpg")
-    analyzeImage("images/output/bottom-left.jpg")
     analyzeImage("images/output/top-mid.jpg")
     analyzeImage("images/output/top-right.jpg")
     analyzeImage("images/output/upper-right.jpg")
     analyzeImage("images/output/lower-right.jpg")
     analyzeImage("images/output/bottom-right.jpg")
     analyzeImage("images/output/bottom-mid.jpg")
+    analyzeImage("images/output/bottom-left.jpg")
+    analyzeImage("images/output/lower-left.jpg")
+    analyzeImage("images/output/upper-left.jpg")
+    analyzeImage("images/output/top-left.jpg")
 
     global score, xCount
     score = 100
