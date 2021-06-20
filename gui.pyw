@@ -1437,13 +1437,13 @@ def analyzeOrionImage(image):
                 #cv2.circle(output,holeCenter,int(innerSpindleRadius),(255,255,0),2)
 
                 distance = ComputeDistance(holeX, holeY, a, b)
-                print("Distance: " + str(distance))
-                print("D-O: " + str(distance-outerSpindleRadius))
-                print("D+O: " + str(distance+outerSpindleRadius))
-                print("pixelTen: " + str(pixelTen))
-                print("pixelNine: " + str(pixelNine))
-                print("pixelEight: " + str(pixelEight))
-                print("pixelSeven: " + str(pixelSeven))
+                # print("Distance: " + str(distance))
+                # print("D-O: " + str(distance-outerSpindleRadius))
+                # print("D+O: " + str(distance+outerSpindleRadius))
+                # print("pixelTen: " + str(pixelTen))
+                # print("pixelNine: " + str(pixelNine))
+                # print("pixelEight: " + str(pixelEight))
+                # print("pixelSeven: " + str(pixelSeven))
 
                 if  distance-outerSpindleRadius <= pixelTen or distance+outerSpindleRadius <= pixelEight:
                     print("X")
