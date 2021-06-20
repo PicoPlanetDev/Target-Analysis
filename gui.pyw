@@ -122,15 +122,15 @@ def cropOrion(image):
     label.config(text="Cropping Orion image...")
     checkOutputDir()
 
-    h=400 * 2
-    w=400 * 2
+    h=400
+    w=400
 
-    y=425 * 2
-    x=1070 * 2
+    y=425
+    x=1070
     crop1 = image[y:y+h, x:x+w]
 
-    y=425 * 2
-    x=1920 * 2
+    y=425
+    x=1920
     crop2 = image[y:y+h, x:x+w]
 
     y=1175
@@ -1390,7 +1390,7 @@ def analyzeOrionImage(image):
 
     #region Identify the hole in the target
     # Make the image binary using a threshold
-    img_thresholded = cv2.inRange(img, (200, 200, 200), (255, 255, 255))
+    img_thresholded = cv2.inRange(img, (100, 100, 100), (255, 255, 255))
     #cv2.imshow('Image Thresholded', img_thresholded)
 
     # Remove noise from the binary image using the opening operation
