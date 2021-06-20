@@ -9,6 +9,9 @@ Currently, the target analysis Python script allows you to automatically:
 - Show most and least missed bulls
 - Show single shooter trends across a range of dates
 
+## Comparison to hand scoring
+![Excel Spreadsheet]()
+
 ## Installation
 1. Install Python 3.9 from this page: https://www.python.org/downloads/release/python-395/
 If the computer used runs Windows, please select the bottom option at the bottom of the page: Windows Installer (64-bit).
