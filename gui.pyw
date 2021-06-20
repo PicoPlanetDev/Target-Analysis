@@ -2,7 +2,7 @@
 from tkinter.constants import BOTH, BOTTOM, CENTER, DISABLED, FLAT, HORIZONTAL, LEFT, NORMAL, NSEW, RIDGE, RIGHT, SOLID, SUNKEN, TOP, X
 import cv2
 import tkinter as tk
-from tkinter import ttk
+from tkinter import StringVar, ttk
 from cv2 import data
 from numpy.core.numeric import count_nonzero
 from ttkthemes import ThemedTk
@@ -765,6 +765,7 @@ def showTrends():
     trendsWindow.iconbitmap("assets/icon.ico")
     trendsWindow.title("Target Analysis")
     #endregion
+
 
     def showMostMissed():
         bulls = [0,0,0,0,0,0,0,0,0,0]
