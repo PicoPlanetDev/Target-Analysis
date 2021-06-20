@@ -730,7 +730,7 @@ def openFolder():
         if file.endswith(".jpeg"):
             path = os.getcwd() + "\images\\" + file
             setInfoFromFile(file)
-            print(path)
+            #print(path)
             fileImage = cv2.imread(path)
             if "left" in file:
                 cropLeft(fileImage)
@@ -747,7 +747,7 @@ def openFolderOrion():
     folder = filedialog.askdirectory()
     for file in os.listdir(folder):
         if file.endswith(".jpeg"):
-            path = os.getcwd() + "\images\\" + file
+            path = folder + "\\" + file
             setInfoFromFile(file)
             print(path)
             fileImage = cv2.imread(path)
@@ -940,13 +940,13 @@ def setInfoFromToday():
 # Delete all files in the data folder
 def clearData():
     path = str(os.getcwd()) + "\data"
-    print(path)
+    #print(path)
     for file in os.listdir(path):
         if file.endswith(".csv"):
             os.remove(path + "\\" + file)
     
     path = str(os.getcwd()) + "\images\output"
-    print(path)
+    #print(path)
     for file in os.listdir(path):
         if file.endswith(".jpg"):
             os.remove(path + "\\" + file)
@@ -956,7 +956,7 @@ def clearData():
 # Ensures that an image/output directory is available to save images
 def checkOutputDir():
     path = os.getcwd() + "\images\output"
-    print(path)
+    #print(path)
     if os.path.isdir(path) == False:
         os.mkdir(path)
 
@@ -1357,7 +1357,7 @@ def analyzeOrionImage(image):
             # Perform a calculation to determine if the system detected the wrong ring, and if so, correct the error
             height, width, channels = img.shape
 
-            print(str(r/width))
+            #print(str(r/width))
             if r/width < 0.37 and r/width > 0.32:
                 pixelOuter = outer/23.63 * r
                 #print("Fixing radius proportions")
@@ -1389,8 +1389,8 @@ def analyzeOrionImage(image):
     #endregion
 
     #region Identify the hole in the target
-    # Make the image binary using a threshold
-    img_thresholded = cv2.inRange(img, (100, 100, 100), (255, 255, 255))
+    
+    img_thresholded = cv2.inRange(img, (100, 100, 100), (255, 255, 255)) # Make the image binary using a threshold
     #cv2.imshow('Image Thresholded', img_thresholded)
 
     # Remove noise from the binary image using the opening operation
@@ -1414,10 +1414,10 @@ def analyzeOrionImage(image):
 
             # Create an enclosing circle that can represent the bullet hole
             (holeX,holeY),holeRadius = cv2.minEnclosingCircle(contour)
-            #holeCenter = (int(holeX),int(holeY))
+            holeCenter = (int(holeX),int(holeY))
             holeRadius = int(holeRadius)
             #print("Hole radius: " + str(holeRadius))
-
+            cv2.circle(output, holeCenter, holeRadius, (255,0,0), 2)
             # compute the center of the contour (different way than enclosing circle) (I don't even understand how it works)
             # M = cv2.moments(contour)
             # cX = int(M["m10"] / M["m00"])
@@ -1437,15 +1437,17 @@ def analyzeOrionImage(image):
                 #cv2.circle(output,holeCenter,int(innerSpindleRadius),(255,255,0),2)
 
                 distance = ComputeDistance(holeX, holeY, a, b)
-                # print("Distance: " + str(distance))
+                print("Distance: " + str(distance))
+                print("Inner Spindle: " + str(innerSpindleRadius))
                 # print("D-O: " + str(distance-outerSpindleRadius))
                 # print("D+O: " + str(distance+outerSpindleRadius))
-                # print("pixelTen: " + str(pixelTen))
+                print("pixelTen: " + str(pixelTen))
                 # print("pixelNine: " + str(pixelNine))
                 # print("pixelEight: " + str(pixelEight))
                 # print("pixelSeven: " + str(pixelSeven))
+                #print("holeRadius: " + str(holeRadius))
 
-                if  distance-outerSpindleRadius <= pixelTen or distance+outerSpindleRadius <= pixelEight:
+                if distance-outerSpindleRadius <= pixelTen or distance+outerSpindleRadius <= pixelEight:
                     print("X")
                     cv2.putText(output, "X", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
                     xCount += 1
@@ -1470,7 +1472,7 @@ def analyzeOrionImage(image):
                                     droppedPoints += 3
                                 else:
                                     print("Score more than 4 or low confidence: PLEASE PLUG MANUALLY")
-                                    label.config(text="Bull " + str(image) + "low confidence")
+                                    label.config(text="Bull " + str(image) + " low confidence")
                                     
 
                 holeRatioX = (holeX-a) / pixelOuter
