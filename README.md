@@ -90,7 +90,7 @@ If you would like to use the Open Folder operation or automatic information pars
 For example:
 "03jan2021left1.jpeg" and "03jan2021right1.jpeg"
 
-**See https://github.com/PicoPlanetDev/Target-Analysis/blob/main/help/scanner-digital.png for a diagram.**
+![Scanning Diagram](https://github.com/PicoPlanetDev/Target-Analysis/blob/main/help/scanner-digital.png?raw=true)
 
 For an Orion Scoring System NRA/USAS-50 target, only one scan is necessary. 
 Make sure that the corner of the target with the barcode is aligned to the front-right corner of the scanner.
