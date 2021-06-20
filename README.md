@@ -10,7 +10,7 @@ Currently, the target analysis Python script allows you to automatically:
 - Show single shooter trends across a range of dates
 
 ## Comparison to hand scoring
-![Excel Spreadsheet]()
+![Excel Spreadsheet](https://github.com/PicoPlanetDev/Target-Analysis/blob/main/help/accuracy-vs-hand-scored.png?raw=true)
 
 ## Installation
 1. Install Python 3.9 from this page: https://www.python.org/downloads/release/python-395/
