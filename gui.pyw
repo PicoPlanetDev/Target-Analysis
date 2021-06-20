@@ -122,64 +122,55 @@ def cropOrion(image):
     label.config(text="Cropping Orion image...")
     checkOutputDir()
 
-    y=425
-    x=1070
-    h=400
-    w=400
+    h=400 * 2
+    w=400 * 2
+
+    y=425 * 2
+    x=1070 * 2
     crop1 = image[y:y+h, x:x+w]
 
-    y=425
-    x=1920
-    h=400
-    w=400
+    y=425 * 2
+    x=1920 * 2
     crop2 = image[y:y+h, x:x+w]
 
     y=1175
     x=1920
-    h=400
-    w=400
+
     crop3 = image[y:y+h, x:x+w]
 
     y=1925
     x=1920
-    h=400
-    w=400
+
     crop4 = image[y:y+h, x:x+w]
 
     y=2680
     x=1920
-    h=400
-    w=400
+
     crop5 = image[y:y+h, x:x+w]
 
     y=2680
     x=1070
-    h=400
-    w=400
+
     crop6 = image[y:y+h, x:x+w]
 
     y=420
     x=225
-    h=400
-    w=400
+
     crop7 = image[y:y+h, x:x+w]
 
     y=1175
     x=225
-    h=400
-    w=400
+
     crop8 = image[y:y+h, x:x+w]
 
     y=1925
     x=225
-    h=400
-    w=400
+
     crop9 = image[y:y+h, x:x+w]
 
     y=2680
     x=225
-    h=400
-    w=400
+
     crop10 = image[y:y+h, x:x+w]
 
     cv2.imwrite("images/output/top-mid.jpg", crop1)
