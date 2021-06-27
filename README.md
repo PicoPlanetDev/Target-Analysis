@@ -9,6 +9,9 @@ Currently, the target analysis Python script allows you to automatically:
 - Show most and least missed bulls
 - Show single shooter trends across a range of dates
 
+## License
+Please see ![LICENSE.md](https://github.com/PicoPlanetDev/Target-Analysis/blob/main/LICENSE.md) for license information. This work is published under exclusive copyright to the developer.
+
 ## Comparison to hand scoring
 ![Excel Spreadsheet](https://github.com/PicoPlanetDev/Target-Analysis/blob/main/help/accuracy-vs-hand-scored.png?raw=true)
 
