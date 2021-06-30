@@ -1536,6 +1536,7 @@ topFrame.pack(fill=X)
 optionsFrame = ttk.Frame(root)
 optionsFrame.pack(side=tk.TOP, pady=10)
 
+# TTK Notebook allows for a tabbed view
 tabControl = ttk.Notebook(root)
 
 tab1indoor = ttk.Frame(tabControl)
