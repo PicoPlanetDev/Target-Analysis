@@ -1547,6 +1547,7 @@ tabControl.add(tab2orion, text ='NRA/USAS-50')
 
 tabControl.pack(side=tk.TOP)
 
+# Buttons frames are a child of the tabs
 buttonsFrame = ttk.Frame(tab1indoor)
 buttonsFrame.pack(side=tk.TOP)
 
@@ -1607,7 +1608,7 @@ useFileInfoCheckbutton = ttk.Checkbutton(optionsFrame, text="Use info from file"
 useFileInfoCheckbutton.grid(column=5, row=0, rowspan=2, padx=5)
 #endregion
 
-#region Add buttons for loading images and analyzing the target uses buttonsFrame
+#region Buttons for NRA A-17 target loading and analysis
 leftImageButton = ttk.Button(buttonsFrame, text = "Select left image", command = loadImageLeft)
 leftImageButton.grid(row=0, column=0, padx=5, pady=5)
 
@@ -1621,7 +1622,7 @@ rightImageButton = ttk.Button(buttonsFrame, text = "Open folder", command = open
 rightImageButton.grid(row=0, column=3, padx=5, pady=5)
 #endregion
 
-#region Add buttons for ORION loading images and analyzing the target uses buttonsFrame
+#region Buttons for Orion NRA/USAS-50 target loading and analysis
 loadImageButton = ttk.Button(orionButtonsFrame, text = "Select image", command = loadImageOrion)
 loadImageButton.grid(row=0, column=0, padx=5, pady=5)
 
@@ -1632,7 +1633,7 @@ analyzeOrionTargetButton = ttk.Button(orionButtonsFrame, text = "Open folder", c
 analyzeOrionTargetButton.grid(row=0, column=2, padx=5, pady=5)
 #endregion
 
-#region Add canvases uses bottomFrame
+#region Add canvases for NRA A-17 target preview
 leftCanvas = tk.Canvas(bottomFrame, width=230,height=300)
 leftCanvas.grid(row = 0, column = 0)
 
@@ -1640,7 +1641,7 @@ rightCanvas = tk.Canvas(bottomFrame, width=230,height=300)
 rightCanvas.grid(row = 0, column = 1)
 #endregion
 
-#region Add canvases uses bottomFrame ORION
+#region Add a single canvas for Orion NRA/USAS-50 target preview
 orionSingleCanvas = tk.Canvas(orionBottomFrame, width=230,height=300)
 orionSingleCanvas.grid(row = 0, column = 0)
 #endregion
