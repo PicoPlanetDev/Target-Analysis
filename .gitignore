@@ -147,3 +147,6 @@ data/*
 
 # but keep folder
 !data/.gitkeep
+
+# exclude VS code workspaces
+.code-workspace
