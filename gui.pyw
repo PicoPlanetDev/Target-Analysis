@@ -1,3 +1,23 @@
+#region Information
+############################################################
+## Target Analysis                                        ##
+############################################################
+## Copyright (c) 2021 Sigmond Kukla, All Rights Reserved  ##
+############################################################
+## Author: Sigmond Kukla                                  ##
+## Copyright: Copyright 2021, Sigmond Kukla               ##
+## The Target Analysis system does not include a license. ##
+## This means that this work is under exclusive           ##
+## copyright by the developer (Sigmond Kukla) alone.      ##
+## Therefore, you are not permitted to copy, distribute,  ##
+## or modify this work and claim it is your own.          ##
+## Maintainer: Sigmond Kukla                              ##
+## Email: picoplanetdev@gmail.com (business)              ##
+##        skukla61@mtlstudents.net (school)               ##
+## Status: Released, active development                   ##
+############################################################
+#endregion
+
 #region Import libraries
 from tkinter.constants import BOTH, BOTTOM, CENTER, DISABLED, EW, FLAT, HORIZONTAL, LEFT, NORMAL, NSEW, RIDGE, RIGHT, S, SOLID, SUNKEN, TOP, X
 from typing_extensions import IntVar
@@ -64,7 +84,7 @@ def loadImageRight():
 
     cropRight(rightImage)
 
-# Loads an image taken by a smartphone camera that includes the entire target
+# Loads an image taken by a smartphone camera that includes the entire target (CURRENTLY DISABLED)
 def loadSingleImage():
     imageFile = filedialog.askopenfilename()
     singleImage = cv2.imread(imageFile)
@@ -97,7 +117,7 @@ def loadImageOrion():
 
     cropOrion(singleImage)
 
-# Somewhat derived from loadSingleImage
+# Somewhat derived from loadSingleImage (CURRENTLY DISABLED)
 def loadOutdoorBull():
     imageFile = filedialog.askopenfilename()
     singleImage = cv2.imread(imageFile)
@@ -186,7 +206,7 @@ def cropOrion(image):
     cv2.imwrite("images/output/lower-left.jpg", crop9)
     cv2.imwrite("images/output/bottom-left.jpg", crop10)
 
-# Runs perspective transform to the image and crops it to 10 output images
+# Runs perspective transform to the image and crops it to 10 output images (CURRENTLY DISABLED)
 def cropSingle(image):
     # Helper function for four_point_transform - puts points in order in a clockwise fashion with the top left point listed first
     def order_points(pts):
@@ -350,6 +370,10 @@ def cropRight(image):
     checkOutputDir()
 
     #region Crop the image
+    if dpiVar.get == 2:
+        dsize = (2550, 3507)
+        image = cv2.resize(image, dsize, interpolation = cv2.INTER_LINEAR)
+
     y=275
     x=720
     h=580
@@ -430,6 +454,10 @@ def cropLeft(image):
     cv2.imwrite("images/output/vertical-flipped.jpg", verticalFlippedImage)
 
     #region Crop each image
+    if dpiVar.get == 2:
+        dsize = (2550, 3507)
+        image = cv2.resize(image, dsize, interpolation = cv2.INTER_LINEAR)
+
     y=240
     x=185
     h=580
@@ -977,9 +1005,9 @@ def openSettings():
         config.set('orion', 'orionMinContourAreaDpi1', str(orionMinContourAreaDpi1.get()))
         config.set('orion', 'orionMinContourAreaDpi2', str(orionMinContourAreaDpi2.get()))
         config.set('orion', 'orionMaxContourAreaDpi1', str(orionMaxContourAreaDpi1.get()))
-        config.set('orion', 'orionMaxContourAreaDpi2', str(orionMinHoleRadiusDpi2.get()))
-        config.set('orion', 'orionMinHoleRadiusDpi1', str(orionMinHoleRadiusDpi1.get()))
-        config.set('orion', 'orionMinHoleRadiusDpi2', str(orionMinHoleRadiusDpi2.get()))
+        config.set('orion', 'orionMaxContourAreaDpi2', str(orionmaxHoleRadiusDpi2.get()))
+        config.set('orion', 'orionmaxHoleRadiusDpi1', str(orionmaxHoleRadiusDpi1.get()))
+        config.set('orion', 'orionmaxHoleRadiusDpi2', str(orionmaxHoleRadiusDpi2.get()))
 
         with open('config.ini', 'w') as f:
             config.write(f)
@@ -1091,14 +1119,14 @@ def openSettings():
     orionMinContourAreaDpi1Entry = ttk.Entry(settingsOrionFrame, textvariable=orionMinContourAreaDpi1)
     orionMinContourAreaDpi1Entry.grid(row=11, column=1)
 
-    orionMaxContourAreaDpi1Label = ttk.Label(settingsOrionFrame, text="Orion max cnt area dpi 2")
+    orionMaxContourAreaDpi1Label = ttk.Label(settingsOrionFrame, text="Orion max cnt area dpi 1")
     orionMaxContourAreaDpi1Label.grid(row=12, column=0)
     orionMaxContourAreaDpi1Entry = ttk.Entry(settingsOrionFrame, textvariable=orionMaxContourAreaDpi1)
     orionMaxContourAreaDpi1Entry.grid(row=12, column=1)
 
-    orionMinContourAreaDpi2Label = ttk.Label(settingsOrionFrame, text="Orion min cnt area dpi 1")
+    orionMinContourAreaDpi2Label = ttk.Label(settingsOrionFrame, text="Orion min cnt area dpi 2")
     orionMinContourAreaDpi2Label.grid(row=13, column=0)
-    orionMinContourAreaDpi2Entry = ttk.Entry(settingsOrionFrame, textvariable=orionMinContourAreaDpi1)
+    orionMinContourAreaDpi2Entry = ttk.Entry(settingsOrionFrame, textvariable=orionMinContourAreaDpi2)
     orionMinContourAreaDpi2Entry.grid(row=13, column=1)
 
     orionMaxContourAreaDpi2Label = ttk.Label(settingsOrionFrame, text="Orion max cnt area dpi 2")
@@ -1106,15 +1134,15 @@ def openSettings():
     orionMaxContourAreaDpi2Entry = ttk.Entry(settingsOrionFrame, textvariable=orionMaxContourAreaDpi2)
     orionMaxContourAreaDpi2Entry.grid(row=14, column=1)
 
-    orionMinHoleRadiusDpi1Label = ttk.Label(settingsOrionFrame, text="Orion min hole rad dpi 1")
-    orionMinHoleRadiusDpi1Label.grid(row=15, column=0)
-    orionMinHoleRadiusDpi1Entry = ttk.Entry(settingsOrionFrame, textvariable=orionMinHoleRadiusDpi1)
-    orionMinHoleRadiusDpi1Entry.grid(row=15, column=1)
+    orionmaxHoleRadiusDpi1Label = ttk.Label(settingsOrionFrame, text="Orion min hole rad dpi 1")
+    orionmaxHoleRadiusDpi1Label.grid(row=15, column=0)
+    orionmaxHoleRadiusDpi1Entry = ttk.Entry(settingsOrionFrame, textvariable=orionmaxHoleRadiusDpi1)
+    orionmaxHoleRadiusDpi1Entry.grid(row=15, column=1)
 
-    orionMinHoleRadiusDpi2Label = ttk.Label(settingsOrionFrame, text="Orion min hole rad dpi 2")
-    orionMinHoleRadiusDpi2Label.grid(row=16, column=0)
-    orionMinHoleRadiusDpi2Entry = ttk.Entry(settingsOrionFrame, textvariable=orionMinHoleRadiusDpi2)
-    orionMinHoleRadiusDpi2Entry.grid(row=16, column=1)
+    orionmaxHoleRadiusDpi2Label = ttk.Label(settingsOrionFrame, text="Orion min hole rad dpi 2")
+    orionmaxHoleRadiusDpi2Label.grid(row=16, column=0)
+    orionmaxHoleRadiusDpi2Entry = ttk.Entry(settingsOrionFrame, textvariable=orionmaxHoleRadiusDpi2)
+    orionmaxHoleRadiusDpi2Entry.grid(row=16, column=1)
     #endregion
 
 # Ensures that an image/output directory is available to save images
@@ -1124,7 +1152,7 @@ def checkOutputDir():
     if os.path.isdir(path) == False:
         os.mkdir(path)
 
-# Derived from analyzeImage
+# (CURRENTLY DISABLED)
 def analyzeOutdoorImage(image):
     # Basic implementation of the distance formula
     def ComputeDistance(x1, y1, x2, y2):
@@ -1569,9 +1597,9 @@ def analyzeOrionImage(image):
 
     # Remove noise from the binary image using the opening operation
     if dpiVar.get == 1:
-        kernel = np.ones((orionMorphologyOpeningKernelSizeDpi1,orionMorphologyOpeningKernelSizeDpi1),np.uint8)
+        kernel = np.ones((orionMorphologyOpeningKernelSizeDpi1.get(),orionMorphologyOpeningKernelSizeDpi1.get()),np.uint8)
     else:
-        kernel = np.ones((orionMorphologyOpeningKernelSizeDpi2,orionMorphologyOpeningKernelSizeDpi2),np.uint8)
+        kernel = np.ones((orionMorphologyOpeningKernelSizeDpi2.get(),orionMorphologyOpeningKernelSizeDpi2.get()),np.uint8)
     
     opening = cv2.morphologyEx(img_thresholded, cv2.MORPH_OPEN, kernel)
     #cv2.imshow('opening',opening)
@@ -1586,7 +1614,7 @@ def analyzeOrionImage(image):
         #cv2.drawContours(output,[contour],0,(255,0,0),2)
         # Check if area is between max and min values for a bullet hole. Area is usually about 1000
 
-        if dpiVar.get == 1:
+        if dpiVar.get() == 1:
             minArea = orionMinContourAreaDpi1.get()
             maxArea = orionMaxContourAreaDpi1.get()
         if dpiVar.get() == 2:
@@ -1603,7 +1631,7 @@ def analyzeOrionImage(image):
             holeCenter = (int(holeX),int(holeY))
             holeRadius = int(holeRadius)
             #print("Hole radius: " + str(holeRadius))
-            cv2.circle(output, holeCenter, holeRadius, (255,0,0), 2)
+            #cv2.circle(output, holeCenter, holeRadius, (255,0,0), 2)
             # compute the center of the contour (different way than enclosing circle) (I don't even understand how it works)
             # M = cv2.moments(contour)
             # cX = int(M["m10"] / M["m00"])
@@ -1615,11 +1643,11 @@ def analyzeOrionImage(image):
             holeCenter = (int(holeX),int(holeY))
 
             if dpiVar.get == 1:
-                minHoleRadius = orionMinHoleRadiusDpi1.get()
+                maxHoleRadius = orionmaxHoleRadiusDpi1.get()
             if dpiVar.get() == 2:
-                minHoleRadius = orionMinHoleRadiusDpi2.get()
+                maxHoleRadius = orionmaxHoleRadiusDpi2.get()
 
-            if holeRadius < minHoleRadius:
+            if holeRadius < maxHoleRadius:
                 #cv2.circle(output,holeCenter,holeRadius,(0,255,0),2) # Enclosing circle
                 cv2.circle(output, holeCenter, 1, (0, 0, 255), 3) # Dot at the center
 
@@ -1711,8 +1739,8 @@ orionMinContourAreaDpi1 = tk.IntVar(root, 200)
 orionMinContourAreaDpi2 = tk.IntVar(root, 5000)
 orionMaxContourAreaDpi1 = tk.IntVar(root, 400)
 orionMaxContourAreaDpi2 = tk.IntVar(root, 12000)
-orionMinHoleRadiusDpi1 = tk.IntVar(root, 40)
-orionMinHoleRadiusDpi2 = tk.IntVar(root, 80)
+orionmaxHoleRadiusDpi1 = tk.IntVar(root, 40)
+orionmaxHoleRadiusDpi2 = tk.IntVar(root, 90)
 #endregion
 
 # Create a ConfigParser object to read the config file
@@ -1738,8 +1766,8 @@ if os.path.isfile("config.ini"):
     orionMinContourAreaDpi2.set(config.getint("orion", "orionMinContourAreaDpi2"))
     orionMaxContourAreaDpi1.set(config.getint("orion", "orionMaxContourAreaDpi1"))
     orionMaxContourAreaDpi2.set(config.getint("orion", "orionMaxContourAreaDpi2"))
-    orionMinHoleRadiusDpi1.set(config.getint("orion", "orionMinHoleRadiusDpi1"))
-    orionMinHoleRadiusDpi2.set(config.getint("orion", "orionMinHoleRadiusDpi2"))
+    orionmaxHoleRadiusDpi1.set(config.getint("orion", "orionmaxHoleRadiusDpi1"))
+    orionmaxHoleRadiusDpi2.set(config.getint("orion", "orionmaxHoleRadiusDpi2"))
 else:
     # If the file does not exist, create it and set the default values
     config.read('config.ini')
@@ -1763,8 +1791,8 @@ else:
     config.set('orion', 'orionMinContourAreaDpi2', str(orionMinContourAreaDpi2.get()))
     config.set('orion', 'orionMaxContourAreaDpi1', str(orionMaxContourAreaDpi1.get()))
     config.set('orion', 'orionMaxContourAreaDpi2', str(orionMaxContourAreaDpi2.get()))
-    config.set('orion', 'orionMinHoleRadiusDpi1', str(orionMinHoleRadiusDpi1.get()))
-    config.set('orion', 'orionMinHoleRadiusDpi2', str(orionMinHoleRadiusDpi2.get()))
+    config.set('orion', 'orionmaxHoleRadiusDpi1', str(orionmaxHoleRadiusDpi1.get()))
+    config.set('orion', 'orionmaxHoleRadiusDpi2', str(orionmaxHoleRadiusDpi2.get()))
 
     with open('config.ini', 'w') as f:
         config.write(f)
