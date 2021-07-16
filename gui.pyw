@@ -1374,15 +1374,25 @@ def analyzeOrionImage(image):
     # Convert the image to grayscale
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     
-    # Blur using 3 * 3 kernel
-    gray_blurred = cv2.blur(gray, (2, 2))
-    #cv2.imshow("gray_blurred", gray_blurred)
+    if dpiVar.get() == 1:
+        # Blur using 3 * 3 kernel
+        gray_blurred = cv2.blur(gray, (2, 2))
+        #cv2.imshow("gray_blurred", gray_blurred)
 
+    if dpiVar.get() == 2:
+        # Blur using 3 * 3 kernel
+        gray_blurred = cv2.blur(gray, (5, 5))
+
+    # Currently not performing any threshold operation
     #threshold_image=cv2.inRange(gray_blurred, 100, 255)
     #cv2.imshow("threshold_image", threshold_image)
     
     # Apply Hough transform on the blurred image.
-    detected_circles = cv2.HoughCircles(gray_blurred, cv2.HOUGH_GRADIENT, 1.4, 200, minRadius = 130)
+    if dpiVar.get() == 1:
+        detected_circles = cv2.HoughCircles(gray_blurred, cv2.HOUGH_GRADIENT, 1.4, 200, minRadius = 130)
+
+    if dpiVar.get() == 2:
+        detected_circles = cv2.HoughCircles(gray_blurred, cv2.HOUGH_GRADIENT, 2, 600, minRadius = 260)
     
     # Draw circles that are detected
     if detected_circles is not None:
@@ -1448,10 +1458,18 @@ def analyzeOrionImage(image):
     for contour in contours:
         # Get the area of the contours
         area = cv2.contourArea(contour)
-        #print(area)
+
         #cv2.drawContours(output,[contour],0,(255,0,0),2)
         # Check if area is between max and min values for a bullet hole. Area is usually about 1000
-        if area<5000 and area>200:
+
+        if dpiVar.get == 1:
+            minArea = 200
+            maxArea = 5000
+        if dpiVar.get() == 2:
+            minArea = 400
+            maxArea = 12000
+
+        if area<maxArea and area>minArea:
 
             # Draw the detected contour for debugging
             #cv2.drawContours(output,[contour],0,(255,0,0),2)
@@ -1472,7 +1490,12 @@ def analyzeOrionImage(image):
 
             holeCenter = (int(holeX),int(holeY))
 
-            if holeRadius < 40:
+            if dpiVar.get == 1:
+                minHoleRadius = 40
+            if dpiVar.get() == 2:
+                minHoleRadius = 80
+
+            if holeRadius < minHoleRadius:
                 #cv2.circle(output,holeCenter,holeRadius,(0,255,0),2) # Enclosing circle
                 cv2.circle(output, holeCenter, 1, (0, 0, 255), 3) # Dot at the center
 
