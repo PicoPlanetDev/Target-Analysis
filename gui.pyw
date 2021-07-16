@@ -1075,8 +1075,11 @@ def openSettings():
     saveSeparator = ttk.Separator(settingsWindow, orient=HORIZONTAL)
     saveSeparator.pack(side=TOP, fill=X)
 
+    revertButton = ttk.Button(settingsWindow, text="Revert settings to default", command= lambda: updateSettingsFromConfigFile("config-backup.ini"))
+    revertButton.pack(side=LEFT, pady=5, padx=5)
+
     saveButton = ttk.Button(settingsWindow, text="Save Settings", command=updateConfig)
-    saveButton.pack(side=TOP, pady=5)
+    saveButton.pack(side=RIGHT, pady=5, padx=5)
     #endregion
 
     #region Create top label
@@ -1242,6 +1245,7 @@ def openSettings():
 # Read settings from config file and apply them to the necessary tk vars
 def updateSettingsFromConfigFile(file):
     config = ConfigParser()
+
 
     config.read(file)
     dpiVar.set(config.getint("settings", "dpi"))
