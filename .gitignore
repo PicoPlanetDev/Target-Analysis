@@ -150,3 +150,6 @@ data/*
 
 # exclude VS code workspaces
 .code-workspace
+
+# exclude config files
+config.ini
