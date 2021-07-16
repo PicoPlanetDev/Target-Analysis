@@ -1,5 +1,5 @@
 #region Import libraries
-from tkinter.constants import BOTH, BOTTOM, CENTER, DISABLED, FLAT, HORIZONTAL, LEFT, NORMAL, NSEW, RIDGE, RIGHT, S, SOLID, SUNKEN, TOP, X
+from tkinter.constants import BOTH, BOTTOM, CENTER, DISABLED, EW, FLAT, HORIZONTAL, LEFT, NORMAL, NSEW, RIDGE, RIGHT, S, SOLID, SUNKEN, TOP, X
 from typing_extensions import IntVar
 import cv2
 import tkinter as tk
@@ -955,11 +955,32 @@ def clearData():
 
     label.config(text="/data and /images/output directories cleared")
 
+# Create a settings window
 def openSettings():
     def updateConfig():
         config = ConfigParser()
         config.read('config.ini')
         config.set('settings', 'dpi', str(dpiVar.get()))
+
+        config.set('orion', 'orionKernelSizeDpi1', str(orionKernelSizeDpi1.get()))
+        config.set('orion', 'orionKernelSizeDpi2', str(orionKernelSizeDpi2.get()))
+        config.set('orion', 'orionParam1Dpi1', str(orionParam1Dpi1.get()))
+        config.set('orion', 'orionParam2Dpi1', str(orionParam2Dpi1.get()))
+        config.set('orion', 'orionMinRadiusDpi1', str(orionMinRadiusDpi1.get()))
+        config.set('orion', 'orionParam1Dpi2', str(orionParam1Dpi2.get()))
+        config.set('orion', 'orionParam2Dpi2', str(orionParam2Dpi2.get()))
+        config.set('orion', 'orionMinRadiusDpi2', str(orionMinRadiusDpi2.get()))
+        config.set('orion', 'orionThreshMin', str(orionThreshMin.get()))
+        config.set('orion', 'orionThreshMax', str(orionThreshMax.get()))
+        config.set('orion', 'orionMorphologyOpeningKernelSizeDpi1', str(orionMorphologyOpeningKernelSizeDpi1.get()))
+        config.set('orion', 'orionMorphologyOpeningKernelSizeDpi2', str(orionMorphologyOpeningKernelSizeDpi2.get()))
+        config.set('orion', 'orionMinContourAreaDpi1', str(orionMinContourAreaDpi1.get()))
+        config.set('orion', 'orionMinContourAreaDpi2', str(orionMinContourAreaDpi2.get()))
+        config.set('orion', 'orionMaxContourAreaDpi1', str(orionMaxContourAreaDpi1.get()))
+        config.set('orion', 'orionMaxContourAreaDpi2', str(orionMinHoleRadiusDpi2.get()))
+        config.set('orion', 'orionMinHoleRadiusDpi1', str(orionMinHoleRadiusDpi1.get()))
+        config.set('orion', 'orionMinHoleRadiusDpi2', str(orionMinHoleRadiusDpi2.get()))
+
         with open('config.ini', 'w') as f:
             config.write(f)
 
@@ -968,21 +989,33 @@ def openSettings():
     #region Create toplevel window
     settingsWindow = tk.Toplevel(root)
     settingsWindow.title("Target Analysis")
-    settingsWindow.minsize(width=400, height=200)
-    settingsWindow.geometry("400x200")
+    settingsWindow.minsize(width=400, height=800)
+    settingsWindow.geometry("400x600")
     settingsWindow.iconbitmap("assets/icon.ico")
     #endregion
 
     #region Create frames
     settingsTopFrame = ttk.Frame(settingsWindow)
-    settingsTopFrame.pack(side=TOP, expand=False, pady=10, fill=X)
+    settingsTopFrame.pack(side=TOP, expand=False, pady=5, fill=X)
 
     settingsBottomFrame = ttk.Frame(settingsWindow)
-    settingsBottomFrame.pack(side=TOP, expand=True, fill=BOTH)
+    settingsBottomFrame.pack(side=TOP, fill=X)
+
+    dpiSeparator = ttk.Separator(settingsWindow, orient=HORIZONTAL)
+    dpiSeparator.pack(side=TOP, fill=X, pady=5)
+
+    settingsOrionFrame = ttk.Frame(settingsWindow)
+    settingsOrionFrame.pack(side=TOP, expand=True, fill=BOTH)
+
+    saveSeparator = ttk.Separator(settingsWindow, orient=HORIZONTAL)
+    saveSeparator.pack(side=TOP, fill=X)
+
+    saveButton = ttk.Button(settingsWindow, text="Save Settings", command=updateConfig)
+    saveButton.pack(side=TOP, pady=5)
     #endregion
 
     #region Create top label
-    settingsLabel1 = ttk.Label(settingsTopFrame, text="Settings")
+    settingsLabel1 = ttk.Label(settingsTopFrame, text="Settings", font='bold')
     settingsLabel1.pack(side=TOP)
     settingsLabel2 = ttk.Label(settingsTopFrame, text="⚠️ Change these only if the software does not work properly ⚠️")
     settingsLabel2.pack(side=TOP)
@@ -990,11 +1023,98 @@ def openSettings():
     labelSeparator.pack(side=TOP, fill=X, pady=10)
     #endregion
 
-    #region Create settings widgets
-    dpiButton300 = ttk.Radiobutton(settingsBottomFrame, text="300 dpi scanner", variable=dpiVar, value=1, command=updateConfig)
-    dpiButton300.grid(row=0, column=0)
-    dpiButton600 = ttk.Radiobutton(settingsBottomFrame, text="600 dpi scanner", variable=dpiVar, value=2, command=updateConfig)
-    dpiButton600.grid(row=0, column=1)
+    #region Create dpi widgets
+    settingsLabel1 = ttk.Label(settingsBottomFrame, text="Global settings", font = 'bold')
+    settingsLabel1.grid(row=0, column=0)
+    dpiButton300 = ttk.Radiobutton(settingsBottomFrame, text="300 dpi scanner", variable=dpiVar, value=1)
+    dpiButton300.grid(row=1, column=0)
+    dpiButton600 = ttk.Radiobutton(settingsBottomFrame, text="600 dpi scanner", variable=dpiVar, value=2)
+    dpiButton600.grid(row=1, column=1)
+    #endregion
+
+    #region Create Orion widgets
+    settingsLabel1 = ttk.Label(settingsOrionFrame, text="Orion settings" , font='bold')
+    settingsLabel1.grid(row=0, column=0)
+
+    orionKernelSizeDpi1Label = ttk.Label(settingsOrionFrame, text="Orion Kernel Size dpi 1")
+    orionKernelSizeDpi1Label.grid(row=1, column=0)
+    orionKernelSizeDpi1Entry = ttk.Entry(settingsOrionFrame, textvariable=orionKernelSizeDpi1)
+    orionKernelSizeDpi1Entry.grid(row=1, column=1)
+
+    orionKernelSizeDpi2Label = ttk.Label(settingsOrionFrame, text="Orion Kernel Size dpi 2")
+    orionKernelSizeDpi2Label.grid(row=2, column=0)
+    orionKernelSizeDpi2Entry = ttk.Entry(settingsOrionFrame, textvariable=orionKernelSizeDpi2)
+    orionKernelSizeDpi2Entry.grid(row=2, column=1)
+
+    orionParam1Dpi1Label = ttk.Label(settingsOrionFrame, text="Orion Param1 dpi 1")
+    orionParam1Dpi1Label.grid(row=3, column=0)
+    orionParam1Dpi1Entry = ttk.Entry(settingsOrionFrame, textvariable=orionParam1Dpi1)
+    orionParam1Dpi1Entry.grid(row=3, column=1)
+
+    orionParam2Dpi1Label = ttk.Label(settingsOrionFrame, text="Orion Param2 dpi 1")
+    orionParam2Dpi1Label.grid(row=4, column=0)
+    orionParam2Dpi1Entry = ttk.Entry(settingsOrionFrame, textvariable=orionParam2Dpi1)
+    orionParam2Dpi1Entry.grid(row=4, column=1)
+
+    orionParam1Dpi2Label = ttk.Label(settingsOrionFrame, text="Orion Param1 dpi 2")
+    orionParam1Dpi2Label.grid(row=5, column=0)
+    orionParam1Dpi2Entry = ttk.Entry(settingsOrionFrame, textvariable=orionParam1Dpi2)
+    orionParam1Dpi2Entry.grid(row=5, column=1)
+
+    orionParam2Dpi2Label = ttk.Label(settingsOrionFrame, text="Orion Param2 dpi 2")
+    orionParam2Dpi2Label.grid(row=6, column=0)
+    orionParam2Dpi2Entry = ttk.Entry(settingsOrionFrame, textvariable=orionParam2Dpi2)
+    orionParam2Dpi2Entry.grid(row=6, column=1)
+
+    orionMinRadiusDpi1Label = ttk.Label(settingsOrionFrame, text="Orion MinRadius dpi 1")
+    orionMinRadiusDpi1Label.grid(row=7, column=0)
+    orionMinRadiusDpi1Entry = ttk.Entry(settingsOrionFrame, textvariable=orionMinRadiusDpi1)
+    orionMinRadiusDpi1Entry.grid(row=7, column=1)
+
+    orionMinRadiusDpi2Label = ttk.Label(settingsOrionFrame, text="Orion MinRadius dpi 2")
+    orionMinRadiusDpi2Label.grid(row=8, column=0)
+    orionMinRadiusDpi2Entry = ttk.Entry(settingsOrionFrame, textvariable=orionMinRadiusDpi2)
+    orionMinRadiusDpi2Entry.grid(row=8, column=1)
+
+    orionThreshMinLabel = ttk.Label(settingsOrionFrame, text="Orion thresh min")
+    orionThreshMinLabel.grid(row=9, column=0)
+    orionThreshMinEntry = ttk.Entry(settingsOrionFrame, textvariable=orionThreshMin)
+    orionThreshMinEntry.grid(row=9, column=1)
+
+    orionThreshMaxLabel = ttk.Label(settingsOrionFrame, text="Orion thresh max")
+    orionThreshMaxLabel.grid(row=10, column=0)
+    orionThreshMaxEntry = ttk.Entry(settingsOrionFrame, textvariable=orionThreshMax)
+    orionThreshMaxEntry.grid(row=10, column=1)
+
+    orionMinContourAreaDpi1Label = ttk.Label(settingsOrionFrame, text="Orion min cnt area dpi 1")
+    orionMinContourAreaDpi1Label.grid(row=11, column=0)
+    orionMinContourAreaDpi1Entry = ttk.Entry(settingsOrionFrame, textvariable=orionMinContourAreaDpi1)
+    orionMinContourAreaDpi1Entry.grid(row=11, column=1)
+
+    orionMaxContourAreaDpi1Label = ttk.Label(settingsOrionFrame, text="Orion max cnt area dpi 2")
+    orionMaxContourAreaDpi1Label.grid(row=12, column=0)
+    orionMaxContourAreaDpi1Entry = ttk.Entry(settingsOrionFrame, textvariable=orionMaxContourAreaDpi1)
+    orionMaxContourAreaDpi1Entry.grid(row=12, column=1)
+
+    orionMinContourAreaDpi2Label = ttk.Label(settingsOrionFrame, text="Orion min cnt area dpi 1")
+    orionMinContourAreaDpi2Label.grid(row=13, column=0)
+    orionMinContourAreaDpi2Entry = ttk.Entry(settingsOrionFrame, textvariable=orionMinContourAreaDpi1)
+    orionMinContourAreaDpi2Entry.grid(row=13, column=1)
+
+    orionMaxContourAreaDpi2Label = ttk.Label(settingsOrionFrame, text="Orion max cnt area dpi 2")
+    orionMaxContourAreaDpi2Label.grid(row=14, column=0)
+    orionMaxContourAreaDpi2Entry = ttk.Entry(settingsOrionFrame, textvariable=orionMaxContourAreaDpi2)
+    orionMaxContourAreaDpi2Entry.grid(row=14, column=1)
+
+    orionMinHoleRadiusDpi1Label = ttk.Label(settingsOrionFrame, text="Orion min hole rad dpi 1")
+    orionMinHoleRadiusDpi1Label.grid(row=15, column=0)
+    orionMinHoleRadiusDpi1Entry = ttk.Entry(settingsOrionFrame, textvariable=orionMinHoleRadiusDpi1)
+    orionMinHoleRadiusDpi1Entry.grid(row=15, column=1)
+
+    orionMinHoleRadiusDpi2Label = ttk.Label(settingsOrionFrame, text="Orion min hole rad dpi 2")
+    orionMinHoleRadiusDpi2Label.grid(row=16, column=0)
+    orionMinHoleRadiusDpi2Entry = ttk.Entry(settingsOrionFrame, textvariable=orionMinHoleRadiusDpi2)
+    orionMinHoleRadiusDpi2Entry.grid(row=16, column=1)
     #endregion
 
 # Ensures that an image/output directory is available to save images
@@ -1376,12 +1496,12 @@ def analyzeOrionImage(image):
     
     if dpiVar.get() == 1:
         # Blur using 3 * 3 kernel
-        gray_blurred = cv2.blur(gray, (2, 2))
+        gray_blurred = cv2.blur(gray, (orionKernelSizeDpi1.get(), orionKernelSizeDpi1.get()))
         #cv2.imshow("gray_blurred", gray_blurred)
 
     if dpiVar.get() == 2:
         # Blur using 3 * 3 kernel
-        gray_blurred = cv2.blur(gray, (5, 5))
+        gray_blurred = cv2.blur(gray, (orionKernelSizeDpi2.get(), orionKernelSizeDpi2.get()))
 
     # Currently not performing any threshold operation
     #threshold_image=cv2.inRange(gray_blurred, 100, 255)
@@ -1389,10 +1509,10 @@ def analyzeOrionImage(image):
     
     # Apply Hough transform on the blurred image.
     if dpiVar.get() == 1:
-        detected_circles = cv2.HoughCircles(gray_blurred, cv2.HOUGH_GRADIENT, 1.4, 200, minRadius = 130)
+        detected_circles = cv2.HoughCircles(gray_blurred, cv2.HOUGH_GRADIENT, orionParam1Dpi1.get(), orionParam2Dpi1.get(), minRadius = orionMinRadiusDpi1.get())
 
     if dpiVar.get() == 2:
-        detected_circles = cv2.HoughCircles(gray_blurred, cv2.HOUGH_GRADIENT, 2, 600, minRadius = 260)
+        detected_circles = cv2.HoughCircles(gray_blurred, cv2.HOUGH_GRADIENT, orionParam1Dpi2.get(), orionParam2Dpi2.get(), minRadius = orionMinRadiusDpi2.get())
     
     # Draw circles that are detected
     if detected_circles is not None:
@@ -1444,11 +1564,15 @@ def analyzeOrionImage(image):
 
     #region Identify the hole in the target
     
-    img_thresholded = cv2.inRange(img, (100, 100, 100), (255, 255, 255)) # Make the image binary using a threshold
+    img_thresholded = cv2.inRange(img, (orionThreshMin.get(), orionThreshMin.get(), orionThreshMin.get()), (orionThreshMax.get(), orionThreshMax.get(), orionThreshMax.get())) # Make the image binary using a threshold
     #cv2.imshow('Image Thresholded', img_thresholded)
 
     # Remove noise from the binary image using the opening operation
-    kernel = np.ones((2,2),np.uint8)
+    if dpiVar.get == 1:
+        kernel = np.ones((orionMorphologyOpeningKernelSizeDpi1,orionMorphologyOpeningKernelSizeDpi1),np.uint8)
+    else:
+        kernel = np.ones((orionMorphologyOpeningKernelSizeDpi2,orionMorphologyOpeningKernelSizeDpi2),np.uint8)
+    
     opening = cv2.morphologyEx(img_thresholded, cv2.MORPH_OPEN, kernel)
     #cv2.imshow('opening',opening)
 
@@ -1463,11 +1587,11 @@ def analyzeOrionImage(image):
         # Check if area is between max and min values for a bullet hole. Area is usually about 1000
 
         if dpiVar.get == 1:
-            minArea = 200
-            maxArea = 5000
+            minArea = orionMinContourAreaDpi1.get()
+            maxArea = orionMaxContourAreaDpi1.get()
         if dpiVar.get() == 2:
-            minArea = 400
-            maxArea = 12000
+            minArea = orionMinContourAreaDpi2.get()
+            maxArea = orionMaxContourAreaDpi2.get()
 
         if area<maxArea and area>minArea:
 
@@ -1491,9 +1615,9 @@ def analyzeOrionImage(image):
             holeCenter = (int(holeX),int(holeY))
 
             if dpiVar.get == 1:
-                minHoleRadius = 40
+                minHoleRadius = orionMinHoleRadiusDpi1.get()
             if dpiVar.get() == 2:
-                minHoleRadius = 80
+                minHoleRadius = orionMinHoleRadiusDpi2.get()
 
             if holeRadius < minHoleRadius:
                 #cv2.circle(output,holeCenter,holeRadius,(0,255,0),2) # Enclosing circle
@@ -1538,7 +1662,7 @@ def analyzeOrionImage(image):
                                     cv2.putText(output, "3", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
                                     droppedPoints += 3
                                 else:
-                                    print("Score more than 4 or low confidence: PLEASE PLUG MANUALLY")
+                                    print("Score more than 4 or low confidence: CHECK MANUALLY")
                                     label.config(text="Bull " + str(image) + " low confidence")
                                     
 
@@ -1567,16 +1691,81 @@ root.title("Target Analysis")
 #endregion
 
 #region Global variables
+# DPI is consistent across all targets that would be scanned. Therefore, it only needs to be set once for all of them.
 dpiVar = tk.IntVar(root, 1)
 
+#region While many similar parameters exist for non-Orion targets, each has been tuned for its use case and therefore are unique to Orion scanning.
+orionKernelSizeDpi1 = tk.IntVar(root, 2)
+orionKernelSizeDpi2 = tk.IntVar(root, 5)
+orionParam1Dpi1 = tk.IntVar(root, 1.4)
+orionParam2Dpi1 = tk.IntVar(root, 200)
+orionMinRadiusDpi1 = tk.IntVar(root, 130)
+orionParam1Dpi2 = tk.IntVar(root, 2)
+orionParam2Dpi2 = tk.IntVar(root, 600)
+orionMinRadiusDpi2 = tk.IntVar(root, 260)
+orionThreshMin = tk.IntVar(root, 100)
+orionThreshMax = tk.IntVar(root, 255)
+orionMorphologyOpeningKernelSizeDpi1 = tk.IntVar(root, 2)
+orionMorphologyOpeningKernelSizeDpi2 = tk.IntVar(root, 2)
+orionMinContourAreaDpi1 = tk.IntVar(root, 200)
+orionMinContourAreaDpi2 = tk.IntVar(root, 5000)
+orionMaxContourAreaDpi1 = tk.IntVar(root, 400)
+orionMaxContourAreaDpi2 = tk.IntVar(root, 12000)
+orionMinHoleRadiusDpi1 = tk.IntVar(root, 40)
+orionMinHoleRadiusDpi2 = tk.IntVar(root, 80)
+#endregion
+
+# Create a ConfigParser object to read the config file
 config = ConfigParser()
 if os.path.isfile("config.ini"):
+    # If the file exists, read it
     config.read('config.ini')
     dpiVar.set(config.getint("settings", "dpi"))
+
+    orionKernelSizeDpi1.set(config.getint("orion", "orionKernelSizeDpi1"))
+    orionKernelSizeDpi2.set(config.getint("orion", "orionKernelSizeDpi2"))
+    orionParam1Dpi1.set(config.getint("orion", "orionParam1Dpi1"))
+    orionParam2Dpi1.set(config.getint("orion", "orionParam2Dpi1"))
+    orionMinRadiusDpi1.set(config.getint("orion", "orionMinRadiusDpi1"))
+    orionParam1Dpi2.set(config.getint("orion", "orionParam1Dpi2"))
+    orionParam2Dpi2.set(config.getint("orion", "orionParam2Dpi2"))
+    orionMinRadiusDpi2.set(config.getint("orion", "orionMinRadiusDpi2"))
+    orionThreshMin.set(config.getint("orion", "orionThreshMin"))
+    orionThreshMax.set(config.getint("orion", "orionThreshMax"))
+    orionMorphologyOpeningKernelSizeDpi1.set(config.getint("orion", "orionMorphologyOpeningKernelSizeDpi1"))
+    orionMorphologyOpeningKernelSizeDpi2.set(config.getint("orion", "orionMorphologyOpeningKernelSizeDpi2"))
+    orionMinContourAreaDpi1.set(config.getint("orion", "orionMinContourAreaDpi1"))
+    orionMinContourAreaDpi2.set(config.getint("orion", "orionMinContourAreaDpi2"))
+    orionMaxContourAreaDpi1.set(config.getint("orion", "orionMaxContourAreaDpi1"))
+    orionMaxContourAreaDpi2.set(config.getint("orion", "orionMaxContourAreaDpi2"))
+    orionMinHoleRadiusDpi1.set(config.getint("orion", "orionMinHoleRadiusDpi1"))
+    orionMinHoleRadiusDpi2.set(config.getint("orion", "orionMinHoleRadiusDpi2"))
 else:
+    # If the file does not exist, create it and set the default values
     config.read('config.ini')
     config.add_section('settings')
     config.set('settings', 'dpi', str(dpiVar.get()))
+
+    config.add_section('orion')
+    config.set('orion', 'orionKernelSizeDpi1', str(orionKernelSizeDpi1.get()))
+    config.set('orion', 'orionKernelSizeDpi2', str(orionKernelSizeDpi2.get()))
+    config.set('orion', 'orionParam1Dpi1', str(orionParam1Dpi1.get()))
+    config.set('orion', 'orionParam2Dpi1', str(orionParam2Dpi1.get()))
+    config.set('orion', 'orionMinRadiusDpi1', str(orionMinRadiusDpi1.get()))
+    config.set('orion', 'orionParam1Dpi2', str(orionParam1Dpi2.get()))
+    config.set('orion', 'orionParam2Dpi2', str(orionParam2Dpi2.get()))
+    config.set('orion', 'orionMinRadiusDpi2', str(orionMinRadiusDpi2.get()))
+    config.set('orion', 'orionThreshMin', str(orionThreshMin.get()))
+    config.set('orion', 'orionThreshMax', str(orionThreshMax.get()))
+    config.set('orion', 'orionMorphologyOpeningKernelSizeDpi1', str(orionMorphologyOpeningKernelSizeDpi1.get()))
+    config.set('orion', 'orionMorphologyOpeningKernelSizeDpi2', str(orionMorphologyOpeningKernelSizeDpi2.get()))
+    config.set('orion', 'orionMinContourAreaDpi1', str(orionMinContourAreaDpi1.get()))
+    config.set('orion', 'orionMinContourAreaDpi2', str(orionMinContourAreaDpi2.get()))
+    config.set('orion', 'orionMaxContourAreaDpi1', str(orionMaxContourAreaDpi1.get()))
+    config.set('orion', 'orionMaxContourAreaDpi2', str(orionMaxContourAreaDpi2.get()))
+    config.set('orion', 'orionMinHoleRadiusDpi1', str(orionMinHoleRadiusDpi1.get()))
+    config.set('orion', 'orionMinHoleRadiusDpi2', str(orionMinHoleRadiusDpi2.get()))
+
     with open('config.ini', 'w') as f:
         config.write(f)
 #endregion
