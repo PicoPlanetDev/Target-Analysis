@@ -1705,6 +1705,7 @@ def analyzeOrionImage(image):
     contours, hierarchy = cv2.findContours(opening.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     #print("Contours: " + str(len(contours)))
     for contour in contours:
+        
         # Get the area of the contours
         area = cv2.contourArea(contour)
 
@@ -1719,7 +1720,6 @@ def analyzeOrionImage(image):
             maxArea = orionMaxContourAreaDpi2.get()
 
         if area<maxArea and area>minArea:
-
             # Draw the detected contour for debugging
             #cv2.drawContours(output,[contour],0,(255,0,0),2)
 
@@ -1739,7 +1739,7 @@ def analyzeOrionImage(image):
 
             holeCenter = (int(holeX),int(holeY))
 
-            if dpiVar.get == 1:
+            if dpiVar.get() == 1:
                 maxHoleRadius = orionmaxHoleRadiusDpi1.get()
             if dpiVar.get() == 2:
                 maxHoleRadius = orionmaxHoleRadiusDpi2.get()
@@ -1833,8 +1833,8 @@ orionThreshMax = tk.IntVar(root, 255)
 orionMorphologyOpeningKernelSizeDpi1 = tk.IntVar(root, 2)
 orionMorphologyOpeningKernelSizeDpi2 = tk.IntVar(root, 2)
 orionMinContourAreaDpi1 = tk.IntVar(root, 200)
+orionMaxContourAreaDpi1 = tk.IntVar(root, 5000)
 orionMinContourAreaDpi2 = tk.IntVar(root, 5000)
-orionMaxContourAreaDpi1 = tk.IntVar(root, 400)
 orionMaxContourAreaDpi2 = tk.IntVar(root, 12000)
 orionmaxHoleRadiusDpi1 = tk.IntVar(root, 40)
 orionmaxHoleRadiusDpi2 = tk.IntVar(root, 90)
@@ -1862,7 +1862,7 @@ if os.path.isfile("config.ini"):
 
     orionKernelSizeDpi1.set(config.getint("orion", "orionKernelSizeDpi1"))
     orionKernelSizeDpi2.set(config.getint("orion", "orionKernelSizeDpi2"))
-    orionParam1Dpi1.set(config.getint("orion", "orionParam1Dpi1"))
+    orionParam1Dpi1.set(config.getfloat("orion", "orionParam1Dpi1"))
     orionParam2Dpi1.set(config.getint("orion", "orionParam2Dpi1"))
     orionMinRadiusDpi1.set(config.getint("orion", "orionMinRadiusDpi1"))
     orionParam1Dpi2.set(config.getint("orion", "orionParam1Dpi2"))
@@ -1880,7 +1880,7 @@ if os.path.isfile("config.ini"):
     orionmaxHoleRadiusDpi2.set(config.getint("orion", "orionmaxHoleRadiusDpi2"))
 
     nraKernalSize.set(config.getint("nra", "nraKernalSize"))
-    nraParam1.set(config.getint("nra", "nraParam1"))
+    nraParam1.set(config.getfloat("nra", "nraParam1"))
     nraParam2.set(config.getint("nra", "nraParam2"))
     nraMinRadius.set(config.getint("nra", "nraMinRadius"))
     nraThreshMin.set(config.getint("nra", "nraThreshMin"))
