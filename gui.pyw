@@ -1054,7 +1054,7 @@ def openSettings():
     settingsBottomFrame = ttk.Frame(settingsWindow)
     settingsBottomFrame.pack(side=TOP, expand=True, fill=BOTH)
 
-    # TTK Notebook allows for a tabbed view
+    # Notebook allows for a tabbed view
     settingsTabControl = ttk.Notebook(settingsBottomFrame)
 
     settingstab1NRAA17 = ttk.Frame(settingsTabControl)
@@ -1929,7 +1929,7 @@ nraMaxContourArea = tk.IntVar(root, 1500)
 nramaxHoleRadius = tk.IntVar(root, 40)
 #endregion
 
-# Create a ConfigParser object to read the config file
+# Check for a config file. If it exists, load the values from it. Otherwise, create a config file frome the defaults.
 if os.path.isfile("config.ini"):
     # If the file exists, update settings to match the config file
     updateSettingsFromConfigFile("config.ini")
@@ -1941,6 +1941,7 @@ else:
 if not os.path.isfile("config-backup.ini"):
     # If the file does not exist, create it and set the default values
     saveSettingsToConfigFile("config-backup.ini")
+#endregion
 
 #region Menubar with File and Help menus
 menubar = tk.Menu(root)
