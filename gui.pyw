@@ -1431,14 +1431,14 @@ def analyzeImage(image):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     
     # Blur using 3 * 3 kernel
-    gray_blurred = cv2.blur(gray, (3, 3))
+    gray_blurred = cv2.blur(gray, (nraKernalSize.get(), nraKernalSize.get()))
     #cv2.imshow("gray_blurred", gray_blurred)
 
     #threshold_image=cv2.inRange(gray_blurred, 100, 255)
     #cv2.imshow("threshold_image", threshold_image)
     
     # Apply Hough transform on the blurred image.
-    detected_circles = cv2.HoughCircles(gray_blurred, cv2.HOUGH_GRADIENT, 1.4, 200, minRadius = 130)
+    detected_circles = cv2.HoughCircles(gray_blurred, cv2.HOUGH_GRADIENT, nraParam1.get(), nraParam2.get(), minRadius = nraMinRadius.get())
     
     # Draw circles that are detected
     if detected_circles is not None:
@@ -1484,11 +1484,11 @@ def analyzeImage(image):
 
     #region Identify the hole in the target
     # Make the image binary using a threshold
-    img_thresholded = cv2.inRange(img, (100, 100, 100), (255, 255, 255))
+    img_thresholded = cv2.inRange(img, (nraThreshMin.get(), nraThreshMin.get(), nraThreshMin.get()), (nraThreshMax.get(), nraThreshMax.get(), nraThreshMax.get()))
     #cv2.imshow('Image Thresholded', img_thresholded)
 
     # Remove noise from the binary image using the opening operation
-    kernel = np.ones((10,10),np.uint8)
+    kernel = np.ones((nraMorphologyOpeningKernelSize.get(),nraMorphologyOpeningKernelSize.get()),np.uint8)
     opening = cv2.morphologyEx(img_thresholded, cv2.MORPH_OPEN, kernel)
     #cv2.imshow('opening',opening)
 
@@ -1500,7 +1500,7 @@ def analyzeImage(image):
         area = cv2.contourArea(contour)
         print(area)
         # Check if area is between max and min values for a bullet hole. Area is usually about 1000
-        if area<1500 and area>200:
+        if area<nraMaxContourArea.get() and area>nraMinContourArea.get():
 
             # Draw the detected contour for debugging
             cv2.drawContours(output,[contour],0,(255,0,0),2)
@@ -1511,7 +1511,7 @@ def analyzeImage(image):
             holeCenter = (int(holeX),int(holeY))
             holeRadius = int(holeRadius)
             #print(holeRadius)
-            if holeRadius < 40:
+            if holeRadius < nramaxHoleRadius.get():
                 #cv2.circle(output,holeCenter,holeRadius,(0,255,0),2) # Enclosing circle
                 cv2.circle(output, holeCenter, 1, (0, 0, 255), 3) # Dot at the center
 
