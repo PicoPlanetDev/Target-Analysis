@@ -1009,6 +1009,17 @@ def openSettings():
         config.set('orion', 'orionmaxHoleRadiusDpi1', str(orionmaxHoleRadiusDpi1.get()))
         config.set('orion', 'orionmaxHoleRadiusDpi2', str(orionmaxHoleRadiusDpi2.get()))
 
+        config.set('nra', 'nraKernalSize', str(nraKernalSize.get()))
+        config.set('nra', 'nraParam1', str(nraParam1.get()))
+        config.set('nra', 'nraParam2', str(nraParam2.get()))
+        config.set('nra', 'nraMinRadius', str(nraMinRadius.get()))
+        config.set('nra', 'nraThreshMin', str(nraThreshMin.get()))
+        config.set('nra', 'nraThreshMax', str(nraThreshMax.get()))
+        config.set('nra', 'nraMorphologyOpeningKernelSize', str(nraMorphologyOpeningKernelSize.get()))
+        config.set('nra', 'nraMinContourArea', str(nraMinContourArea.get()))
+        config.set('nra', 'nraMaxContourArea', str(nraMaxContourArea.get()))
+        config.set('nra', 'nramaxHoleRadius', str(nramaxHoleRadius.get()))
+
         with open('config.ini', 'w') as f:
             config.write(f)
 
@@ -1608,11 +1619,13 @@ def analyzeOrionImage(image):
     if dpiVar.get() == 1:
         # Blur using 3 * 3 kernel
         gray_blurred = cv2.blur(gray, (orionKernelSizeDpi1.get(), orionKernelSizeDpi1.get()))
-        #cv2.imshow("gray_blurred", gray_blurred)
+        
 
     if dpiVar.get() == 2:
         # Blur using 3 * 3 kernel
         gray_blurred = cv2.blur(gray, (orionKernelSizeDpi2.get(), orionKernelSizeDpi2.get()))
+
+    #cv2.imshow("gray_blurred", gray_blurred)
 
     # Currently not performing any threshold operation
     #threshold_image=cv2.inRange(gray_blurred, 100, 255)
@@ -1627,7 +1640,7 @@ def analyzeOrionImage(image):
     
     # Draw circles that are detected
     if detected_circles is not None:
-    
+
         # Convert the circle parameters a, b and r to integers
         detected_circles = np.uint16(np.around(detected_circles))
     
@@ -1679,9 +1692,10 @@ def analyzeOrionImage(image):
     #cv2.imshow('Image Thresholded', img_thresholded)
 
     # Remove noise from the binary image using the opening operation
-    if dpiVar.get == 1:
+    if dpiVar.get() == 1:
         kernel = np.ones((orionMorphologyOpeningKernelSizeDpi1.get(),orionMorphologyOpeningKernelSizeDpi1.get()),np.uint8)
-    else:
+    
+    if dpiVar.get() == 2:
         kernel = np.ones((orionMorphologyOpeningKernelSizeDpi2.get(),orionMorphologyOpeningKernelSizeDpi2.get()),np.uint8)
     
     opening = cv2.morphologyEx(img_thresholded, cv2.MORPH_OPEN, kernel)
@@ -1808,7 +1822,7 @@ dpiVar = tk.IntVar(root, 1)
 #region While many similar parameters exist for non-Orion targets, each has been tuned for its use case and therefore are unique to Orion scanning.
 orionKernelSizeDpi1 = tk.IntVar(root, 2)
 orionKernelSizeDpi2 = tk.IntVar(root, 5)
-orionParam1Dpi1 = tk.IntVar(root, 1.4)
+orionParam1Dpi1 = tk.DoubleVar(root, 1.4)
 orionParam2Dpi1 = tk.IntVar(root, 200)
 orionMinRadiusDpi1 = tk.IntVar(root, 130)
 orionParam1Dpi2 = tk.IntVar(root, 2)
@@ -1828,7 +1842,7 @@ orionmaxHoleRadiusDpi2 = tk.IntVar(root, 90)
 
 #region Fine tuning settings for non-Orion targets
 nraKernalSize = tk.IntVar(root, 3)
-nraParam1 = tk.IntVar(root, 1.4)
+nraParam1 = tk.DoubleVar(root, 1.4)
 nraParam2 = tk.IntVar(root, 200)
 nraMinRadius = tk.IntVar(root, 130)
 nraThreshMin = tk.IntVar(root, 100)
