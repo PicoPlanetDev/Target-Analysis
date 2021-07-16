@@ -456,7 +456,7 @@ def cropLeft(image):
     #region Crop each image
     if dpiVar.get() == 2:
         dsize = (2550, 3507)
-        image = cv2.resize(image, dsize, interpolation = cv2.INTER_LINEAR)
+        verticalFlippedImage = cv2.resize(verticalFlippedImage, dsize, interpolation = cv2.INTER_LINEAR)
 
     y=240
     x=185
