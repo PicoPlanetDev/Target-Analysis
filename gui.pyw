@@ -370,7 +370,7 @@ def cropRight(image):
     checkOutputDir()
 
     #region Crop the image
-    if dpiVar.get == 2:
+    if dpiVar.get() == 2:
         dsize = (2550, 3507)
         image = cv2.resize(image, dsize, interpolation = cv2.INTER_LINEAR)
 
@@ -454,7 +454,7 @@ def cropLeft(image):
     cv2.imwrite("images/output/vertical-flipped.jpg", verticalFlippedImage)
 
     #region Crop each image
-    if dpiVar.get == 2:
+    if dpiVar.get() == 2:
         dsize = (2550, 3507)
         image = cv2.resize(image, dsize, interpolation = cv2.INTER_LINEAR)
 
