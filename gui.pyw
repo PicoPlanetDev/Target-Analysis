@@ -1012,13 +1012,17 @@ def openSettings():
         with open('config.ini', 'w') as f:
             config.write(f)
 
+    def onCloseSettings():
+        updateConfig()
+        settingsWindow.destroy()
+
     label.config(text="Showing settings window")
 
     #region Create toplevel window
     settingsWindow = tk.Toplevel(root)
     settingsWindow.title("Target Analysis")
-    settingsWindow.minsize(width=400, height=800)
-    settingsWindow.geometry("400x600")
+    settingsWindow.minsize(width=400, height=750)
+    settingsWindow.geometry("400x750")
     settingsWindow.iconbitmap("assets/icon.ico")
     #endregion
 
@@ -1026,14 +1030,36 @@ def openSettings():
     settingsTopFrame = ttk.Frame(settingsWindow)
     settingsTopFrame.pack(side=TOP, expand=False, pady=5, fill=X)
 
-    settingsBottomFrame = ttk.Frame(settingsWindow)
-    settingsBottomFrame.pack(side=TOP, fill=X)
+    settingsDpiFrame = ttk.Frame(settingsWindow)
+    settingsDpiFrame.pack(side=TOP, fill=X)
+
+    # TTK Notebook allows for a tabbed view
+    tabControl = ttk.Notebook(root)
+
+    tab1indoor = ttk.Frame(tabControl)
+    tab2orion = ttk.Frame(tabControl)
+
+    tabControl.add(tab1indoor, text ='NRA A-17')
+    tabControl.add(tab2orion, text ='NRA/USAS-50')
+
+    tabControl.pack(side=tk.TOP)
 
     dpiSeparator = ttk.Separator(settingsWindow, orient=HORIZONTAL)
     dpiSeparator.pack(side=TOP, fill=X, pady=5)
 
-    settingsOrionFrame = ttk.Frame(settingsWindow)
-    settingsOrionFrame.pack(side=TOP, expand=True, fill=BOTH)
+    settingsBottomFrame = ttk.Frame(settingsWindow)
+    settingsBottomFrame.pack(side=TOP, expand=True, fill=BOTH)
+
+    # TTK Notebook allows for a tabbed view
+    settingsTabControl = ttk.Notebook(settingsBottomFrame)
+
+    settingstab1NRAA17 = ttk.Frame(settingsTabControl)
+    settingstab2orion = ttk.Frame(settingsTabControl)
+
+    settingsTabControl.add(settingstab1NRAA17, text ='NRA A-17 Settings')
+    settingsTabControl.add(settingstab2orion, text ='NRA/USAS-50 Orion Settings')
+
+    settingsTabControl.pack(side=tk.TOP, expand=True, fill=BOTH, padx=10, pady=5)
 
     saveSeparator = ttk.Separator(settingsWindow, orient=HORIZONTAL)
     saveSeparator.pack(side=TOP, fill=X)
@@ -1052,98 +1078,105 @@ def openSettings():
     #endregion
 
     #region Create dpi widgets
-    settingsLabel1 = ttk.Label(settingsBottomFrame, text="Global settings", font = 'bold')
+    settingsLabel1 = ttk.Label(settingsDpiFrame, text="Global settings", font = 'bold')
     settingsLabel1.grid(row=0, column=0)
-    dpiButton300 = ttk.Radiobutton(settingsBottomFrame, text="300 dpi scanner", variable=dpiVar, value=1)
+    dpiButton300 = ttk.Radiobutton(settingsDpiFrame, text="300 dpi scanner", variable=dpiVar, value=1)
     dpiButton300.grid(row=1, column=0)
-    dpiButton600 = ttk.Radiobutton(settingsBottomFrame, text="600 dpi scanner", variable=dpiVar, value=2)
+    dpiButton600 = ttk.Radiobutton(settingsDpiFrame, text="600 dpi scanner", variable=dpiVar, value=2)
     dpiButton600.grid(row=1, column=1)
     #endregion
 
-    #region Create Orion widgets
-    settingsLabel1 = ttk.Label(settingsOrionFrame, text="Orion settings" , font='bold')
-    settingsLabel1.grid(row=0, column=0)
+    #region Create NRA A-17 widgets
+    settingsLabel2 = ttk.Label(settingstab1NRAA17, text="NRA A-17 settings" , font='bold')
+    settingsLabel2.grid(row=0, column=0, columnspan=2)
+    #endregion
 
-    orionKernelSizeDpi1Label = ttk.Label(settingsOrionFrame, text="Orion Kernel Size dpi 1")
+    #region Create Orion widgets
+    settingsLabel1 = ttk.Label(settingstab2orion, text="Orion settings" , font='bold')
+    settingsLabel1.grid(row=0, column=0, columnspan=2)
+
+    orionKernelSizeDpi1Label = ttk.Label(settingstab2orion, text="Orion Kernel Size dpi 1")
     orionKernelSizeDpi1Label.grid(row=1, column=0)
-    orionKernelSizeDpi1Entry = ttk.Entry(settingsOrionFrame, textvariable=orionKernelSizeDpi1)
+    orionKernelSizeDpi1Entry = ttk.Entry(settingstab2orion, textvariable=orionKernelSizeDpi1)
     orionKernelSizeDpi1Entry.grid(row=1, column=1)
 
-    orionKernelSizeDpi2Label = ttk.Label(settingsOrionFrame, text="Orion Kernel Size dpi 2")
+    orionKernelSizeDpi2Label = ttk.Label(settingstab2orion, text="Orion Kernel Size dpi 2")
     orionKernelSizeDpi2Label.grid(row=2, column=0)
-    orionKernelSizeDpi2Entry = ttk.Entry(settingsOrionFrame, textvariable=orionKernelSizeDpi2)
+    orionKernelSizeDpi2Entry = ttk.Entry(settingstab2orion, textvariable=orionKernelSizeDpi2)
     orionKernelSizeDpi2Entry.grid(row=2, column=1)
 
-    orionParam1Dpi1Label = ttk.Label(settingsOrionFrame, text="Orion Param1 dpi 1")
+    orionParam1Dpi1Label = ttk.Label(settingstab2orion, text="Orion Param1 dpi 1")
     orionParam1Dpi1Label.grid(row=3, column=0)
-    orionParam1Dpi1Entry = ttk.Entry(settingsOrionFrame, textvariable=orionParam1Dpi1)
+    orionParam1Dpi1Entry = ttk.Entry(settingstab2orion, textvariable=orionParam1Dpi1)
     orionParam1Dpi1Entry.grid(row=3, column=1)
 
-    orionParam2Dpi1Label = ttk.Label(settingsOrionFrame, text="Orion Param2 dpi 1")
+    orionParam2Dpi1Label = ttk.Label(settingstab2orion, text="Orion Param2 dpi 1")
     orionParam2Dpi1Label.grid(row=4, column=0)
-    orionParam2Dpi1Entry = ttk.Entry(settingsOrionFrame, textvariable=orionParam2Dpi1)
+    orionParam2Dpi1Entry = ttk.Entry(settingstab2orion, textvariable=orionParam2Dpi1)
     orionParam2Dpi1Entry.grid(row=4, column=1)
 
-    orionParam1Dpi2Label = ttk.Label(settingsOrionFrame, text="Orion Param1 dpi 2")
+    orionParam1Dpi2Label = ttk.Label(settingstab2orion, text="Orion Param1 dpi 2")
     orionParam1Dpi2Label.grid(row=5, column=0)
-    orionParam1Dpi2Entry = ttk.Entry(settingsOrionFrame, textvariable=orionParam1Dpi2)
+    orionParam1Dpi2Entry = ttk.Entry(settingstab2orion, textvariable=orionParam1Dpi2)
     orionParam1Dpi2Entry.grid(row=5, column=1)
 
-    orionParam2Dpi2Label = ttk.Label(settingsOrionFrame, text="Orion Param2 dpi 2")
+    orionParam2Dpi2Label = ttk.Label(settingstab2orion, text="Orion Param2 dpi 2")
     orionParam2Dpi2Label.grid(row=6, column=0)
-    orionParam2Dpi2Entry = ttk.Entry(settingsOrionFrame, textvariable=orionParam2Dpi2)
+    orionParam2Dpi2Entry = ttk.Entry(settingstab2orion, textvariable=orionParam2Dpi2)
     orionParam2Dpi2Entry.grid(row=6, column=1)
 
-    orionMinRadiusDpi1Label = ttk.Label(settingsOrionFrame, text="Orion MinRadius dpi 1")
+    orionMinRadiusDpi1Label = ttk.Label(settingstab2orion, text="Orion MinRadius dpi 1")
     orionMinRadiusDpi1Label.grid(row=7, column=0)
-    orionMinRadiusDpi1Entry = ttk.Entry(settingsOrionFrame, textvariable=orionMinRadiusDpi1)
+    orionMinRadiusDpi1Entry = ttk.Entry(settingstab2orion, textvariable=orionMinRadiusDpi1)
     orionMinRadiusDpi1Entry.grid(row=7, column=1)
 
-    orionMinRadiusDpi2Label = ttk.Label(settingsOrionFrame, text="Orion MinRadius dpi 2")
+    orionMinRadiusDpi2Label = ttk.Label(settingstab2orion, text="Orion MinRadius dpi 2")
     orionMinRadiusDpi2Label.grid(row=8, column=0)
-    orionMinRadiusDpi2Entry = ttk.Entry(settingsOrionFrame, textvariable=orionMinRadiusDpi2)
+    orionMinRadiusDpi2Entry = ttk.Entry(settingstab2orion, textvariable=orionMinRadiusDpi2)
     orionMinRadiusDpi2Entry.grid(row=8, column=1)
 
-    orionThreshMinLabel = ttk.Label(settingsOrionFrame, text="Orion thresh min")
+    orionThreshMinLabel = ttk.Label(settingstab2orion, text="Orion thresh min")
     orionThreshMinLabel.grid(row=9, column=0)
-    orionThreshMinEntry = ttk.Entry(settingsOrionFrame, textvariable=orionThreshMin)
+    orionThreshMinEntry = ttk.Entry(settingstab2orion, textvariable=orionThreshMin)
     orionThreshMinEntry.grid(row=9, column=1)
 
-    orionThreshMaxLabel = ttk.Label(settingsOrionFrame, text="Orion thresh max")
+    orionThreshMaxLabel = ttk.Label(settingstab2orion, text="Orion thresh max")
     orionThreshMaxLabel.grid(row=10, column=0)
-    orionThreshMaxEntry = ttk.Entry(settingsOrionFrame, textvariable=orionThreshMax)
+    orionThreshMaxEntry = ttk.Entry(settingstab2orion, textvariable=orionThreshMax)
     orionThreshMaxEntry.grid(row=10, column=1)
 
-    orionMinContourAreaDpi1Label = ttk.Label(settingsOrionFrame, text="Orion min cnt area dpi 1")
+    orionMinContourAreaDpi1Label = ttk.Label(settingstab2orion, text="Orion min cnt area dpi 1")
     orionMinContourAreaDpi1Label.grid(row=11, column=0)
-    orionMinContourAreaDpi1Entry = ttk.Entry(settingsOrionFrame, textvariable=orionMinContourAreaDpi1)
+    orionMinContourAreaDpi1Entry = ttk.Entry(settingstab2orion, textvariable=orionMinContourAreaDpi1)
     orionMinContourAreaDpi1Entry.grid(row=11, column=1)
 
-    orionMaxContourAreaDpi1Label = ttk.Label(settingsOrionFrame, text="Orion max cnt area dpi 1")
+    orionMaxContourAreaDpi1Label = ttk.Label(settingstab2orion, text="Orion max cnt area dpi 1")
     orionMaxContourAreaDpi1Label.grid(row=12, column=0)
-    orionMaxContourAreaDpi1Entry = ttk.Entry(settingsOrionFrame, textvariable=orionMaxContourAreaDpi1)
+    orionMaxContourAreaDpi1Entry = ttk.Entry(settingstab2orion, textvariable=orionMaxContourAreaDpi1)
     orionMaxContourAreaDpi1Entry.grid(row=12, column=1)
 
-    orionMinContourAreaDpi2Label = ttk.Label(settingsOrionFrame, text="Orion min cnt area dpi 2")
+    orionMinContourAreaDpi2Label = ttk.Label(settingstab2orion, text="Orion min cnt area dpi 2")
     orionMinContourAreaDpi2Label.grid(row=13, column=0)
-    orionMinContourAreaDpi2Entry = ttk.Entry(settingsOrionFrame, textvariable=orionMinContourAreaDpi2)
+    orionMinContourAreaDpi2Entry = ttk.Entry(settingstab2orion, textvariable=orionMinContourAreaDpi2)
     orionMinContourAreaDpi2Entry.grid(row=13, column=1)
 
-    orionMaxContourAreaDpi2Label = ttk.Label(settingsOrionFrame, text="Orion max cnt area dpi 2")
+    orionMaxContourAreaDpi2Label = ttk.Label(settingstab2orion, text="Orion max cnt area dpi 2")
     orionMaxContourAreaDpi2Label.grid(row=14, column=0)
-    orionMaxContourAreaDpi2Entry = ttk.Entry(settingsOrionFrame, textvariable=orionMaxContourAreaDpi2)
+    orionMaxContourAreaDpi2Entry = ttk.Entry(settingstab2orion, textvariable=orionMaxContourAreaDpi2)
     orionMaxContourAreaDpi2Entry.grid(row=14, column=1)
 
-    orionmaxHoleRadiusDpi1Label = ttk.Label(settingsOrionFrame, text="Orion min hole rad dpi 1")
+    orionmaxHoleRadiusDpi1Label = ttk.Label(settingstab2orion, text="Orion min hole rad dpi 1")
     orionmaxHoleRadiusDpi1Label.grid(row=15, column=0)
-    orionmaxHoleRadiusDpi1Entry = ttk.Entry(settingsOrionFrame, textvariable=orionmaxHoleRadiusDpi1)
+    orionmaxHoleRadiusDpi1Entry = ttk.Entry(settingstab2orion, textvariable=orionmaxHoleRadiusDpi1)
     orionmaxHoleRadiusDpi1Entry.grid(row=15, column=1)
 
-    orionmaxHoleRadiusDpi2Label = ttk.Label(settingsOrionFrame, text="Orion min hole rad dpi 2")
+    orionmaxHoleRadiusDpi2Label = ttk.Label(settingstab2orion, text="Orion min hole rad dpi 2")
     orionmaxHoleRadiusDpi2Label.grid(row=16, column=0)
-    orionmaxHoleRadiusDpi2Entry = ttk.Entry(settingsOrionFrame, textvariable=orionmaxHoleRadiusDpi2)
+    orionmaxHoleRadiusDpi2Entry = ttk.Entry(settingstab2orion, textvariable=orionmaxHoleRadiusDpi2)
     orionmaxHoleRadiusDpi2Entry.grid(row=16, column=1)
     #endregion
+
+    settingsWindow.protocol("WM_DELETE_WINDOW", onCloseSettings)
 
 # Ensures that an image/output directory is available to save images
 def checkOutputDir():
