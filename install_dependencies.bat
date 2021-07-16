@@ -5,4 +5,5 @@ pip install numpy --upgrade
 REM pip install argparse --upgrade
 pip install matplotlib --upgrade
 pip install ttkthemes --upgrade
+pip install configparser --upgrade
 pause
