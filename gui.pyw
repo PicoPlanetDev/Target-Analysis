@@ -1,5 +1,6 @@
 #region Import libraries
-from tkinter.constants import BOTH, BOTTOM, CENTER, DISABLED, FLAT, HORIZONTAL, LEFT, NORMAL, NSEW, RIDGE, RIGHT, SOLID, SUNKEN, TOP, X
+from tkinter.constants import BOTH, BOTTOM, CENTER, DISABLED, FLAT, HORIZONTAL, LEFT, NORMAL, NSEW, RIDGE, RIGHT, S, SOLID, SUNKEN, TOP, X
+from typing_extensions import IntVar
 import cv2
 import tkinter as tk
 from tkinter import StringVar, ttk
@@ -16,6 +17,7 @@ import datetime
 from numpy.core.fromnumeric import var
 import matplotlib.pyplot as plt
 import matplotlib
+from configparser import ConfigParser
 #endregion
 
 # Loads an image for the left side of the target
@@ -122,54 +124,54 @@ def cropOrion(image):
     label.config(text="Cropping Orion image...")
     checkOutputDir()
 
-    h=400
-    w=400
+    h=400 * dpiVar.get()
+    w=400 * dpiVar.get()
 
-    y=425
-    x=1070
+    y=425 * dpiVar.get()
+    x=1070 * dpiVar.get()
     crop1 = image[y:y+h, x:x+w]
 
-    y=425
-    x=1920
+    y=425 * dpiVar.get()
+    x=1920 * dpiVar.get()
     crop2 = image[y:y+h, x:x+w]
 
-    y=1175
-    x=1920
+    y=1175 * dpiVar.get()
+    x=1920 * dpiVar.get()
 
     crop3 = image[y:y+h, x:x+w]
 
-    y=1925
-    x=1920
+    y=1925 * dpiVar.get()
+    x=1920 * dpiVar.get()
 
     crop4 = image[y:y+h, x:x+w]
 
-    y=2680
-    x=1920
+    y=2680 * dpiVar.get()
+    x=1920 * dpiVar.get()
 
     crop5 = image[y:y+h, x:x+w]
 
-    y=2680
-    x=1070
+    y=2680 * dpiVar.get()
+    x=1070 * dpiVar.get()
 
     crop6 = image[y:y+h, x:x+w]
 
-    y=420
-    x=225
+    y=420 * dpiVar.get()
+    x=225 * dpiVar.get()
 
     crop7 = image[y:y+h, x:x+w]
 
-    y=1175
-    x=225
+    y=1175 * dpiVar.get()
+    x=225 * dpiVar.get()
 
     crop8 = image[y:y+h, x:x+w]
 
-    y=1925
-    x=225
+    y=1925 * dpiVar.get()
+    x=225 * dpiVar.get()
 
     crop9 = image[y:y+h, x:x+w]
 
-    y=2680
-    x=225
+    y=2680 * dpiVar.get()
+    x=225 * dpiVar.get()
 
     crop10 = image[y:y+h, x:x+w]
 
@@ -953,6 +955,48 @@ def clearData():
 
     label.config(text="/data and /images/output directories cleared")
 
+def openSettings():
+    def updateConfig():
+        config = ConfigParser()
+        config.read('config.ini')
+        config.set('settings', 'dpi', str(dpiVar.get()))
+        with open('config.ini', 'w') as f:
+            config.write(f)
+
+    label.config(text="Showing settings window")
+
+    #region Create toplevel window
+    settingsWindow = tk.Toplevel(root)
+    settingsWindow.title("Target Analysis")
+    settingsWindow.minsize(width=400, height=200)
+    settingsWindow.geometry("400x200")
+    settingsWindow.iconbitmap("assets/icon.ico")
+    #endregion
+
+    #region Create frames
+    settingsTopFrame = ttk.Frame(settingsWindow)
+    settingsTopFrame.pack(side=TOP, expand=False, pady=10, fill=X)
+
+    settingsBottomFrame = ttk.Frame(settingsWindow)
+    settingsBottomFrame.pack(side=TOP, expand=True, fill=BOTH)
+    #endregion
+
+    #region Create top label
+    settingsLabel1 = ttk.Label(settingsTopFrame, text="Settings")
+    settingsLabel1.pack(side=TOP)
+    settingsLabel2 = ttk.Label(settingsTopFrame, text="⚠️ Change these only if the software does not work properly ⚠️")
+    settingsLabel2.pack(side=TOP)
+    labelSeparator = ttk.Separator(settingsTopFrame, orient=HORIZONTAL)
+    labelSeparator.pack(side=TOP, fill=X, pady=10)
+    #endregion
+
+    #region Create settings widgets
+    dpiButton300 = ttk.Radiobutton(settingsBottomFrame, text="300 dpi scanner", variable=dpiVar, value=1, command=updateConfig)
+    dpiButton300.grid(row=0, column=0)
+    dpiButton600 = ttk.Radiobutton(settingsBottomFrame, text="600 dpi scanner", variable=dpiVar, value=2, command=updateConfig)
+    dpiButton600.grid(row=0, column=1)
+    #endregion
+
 # Ensures that an image/output directory is available to save images
 def checkOutputDir():
     path = os.getcwd() + "\images\output"
@@ -1499,6 +1543,21 @@ root.iconbitmap("assets/icon.ico")
 root.title("Target Analysis")
 #endregion
 
+#region Global variables
+dpiVar = tk.IntVar(root, 1)
+
+config = ConfigParser()
+if os.path.isfile("config.ini"):
+    config.read('config.ini')
+    dpiVar.set(config.getint("settings", "dpi"))
+else:
+    config.read('config.ini')
+    config.add_section('settings')
+    config.set('settings', 'dpi', str(dpiVar.get()))
+    with open('config.ini', 'w') as f:
+        config.write(f)
+#endregion
+
 #region Menubar with File and Help menus
 menubar = tk.Menu(root)
 
@@ -1512,6 +1571,8 @@ filemenu.add_command(label="🗂 Show in Explorer", command=showFolder)
 filemenu.add_command(label="💯 Show Output", command=showOutput, state=DISABLED)
 filemenu.add_command(label="📈 Show Trends", command=showTrends)
 #filemenu.add_command(label="(Experimental) Load Outdoor", command=loadOutdoorBull)
+filemenu.add_separator()
+filemenu.add_command(label="⚙️ Settings", command=openSettings)
 filemenu.add_separator()
 filemenu.add_command(label="⚠ Clear data", command=clearData)
 filemenu.add_separator()
