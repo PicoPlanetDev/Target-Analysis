@@ -1048,17 +1048,6 @@ def openSettings():
     settingsDpiFrame = ttk.Frame(settingsWindow)
     settingsDpiFrame.pack(side=TOP, fill=X)
 
-    # TTK Notebook allows for a tabbed view
-    tabControl = ttk.Notebook(root)
-
-    tab1indoor = ttk.Frame(tabControl)
-    tab2orion = ttk.Frame(tabControl)
-
-    tabControl.add(tab1indoor, text ='NRA A-17')
-    tabControl.add(tab2orion, text ='NRA/USAS-50')
-
-    tabControl.pack(side=tk.TOP)
-
     dpiSeparator = ttk.Separator(settingsWindow, orient=HORIZONTAL)
     dpiSeparator.pack(side=TOP, fill=X, pady=5)
 
