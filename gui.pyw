@@ -1089,6 +1089,56 @@ def openSettings():
     #region Create NRA A-17 widgets
     settingsLabel2 = ttk.Label(settingstab1NRAA17, text="NRA A-17 settings" , font='bold')
     settingsLabel2.grid(row=0, column=0, columnspan=2)
+
+    nraKernalSizeLabel = ttk.Label(settingstab1NRAA17, text="NRA A-17 Kernel Size")
+    nraKernalSizeLabel.grid(row=1, column=0)
+    nraKernalSizeEntry = ttk.Entry(settingstab1NRAA17, textvariable=nraKernalSize)
+    nraKernalSizeEntry.grid(row=1, column=1)
+
+    nraParam1Label = ttk.Label(settingstab1NRAA17, text="NRA A-17 Param 1")
+    nraParam1Label.grid(row=2, column=0)
+    nraParam1Entry = ttk.Entry(settingstab1NRAA17, textvariable=nraParam1)
+    nraParam1Entry.grid(row=2, column=1)
+
+    nraParam2Label = ttk.Label(settingstab1NRAA17, text="NRA A-17 Param 2")
+    nraParam2Label.grid(row=3, column=0)
+    nraParam2Entry = ttk.Entry(settingstab1NRAA17, textvariable=nraParam2)
+    nraParam2Entry.grid(row=3, column=1)
+
+    nraMinRadiusLabel = ttk.Label(settingstab1NRAA17, text="NRA A-17 Min Circle Radius")
+    nraMinRadiusLabel.grid(row=4, column=0)
+    nraMinRadiusEntry = ttk.Entry(settingstab1NRAA17, textvariable=nraMinRadius)
+    nraMinRadiusEntry.grid(row=4, column=1)
+
+    nraThreshMinLabel = ttk.Label(settingstab1NRAA17, text="NRA A-17 Thresh Min")
+    nraThreshMinLabel.grid(row=5, column=0)
+    nraThreshMinEntry = ttk.Entry(settingstab1NRAA17, textvariable=nraThreshMin)
+    nraThreshMinEntry.grid(row=5, column=1)
+
+    nraThreshMaxLabel = ttk.Label(settingstab1NRAA17, text="NRA A-17 Thresh Max")
+    nraThreshMaxLabel.grid(row=6, column=0)
+    nraThreshMaxEntry = ttk.Entry(settingstab1NRAA17, textvariable=nraThreshMax)
+    nraThreshMaxEntry.grid(row=6, column=1)
+
+    nraMorphologyOpeningKernelSizeLabel = ttk.Label(settingstab1NRAA17, text="NRA A-17 Morphology Opening Kernal Size")
+    nraMorphologyOpeningKernelSizeLabel.grid(row=7, column=0)
+    nraMorphologyOpeningKernelSizeEntry = ttk.Entry(settingstab1NRAA17, textvariable=nraMorphologyOpeningKernelSize)
+    nraMorphologyOpeningKernelSizeEntry.grid(row=7, column=1)
+
+    nraMinContourAreaLabel = ttk.Label(settingstab1NRAA17, text="NRA A-17 Min cnt area")
+    nraMinContourAreaLabel.grid(row=8, column=0)
+    nraMinContourAreaEntry = ttk.Entry(settingstab1NRAA17, textvariable=nraMinContourArea)
+    nraMinContourAreaEntry.grid(row=8, column=1)
+
+    nraMaxContourAreaLabel = ttk.Label(settingstab1NRAA17, text="NRA A-17 Max cnt area")
+    nraMaxContourAreaLabel.grid(row=9, column=0)
+    nraMaxContourAreaEntry = ttk.Entry(settingstab1NRAA17, textvariable=nraMaxContourArea)
+    nraMaxContourAreaEntry.grid(row=9, column=1)
+
+    nramaxHoleRadiusLabel = ttk.Label(settingstab1NRAA17, text="NRA A-17 Max hole radius")
+    nramaxHoleRadiusLabel.grid(row=10, column=0)
+    nramaxHoleRadiusEntry = ttk.Entry(settingstab1NRAA17, textvariable=nramaxHoleRadius)
+    nramaxHoleRadiusEntry.grid(row=10, column=1)
     #endregion
 
     #region Create Orion widgets
@@ -1776,6 +1826,19 @@ orionmaxHoleRadiusDpi1 = tk.IntVar(root, 40)
 orionmaxHoleRadiusDpi2 = tk.IntVar(root, 90)
 #endregion
 
+#region Fine tuning settings for non-Orion targets
+nraKernalSize = tk.IntVar(root, 3)
+nraParam1 = tk.IntVar(root, 1.4)
+nraParam2 = tk.IntVar(root, 200)
+nraMinRadius = tk.IntVar(root, 130)
+nraThreshMin = tk.IntVar(root, 100)
+nraThreshMax = tk.IntVar(root, 255)
+nraMorphologyOpeningKernelSize = tk.IntVar(root, 10)
+nraMinContourArea = tk.IntVar(root, 200)
+nraMaxContourArea = tk.IntVar(root, 1500)
+nramaxHoleRadius = tk.IntVar(root, 40)
+#endregion
+
 # Create a ConfigParser object to read the config file
 config = ConfigParser()
 if os.path.isfile("config.ini"):
@@ -1801,6 +1864,17 @@ if os.path.isfile("config.ini"):
     orionMaxContourAreaDpi2.set(config.getint("orion", "orionMaxContourAreaDpi2"))
     orionmaxHoleRadiusDpi1.set(config.getint("orion", "orionmaxHoleRadiusDpi1"))
     orionmaxHoleRadiusDpi2.set(config.getint("orion", "orionmaxHoleRadiusDpi2"))
+
+    nraKernalSize.set(config.getint("nra", "nraKernalSize"))
+    nraParam1.set(config.getint("nra", "nraParam1"))
+    nraParam2.set(config.getint("nra", "nraParam2"))
+    nraMinRadius.set(config.getint("nra", "nraMinRadius"))
+    nraThreshMin.set(config.getint("nra", "nraThreshMin"))
+    nraThreshMax.set(config.getint("nra", "nraThreshMax"))
+    nraMorphologyOpeningKernelSize.set(config.getint("nra", "nraMorphologyOpeningKernelSize"))
+    nraMinContourArea.set(config.getint("nra", "nraMinContourArea"))
+    nraMaxContourArea.set(config.getint("nra", "nraMaxContourArea"))
+    nramaxHoleRadius.set(config.getint("nra", "nramaxHoleRadius"))
 else:
     # If the file does not exist, create it and set the default values
     config.read('config.ini')
@@ -1826,6 +1900,18 @@ else:
     config.set('orion', 'orionMaxContourAreaDpi2', str(orionMaxContourAreaDpi2.get()))
     config.set('orion', 'orionmaxHoleRadiusDpi1', str(orionmaxHoleRadiusDpi1.get()))
     config.set('orion', 'orionmaxHoleRadiusDpi2', str(orionmaxHoleRadiusDpi2.get()))
+
+    config.add_section('nra')
+    config.set('nra', 'nraKernalSize', str(nraKernalSize.get()))
+    config.set('nra', 'nraParam1', str(nraParam1.get()))
+    config.set('nra', 'nraParam2', str(nraParam2.get()))
+    config.set('nra', 'nraMinRadius', str(nraMinRadius.get()))
+    config.set('nra', 'nraThreshMin', str(nraThreshMin.get()))
+    config.set('nra', 'nraThreshMax', str(nraThreshMax.get()))
+    config.set('nra', 'nraMorphologyOpeningKernelSize', str(nraMorphologyOpeningKernelSize.get()))
+    config.set('nra', 'nraMinContourArea', str(nraMinContourArea.get()))
+    config.set('nra', 'nraMaxContourArea', str(nraMaxContourArea.get()))
+    config.set('nra', 'nramaxHoleRadius', str(nramaxHoleRadius.get()))
 
     with open('config.ini', 'w') as f:
         config.write(f)
