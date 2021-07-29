@@ -16,19 +16,14 @@ Please see [LICENSE.md](https://github.com/PicoPlanetDev/Target-Analysis/blob/ma
 ![Excel Spreadsheet](https://github.com/PicoPlanetDev/Target-Analysis/blob/main/help/accuracy-vs-hand-scored.png?raw=true)
 
 ## Installation
-1. Install Python 3.9 from this page: https://www.python.org/downloads/release/python-395/
-If the computer used runs Windows, please select the bottom option at the bottom of the page: Windows Installer (64-bit).
-2. Run the installer, **making sure to check the "Add Python 3.x to PATH" box**.
-3. Click the green ```↓ Code``` button at the top right of this Github page and select Download ZIP.
-4. Extract the zipped folder to a prominent location, such as the Desktop or Documents directory.
-5. Double click to run ```install_dependencies.bat```
-6. Double click to run ```gui.pyw``` to run the analysis software.
-7. The images folder includes two scanned targets to test functionality. Run the software (see the Usage section) and click Show Output, ensuring that a score of 94-4X is displayed.
+1. Double click to run ```install_dependencies.bat```
+2. Double click to run ```gui.pyw``` to run the analysis software.
+3. The images folder includes two scanned targets to test functionality. Run the software (see the Usage section) and click Show Output, ensuring that a score of 94-4X is displayed.
 
 ## Documentation
 ### Information
 
-Created by Sigmond Kukla for the Mt. Lebanon Rifle Team in May and June of 2021.
+Created by Sigmond Kukla for the Mt. Lebanon Rifle Team in May, June, and July of 2021.
 
 Future people: Is COVID over yet?
 
@@ -38,7 +33,7 @@ Documentation - Measurements
 
 *Disclaimer: This might not actually be what these rings are called... I'm just going off of what I used in the code.
 
-Measurements are from *NRA Smallbore Rifle Rules*
+Measurements are from *NRA Smallbore Rifle Rules* January 2010 booklet.
 
 Measurements used in the target analysis system (radius):
 NRA A-17 target:
@@ -67,9 +62,7 @@ The target analysis system uses Hough Circles to identify a large circle in the 
 
 ### Requirements
 
-Install Python 3. This project was built using Python 3.9, so that is recommended if possible. When installing Python, be sure to check the ```"Add Python 3.x to PATH"``` box.
-
-Ensure that the following Python packages are installed:
+Python 3 and the following Python packages must be installed:
 
 - opencv-python
 - pillow
@@ -108,16 +101,23 @@ To score a target:
    b. Click File -> Show in Explorer, then open the data directory, then open data.csv to view scores for targets analyzed using Open Folder.
 
 
-Data from the analysis is stored in the data folder as data-<Name><Day><Month><Year><Target number>.csv
+Data from the analysis is stored in the data folder as 
+
+data-[Name][Day][Month][Year][Target number].csv
 
 If "Use info from file" is selected, the program will automatically update the date and target number. This will overwrite all data and target number information in the box already. If the file is not named correctly, or you would like to use a different date or target number, make sure to deselect this option.
+
 For this to work, you must name the target files as such:
+
 **NRA A-17:**
 <2 number day><3 letter shortened month><Year><left/right><target number>.jpeg
+
 For example:
 "03jan2021left1.jpeg" and "03jan2021right1.jpeg"
+
 **NRA/USAS-50:**
 <2 number day><3 letter shortened month><Year><Shooter's name><target number>.jpeg
+
 For example:
 "03jan2021Sigmond1.jpeg"
 
@@ -134,22 +134,16 @@ The name should identify the target easily. I prefer to use the shooter's name f
     b. Load File allows you to select a CSV data file to see a graph of shooting performance including score and X Count.
 Remember, these are designed for a single shooter. Please copy and paste data files / folder to another location to isolate them to score only a single shooter.
 
+**If Target Analysis is not working properly:**
 
-**Folder structure**
-Target-Analysis
-├───assets
-├───data
-├───help
-├───images
-│   └───output
-└───old
+Click File -> Settings to open the settigs menu.
 
-**assets** - do not touch
-**data** - contains output CSV files. Clear them manually by deleting them, or by using File -> Clear Data inside the software
-**help** - contains some documentation
-**images** - put targets that need to be scored here
-**output** - do not touch, files inside are automatically overwritten
-**old** - contains older versions of this software that have been superseded by the current version. I do not reccomend using them ;-)
+Then, ensure that the DPI setting matches your scanner's selected DPI.
+The 300dpi setting is active by default.
+
+Test Target Analysis again. If it still doesn't work, open settings and select the tab corresponding with the targets that you are scanning (either NRA A-17 or NRA/USAS-50). Then, tune the settings shown and retry the software after each change.
+
+If you are unsure what settings to change or cannot make Target Analysis work properly, please email Sigmond at picoplanetdev@gmail.com or skukla61@mtlstudents.net, making sure to include screenshots of the issue.
 
 ### Folder structure
 ```Target-Analysis
@@ -162,8 +156,13 @@ Target-Analysis
 ```
 
 **assets** - do not touch
+
 **data** - contains output CSV files. Clear them manually by deleting them, or by using File -> Clear Data inside the software
+
 **help** - contains some documentation
+
 **images** - put targets that need to be scored here
+
 **output** - do not touch, files inside are automatically overwritten
+
 **old** - contains older versions of this software that have been superseded by the current version. I do not reccomend using them ;-)
