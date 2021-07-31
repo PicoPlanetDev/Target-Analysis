@@ -145,6 +145,26 @@ Test Target Analysis again. If it still doesn't work, open settings and select t
 
 If you are unsure what settings to change or cannot make Target Analysis work properly, please email Sigmond at picoplanetdev@gmail.com or skukla61@mtlstudents.net, making sure to include screenshots of the issue.
 
+**Tuning overview**
+
+To tune the target analysis software, open the settings menu by pressing File -> Settings.
+Then, select the tab that corresponds with the target that you are trying to tune (NRA A-17 or NRA/USAS-50).
+
+Settings with the DPI 1 notation correspond with the 300dpi scanner setting. Settings with the DPI 2 notation correspond with the 600dpi setting. These are not linked, but I reccomend only changing settings that correspond with your active DPI (at the top of the settings menu).
+
+**These settings affect the ring detection on each bull**
+- Kernel Size: Affects the blur kernel used on the grayscale bull image to smooth it and remove some high-frequency noise. Higher values result in a stronger blur. Because the blur kernel is 2D, this value is passed for both kernel dimensions.
+- Param 1: Affects the sensitivity of the Hough Circles detector. Higher values result in stronger edges being detected. If this is set too high, no circles will be detected. If it is set too low, more circles will be detected including false cicles. Aim for only one circle to be detected when tuning this parameter. See this StackExchange answer for more details: https://dsp.stackexchange.com/a/22649
+- Param 2: Affects the number of points that must be detected on one circle for it to be used. Higher values result in stronger circles being detected. If this is set too high, no circles will be detected. If it is set too low, more circles will be detected including false cicles. Aim for only one circle to be detected when tuning this parameter. See this StackExchange answer for more details: https://dsp.stackexchange.com/a/22649
+- Min Circle Radius: Any circles detected by Hough Circles will be discarded if they are smaller than this radius.
+**These settings affect the bullet hole detection**
+- Thresh Min: The bullet hole detection system applies a threshold to the image, making it black if below this value or white if above this value and below the max value. This is to make contours more apparent to the contour detector. Range from 0 to 255.
+- Thresh Max: This is the max value that the threshold uses. Not reccomended to change this.
+- Morphology Opening Kernel Size: An opening morphology filter is applied to the black and white image to reduce noise. This process erodes the image (making white areas smaller), then dilates the image (making white areas larger). Small dots of noise are removed in the erosion and never appear in the dilation, but larger areas remain unchanged by the filter. This kernal size affects the number of pixels that are counted when performing these operations. Similar to the blur kernal size, this value is applied to both axes.
+- Min cnt area: This defines the minimum area of a detected contour for it to be kept.
+- Max cnt area: This defines the maximum area of a detected contour for it to be kept.
+- Max hole radius: If a contour is detected, and it passes the min/max area filter, and its size is smaller than this radius, it is counted as a bullet hole and scored.
+
 ### Folder structure
 ```Target-Analysis
 ├───assets
@@ -155,14 +175,22 @@ If you are unsure what settings to change or cannot make Target Analysis work pr
 └───old
 ```
 
-**assets** - do not touch
+**assets** - Do not edit.
 
-**data** - contains output CSV files. Clear them manually by deleting them, or by using File -> Clear Data inside the software
+**data** - Contains output CSV files. Clear them manually by deleting them, or by using File -> Clear Data inside the software. Files in this folder may be opened in a program such as Excel or Calc. Files in this folder may be copied to another folder to preserve them for future reference.
 
-**help** - contains some documentation
+**help** - Contains documentation files. Not reccomended to edit anything in this folder, although files in this folder may be manually opened in a programs such as Notepad (TXT) or Photos (PNG).
 
-**images** - put targets that need to be scored here
+**images** - Put targets that need to be scored here. You can set this as your default scanning directory so that the scanner automatically sends them here.
 
-**output** - do not touch, files inside are automatically overwritten
+**images/output** - Do not edit while Target Analysis is running, files inside are automatically overwritten every time a target is scored. Files in this folder may be viewed for debugging or scrutiny. Files in this folder may be copied to another folder to preserve them for future reference.
 
-**old** - contains older versions of this software that have been superseded by the current version. I do not reccomend using them ;-)
+**old** - Contains older versions of this software that have been superseded by the current version. I do not reccomend using them
+
+### Developer's note
+
+This is getting to be a pretty long readme, so I guess it's best to cut it short here.
+I really enjoyed developing Target Analysis (gotta think of a better name maybe) and hope that it can be of use to someone. If you have anything that you would like to see in the software, please let me know. Also, I would appreciate it if you sent me any bugs or issues that you have found. I would be happy to help sort them out.
+
+Thanks for using Target Analysis!
+Sigmond
