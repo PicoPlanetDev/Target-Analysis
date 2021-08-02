@@ -29,30 +29,27 @@ Future people: Is COVID over yet?
 
 ### Measurements
 
-Documentation - Measurements
-
 *Disclaimer: This might not actually be what these rings are called... I'm just going off of what I used in the code.
 
 Measurements are from *NRA Smallbore Rifle Rules* January 2010 booklet.
 
-Measurements used in the target analysis system (radius):
-NRA A-17 target:
-Outer ring   - 46.150 millimeters
-Five ring    - 37.670 millimeters
-Six ring     - 29.210 millimeters
-Seven ring   - 20.750 millimeters
-Eight ring   - 12.270 millimeters
-Nine ring    - 3.810 millimeters
+**NRA A-17 target:**
+- Outer ring   - 46.150 millimeters radius
+- Five ring    - 37.670 millimeters radius
+- Six ring     - 29.210 millimeters radius
+- Seven ring   - 20.750 millimeters radius
+- Eight ring   - 12.270 millimeters radius
+- Nine ring    - 3.810 millimeters radius
 
-NRA/USAS-50 target:
-outer (three) = 33.38
-four = 28.5
-five = 23.63
-six = 18.75
-seven = 13.87
-eight = 9
-nine = 4.12
-ten = 0.76
+**NRA/USAS-50 target:**
+- outer (three) = 33.38 millimeters radius
+- four = 28.5 millimeters radius
+- five = 23.63 millimeters radius
+- six = 18.75 millimeters radius
+- seven = 13.87 millimeters radius
+- eight = 9 millimeters radius
+- nine = 4.12 millimeters radius
+- ten = 0.76 millimeters radius
 
 Inner scoring spindle on scoring gauge uses radius 2.8 millimeters (equivalent to ⌀5.6mm)
 Outer scoring spindle uses radius 4.5 millimeters (equivalent to ⌀9mm)
@@ -74,6 +71,8 @@ You can do this automatically by running the **install_dependencies.bat** file i
 
 ### Scanning
 
+#### NRA A-17 target scanning
+
 For a normal-sized scanner glass, two scans must be used for a standard NRA A-17 target.
 
 1. Place the target on the scanner glass with the top left of the back of the target pressed firmly into the back right corner of the glass.
@@ -88,24 +87,28 @@ For example:
 
 ![Scanning Diagram](https://github.com/PicoPlanetDev/Target-Analysis/blob/main/help/scanner-digital.png?raw=true)
 
+#### Orion NRA/USAS-50 target scanning
+
 For an Orion Scoring System NRA/USAS-50 target, only one scan is necessary. 
 Make sure that the corner of the target with the barcode is aligned to the front-right corner of the scanner.
 
 ### Usage
 
-To score a target:
-1. Select a target type by clicking one of the tabs on the main screen: NRA A-17 or NRA/USAS-50. The NRA/USAS-50 is optimized for scoring an ORION target.
+**To score a target:**
+1. Select a target type by clicking one of the tabs on the main screen: **NRA A-17** or **NRA/USAS-50**. The NRA/USAS-50 is optimized for scoring an ORION target.
 2. Click Select Image or Open Folder. If you are scanning an NRA A-17 target, please select an image for both sides of the target.
 3. Click Analyze Target. Hit any key on the keyboard or click the [X] in the top right to see the next bull. The bulls are displayed in clockwise order, starting with the top-middle bull. The sighter bull(s) in the center are omitted.
-4. a. Click File -> Show Output (as long as you scored a single target as opposed to using Open Folder) to see the score.
-   b. Click File -> Show in Explorer, then open the data directory, then open data.csv to view scores for targets analyzed using Open Folder.
+4.
+    1. Click File -> Show Output (as long as you scored a single target as opposed to using Open Folder) to see the score.
+    2. Click File -> Show in Explorer, then open the data directory, then open data.csv to view scores for targets analyzed using Open Folder.
 
+Data for each target is stored in the /data folder named as follows:
 
-Data from the analysis is stored in the data folder as 
+`data-[Name][Day][Month][Year][Target number].csv`
 
-data-[Name][Day][Month][Year][Target number].csv
+#### To set the date, name, and target number
 
-If "Use info from file" is selected, the program will automatically update the date and target number. This will overwrite all data and target number information in the box already. If the file is not named correctly, or you would like to use a different date or target number, make sure to deselect this option.
+If "Use info from file" is selected, the program will automatically update the date and target number (and also the name for NRA/USAS-50 targets).
 
 For this to work, you must name the target files as such:
 
@@ -121,20 +124,24 @@ For example:
 For example:
 "03jan2021Sigmond1.jpeg"
 
-You can click [Use Today] to set today's date and use target #1. The target number allows you to score multiple targets from the same person on the same day.
+If you choose not to name your files before importing them into the Target Analysis software, you will need to manually type in a name, date, and target number:
+
+You can click <kbd>Use Today</kbd> to set today's date and use target #1. The target number allows you to score multiple targets from the same person on the same day.
+
 You can also simply type in a month, day, year, target number, and name.
-When using either option, please make sure to disable "Use info from file" in this scenario.
 
-The name should identify the target easily. I prefer to use the shooter's name for this. It is preferable to make the name one word only (Sigmond or SigmondKukla for example) to avoid problems related to the path of files that use this name.
+When using either option, **please make sure to disable "Use info from file" in this scenario.**
 
-**To show identified trends for a single shooter across a range of dates:**
+The name should identify the target easily. I prefer to use the shooter's name for this. It is important to make the name one word only (Sigmond or SigmondKukla for example) to avoid problems related to the system path of files that use this name.
+
+#### To show identified trends for a single shooter across a range of dates:
 1. Click File -> Show Trends.
 2. Select Load Folder or Load File, depending on what trend you would like to see:
     a. Load Folder allows you to open the data folder (or another folder with output files in it) to see which bull has the lowest score on average versus the highest score.
     b. Load File allows you to select a CSV data file to see a graph of shooting performance including score and X Count.
 Remember, these are designed for a single shooter. Please copy and paste data files / folder to another location to isolate them to score only a single shooter.
 
-**If Target Analysis is not working properly:**
+### If Target Analysis is not working properly:
 
 Click File -> Settings to open the settigs menu.
 
