@@ -150,7 +150,9 @@ If you are unsure what settings to change or cannot make Target Analysis work pr
 To tune the target analysis software, open the settings menu by pressing File -> Settings.
 Then, select the tab that corresponds with the target that you are trying to tune (NRA A-17 or NRA/USAS-50).
 
-Settings with the DPI 1 notation correspond with the 300dpi scanner setting. Settings with the DPI 2 notation correspond with the 600dpi setting. These are not linked, but I reccomend only changing settings that correspond with your active DPI (at the top of the settings menu).
+Settings with the DPI 1 notation correspond with the 300dpi scanner setting. Settings with the DPI 2 notation correspond with the 600dpi setting. These are not linked, but I reccomend only changing settings that correspond with your active DPI (at the top of the settings menu). 
+
+Please note that there was not a noticeable accuracy increase when using the 600dpi mode for NRA A-17 targets, so if that mode is enabled, targets will automatically be scaled in accordance with a 300dpi resolution. Using an unecessarily high DPI results in slower target processing with more CPU cost, therefore, it is discouraged. NRA/USAS-50 targets *do* score more accurately when using the 600dpi mode due to their smaller size. Therefore, the 600dpi mode is present in the analysis algorithm for NRA/USAS-50 targets. If your scanner supports 600dpi, I encourage you to take advantage of it for NRA/USAS-50 targets.
 
 **These settings affect the ring detection on each bull**
 - Kernel Size: Affects the blur kernel used on the grayscale bull image to smooth it and remove some high-frequency noise. Higher values result in a stronger blur. Because the blur kernel is 2D, this value is passed for both kernel dimensions.
