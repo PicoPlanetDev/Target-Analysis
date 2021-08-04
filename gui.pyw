@@ -20,12 +20,9 @@
 
 #region Import libraries
 from tkinter.constants import BOTH, BOTTOM, CENTER, DISABLED, EW, FLAT, HORIZONTAL, LEFT, NORMAL, NSEW, RIDGE, RIGHT, S, SOLID, SUNKEN, TOP, X
-from typing_extensions import IntVar
 import cv2
 import tkinter as tk
 from tkinter import StringVar, ttk
-from cv2 import data
-from numpy.core.numeric import count_nonzero
 from ttkthemes import ThemedTk
 from tkinter import Frame, filedialog
 from PIL import ImageTk,Image
@@ -34,7 +31,6 @@ import csv
 import numpy as np
 import math
 import datetime
-from numpy.core.fromnumeric import var
 import matplotlib.pyplot as plt
 import matplotlib
 from configparser import ConfigParser
