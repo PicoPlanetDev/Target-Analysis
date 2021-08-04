@@ -16,9 +16,20 @@ Please see [LICENSE.md](https://github.com/PicoPlanetDev/Target-Analysis/blob/ma
 ![Excel Spreadsheet](https://github.com/PicoPlanetDev/Target-Analysis/blob/main/help/accuracy-vs-hand-scored.png?raw=true)
 
 ## Installation
-1. Double click to run ```install_dependencies.bat```
-2. Double click to run ```gui.pyw``` to run the analysis software.
-3. The images folder includes two scanned targets to test functionality. Run the software (see the Usage section) and click Show Output, ensuring that a score of 94-4X is displayed.
+**Bundled installation (reccomended)**
+1. Download the *TargetAnalysis.zip* file on [this page](https://github.com/PicoPlanetDev/Target-Analysis/releases) and extract it to a memorable location.
+2. Open the TargetAnalysis folder and double click to run **gui.exe**
+
+**Source installation**
+1. On [this page](https://github.com/PicoPlanetDev/Target-Analysis), click the download code button <kbd>⇩ Code ▼</kbd> and select *Download Zip*
+2. Save the Zip file to a memorable location and extract it.
+3. Open the Target-Analysis-main folder (depending on your system, you might have to open it twice), then
+3. Double click to run ```install_dependencies.bat```
+4. Double click to run ```gui.pyw``` to run the analysis software.
+
+**Testing**
+
+The images folder includes two scanned targets to test functionality. Run the software (see the Usage section) and click Show Output, ensuring that a score of 94-4X is displayed.
 
 ## Documentation
 ### Information
@@ -59,8 +70,13 @@ The target analysis system uses Hough Circles to identify a large circle in the 
 
 ### Requirements
 
-Python 3 and the following Python packages must be installed:
+**If you installed Target Analysis using the bundled installation:**
 
+Nothing else is necessary. You should be able to simply open **gui.exe**
+
+**If you installed Target Analysis manually:**
+
+Python 3 and the following Python packages must be installed:
 - opencv-python
 - pillow
 - numpy
