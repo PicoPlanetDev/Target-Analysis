@@ -54,7 +54,7 @@ def loadImageLeft():
 
     label.config(text="Right image loaded")
 
-    root.geometry("500x500")
+    root.geometry("520x530")
 
     cropLeft(leftImage)
 
@@ -76,7 +76,7 @@ def loadImageRight():
 
     label.config(text="Left image loaded")
 
-    root.geometry("500x500")
+    root.geometry("520x530")
 
     cropRight(rightImage)
 
@@ -985,6 +985,7 @@ def openSettings():
         config = ConfigParser()
         config.read('config.ini')
         config.set('settings', 'dpi', str(dpiVar.get()))
+        config.set('settings', 'darkMode', str(darkModeVar.get()))
 
         config.set('orion', 'orionKernelSizeDpi1', str(orionKernelSizeDpi1.get()))
         config.set('orion', 'orionKernelSizeDpi2', str(orionKernelSizeDpi2.get()))
@@ -1033,7 +1034,7 @@ def openSettings():
     settingsWindow = tk.Toplevel(root)
     settingsWindow.title("Target Analysis")
     settingsWindow.minsize(width=400, height=750)
-    settingsWindow.geometry("400x750")
+    settingsWindow.geometry("400x800")
     settingsWindow.iconbitmap("assets/icon.ico")
     #endregion
 
@@ -1087,6 +1088,10 @@ def openSettings():
     dpiButton300.grid(row=1, column=0)
     dpiButton600 = ttk.Radiobutton(settingsDpiFrame, text="600 dpi scanner", variable=dpiVar, value=2)
     dpiButton600.grid(row=1, column=1)
+
+    global darkModeVar
+    darkModeCheckbutton = ttk.Checkbutton(settingsDpiFrame, text='Use dark theme', style='Switch.TCheckbutton', variable=darkModeVar, onvalue=True, offvalue=False, command=switchDarkMode)
+    darkModeCheckbutton.grid(column=0, row=2)
     #endregion
 
     #region Create NRA A-17 widgets
@@ -1231,12 +1236,21 @@ def openSettings():
 
     settingsWindow.protocol("WM_DELETE_WINDOW", onCloseSettings)
 
+# Enables/Disables dark theme UI based on darkMode boolean variable state
+def switchDarkMode():
+        if darkModeVar.get() == True:
+            root.tk.call("set_theme", "dark")
+        else:
+            root.tk.call("set_theme", "light")
+
 # Read settings from config file and apply them to the necessary tk vars
 def updateSettingsFromConfigFile(file):
     config = ConfigParser()
 
     config.read(file)
     dpiVar.set(config.getint("settings", "dpi"))
+    darkModeVar.set(config.getboolean("settings", "darkMode"))
+    switchDarkMode()
 
     orionKernelSizeDpi1.set(config.getint("orion", "orionKernelSizeDpi1"))
     orionKernelSizeDpi2.set(config.getint("orion", "orionKernelSizeDpi2"))
@@ -1275,6 +1289,7 @@ def saveSettingsToConfigFile(file):
     config.read(file)
     config.add_section('settings')
     config.set('settings', 'dpi', str(dpiVar.get()))
+    config.set('settings', 'darkMode', str(darkModeVar.get()))
 
     config.add_section('orion')
     config.set('orion', 'orionKernelSizeDpi1', str(orionKernelSizeDpi1.get()))
@@ -1879,17 +1894,24 @@ def analyzeOrionImage(image):
     cv2.imwrite(image + "-output.jpg", output)
 
 #region Initialize tkinter
-#root = tk.Tk()
-root = ThemedTk(theme="breeze")
-root.minsize(500,300)
-root.geometry("500x300")
+root = tk.Tk()
+# Set the initial theme
+root.tk.call("source", "assets/sun-valley/sun-valley.tcl")
+#root.tk.call("source", "azure.tcl")
+#ttk.Style().theme_use('azure')
+root.tk.call("set_theme", "light")
+#root = ThemedTk(theme="breeze")
+root.minsize(520,400)
+root.geometry("520x400")
 root.iconbitmap("assets/icon.ico")
 root.title("Target Analysis")
+
 #endregion
 
 #region Global variables
 # DPI is consistent across all targets that would be scanned. Therefore, it only needs to be set once for all of them.
 dpiVar = tk.IntVar(root, 1)
+darkModeVar = tk.BooleanVar(root, False)
 
 #region While many similar parameters exist for non-Orion targets, each has been tuned for its use case and therefore are unique to Orion scanning.
 orionKernelSizeDpi1 = tk.IntVar(root, 2)
@@ -1974,7 +1996,7 @@ topFrame = ttk.Frame(root)
 topFrame.pack(fill=X)
 
 optionsFrame = ttk.Frame(root)
-optionsFrame.pack(side=tk.TOP, pady=10)
+optionsFrame.pack(side=tk.TOP, padx=7.5, pady=7.5)
 
 # TTK Notebook allows for a tabbed view
 tabControl = ttk.Notebook(root)
@@ -1985,7 +2007,7 @@ tab2orion = ttk.Frame(tabControl)
 tabControl.add(tab1indoor, text ='NRA A-17')
 tabControl.add(tab2orion, text ='NRA/USAS-50')
 
-tabControl.pack(side=tk.TOP)
+tabControl.pack(side=tk.TOP, fill=BOTH, padx=10, pady=10)
 
 # Buttons frames are a child of the tabs
 buttonsFrame = ttk.Frame(tab1indoor)
@@ -2015,36 +2037,38 @@ labelSeparator.pack(side=TOP, fill=X)
 monthVar = tk.StringVar()
 monthVar.set("Month")
 monthEntry = ttk.Entry(optionsFrame, textvariable=monthVar, width=10)
-monthEntry.grid(column = 0, row = 0, sticky=NSEW)
+monthEntry.grid(column = 0, row = 0, sticky=NSEW, padx=2.5, pady=5)
 
 dayVar = tk.StringVar()
 dayVar.set("Day")
 dateEntry = ttk.Entry(optionsFrame, textvariable=dayVar, width=5)
-dateEntry.grid(column = 1, row = 0, sticky=NSEW)
+dateEntry.grid(column = 1, row = 0, sticky=NSEW, padx=2.5, pady=5)
 
 yearVar = tk.StringVar()
 yearVar.set("Year")
 yearEntry = ttk.Entry(optionsFrame, textvariable=yearVar, width=5)
-yearEntry.grid(column = 2, row = 0, sticky=NSEW)
+yearEntry.grid(column = 2, row = 0, sticky=NSEW, padx=2.5, pady=5)
 
 targetNumVar = tk.StringVar()
 targetNumVar.set("Num")
 targetNumEntry = ttk.Entry(optionsFrame, textvariable=targetNumVar, width=5)
-targetNumEntry.grid(column = 3, row = 0, sticky=NSEW)
+targetNumEntry.grid(column = 3, row = 0, sticky=NSEW, padx=2.5, pady=5)
 
 # Name goes below
 nameVar = tk.StringVar()
 nameVar.set("Name")
 nameEntry = ttk.Entry(optionsFrame, textvariable=nameVar, width=30)
-nameEntry.grid(column = 0, row = 1, columnspan = 4, sticky=NSEW)
+nameEntry.grid(column = 0, row = 1, columnspan = 4, sticky=NSEW, padx=2.5)
 
 # Today button and use file info checkbox are placed to the right of the name and date
 todayButton = ttk.Button(optionsFrame, text="Use Today", command=setInfoFromToday)
-todayButton.grid(column=4, row=0, rowspan=2, padx=10)
+todayButton.grid(column=4, row=0, rowspan=2, padx=2.5)
 
 useFileInfo = tk.BooleanVar()
 useFileInfo.set(True)
-useFileInfoCheckbutton = ttk.Checkbutton(optionsFrame, text="Use info from file", variable=useFileInfo, onvalue=True, offvalue=False)
+#useFileInfoCheckbutton = ttk.Checkbutton(optionsFrame, text='Use info from file', style='Switch', variable=useFileInfo, onvalue=True, offvalue=False)
+useFileInfoCheckbutton = ttk.Checkbutton(optionsFrame, text='Use info from file', style='Switch.TCheckbutton', variable=useFileInfo, onvalue=True, offvalue=False)
+#useFileInfoCheckbutton = ttk.Checkbutton(optionsFrame, text="Use info from file", variable=useFileInfo, onvalue=True, offvalue=False)
 useFileInfoCheckbutton.grid(column=5, row=0, rowspan=2, padx=5)
 #endregion
 
@@ -2075,10 +2099,10 @@ analyzeOrionTargetButton.grid(row=0, column=2, padx=5, pady=5)
 
 #region Add canvases for NRA A-17 target preview
 leftCanvas = tk.Canvas(bottomFrame, width=230,height=300)
-leftCanvas.grid(row = 0, column = 0)
+leftCanvas.grid(row = 0, column = 0, padx=5, pady=5)
 
 rightCanvas = tk.Canvas(bottomFrame, width=230,height=300)
-rightCanvas.grid(row = 0, column = 1)
+rightCanvas.grid(row = 0, column = 1, padx=5, pady=5)
 #endregion
 
 #region Add a single canvas for Orion NRA/USAS-50 target preview

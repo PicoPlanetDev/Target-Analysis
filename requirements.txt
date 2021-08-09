@@ -2,5 +2,4 @@ opencv-python
 pillow
 numpy
 matplotlib
-ttkthemes
 configparser
