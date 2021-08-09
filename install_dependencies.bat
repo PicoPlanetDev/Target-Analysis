@@ -15,9 +15,4 @@ REM Removing the Python installer
 del "C:\temp\python-3.9.6-amd64.exe"
 
 REM Installing dependencies
-pip install opencv-python --upgrade
-pip install pillow --upgrade
-pip install numpy --upgrade
-pip install matplotlib --upgrade
-pip install ttkthemes --upgrade
-pip install configparser --upgrade
+pip install -r requirements.txt
