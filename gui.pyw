@@ -54,7 +54,7 @@ def loadImageLeft():
 
     label.config(text="Right image loaded")
 
-    root.geometry("520x530")
+    root.geometry("530x530")
 
     cropLeft(leftImage)
 
@@ -76,7 +76,7 @@ def loadImageRight():
 
     label.config(text="Left image loaded")
 
-    root.geometry("520x530")
+    root.geometry("530x530")
 
     cropRight(rightImage)
 
@@ -1901,8 +1901,8 @@ root.tk.call("source", "assets/sun-valley/sun-valley.tcl")
 #ttk.Style().theme_use('azure')
 root.tk.call("set_theme", "light")
 #root = ThemedTk(theme="breeze")
-root.minsize(520,400)
-root.geometry("520x400")
+root.minsize(530,400)
+root.geometry("530x400")
 root.iconbitmap("assets/icon.ico")
 root.title("Target Analysis")
 
