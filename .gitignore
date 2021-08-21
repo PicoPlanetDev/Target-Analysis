@@ -142,6 +142,11 @@ images/*
 !images/03jan2021left1.jpeg
 !images/03jan2021right1.jpeg
 
+!images/03jan2021left1600dpi.jpeg
+!images/03jan2021right1600dpi.jpeg
+!26jan2021300dpi1.jpeg
+!26jan2021600dpi1.jpeg
+
 # exclude all data
 data/*
 
@@ -153,3 +158,6 @@ data/*
 
 # exclude config files
 config.ini
+
+# keep spec
+!gui.spec
