@@ -212,6 +212,17 @@ Please note that there was not a noticeable accuracy increase when using the 600
 
 **old** - Contains older versions of this software that have been superseded by the current version. I do not reccomend using them
 
+### Building to an EXE
+Using pyinstaller, an EXE file can be built for distribution. If you only intend to use Target Analysis, this is not necessary. See **Installation** for more details.
+
+This step-by-step is designed for advanced user:
+1. Clone or Download the Target Analysis code
+2. `cd` into the code directory, or open a terminal there
+3. Use `pyi-makespec gui.pyw` to create a SPEC file to customize.
+4. Edit the SPEC file to include every file in the target-analysis directory and all subdirectories as a tuple in datas=[] (not every file is required, but to avoid errors, include every file)
+5. Use `pyinstaller gui.spec` to create the EXE
+6. Zip the entire folder that the EXE is inside of and share it.
+
 ### Developer's note
 
 This is getting to be a pretty long readme, so I guess it's best to cut it short here.
