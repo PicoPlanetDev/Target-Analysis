@@ -1013,7 +1013,6 @@ def openSettings():
         config.set('orion', 'orionMinContourAreaDpi2', str(orionMinContourAreaDpi2.get()))
         config.set('orion', 'orionMaxContourAreaDpi1', str(orionMaxContourAreaDpi1.get()))
         config.set('orion', 'orionMaxContourAreaDpi2', str(orionMaxContourAreaDpi2.get()))
-        config.set('orion', 'orionMaxContourAreaDpi2', str(orionmaxHoleRadiusDpi2.get()))
         config.set('orion', 'orionmaxHoleRadiusDpi1', str(orionmaxHoleRadiusDpi1.get()))
         config.set('orion', 'orionmaxHoleRadiusDpi2', str(orionmaxHoleRadiusDpi2.get()))
 
