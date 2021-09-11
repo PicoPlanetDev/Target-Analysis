@@ -54,7 +54,7 @@ def loadImageLeft():
 
     label.config(text="Right image loaded")
 
-    root.geometry("530x530")
+    root.geometry("550x540")
 
     cropLeft(leftImage)
 
@@ -76,7 +76,7 @@ def loadImageRight():
 
     label.config(text="Left image loaded")
 
-    root.geometry("530x530")
+    root.geometry("550x540")
 
     cropRight(rightImage)
 
@@ -109,7 +109,7 @@ def loadImageOrion():
 
     label.config(text="Orion single image loaded")
 
-    root.geometry("500x500")
+    root.geometry("550x540")
 
     cropOrion(singleImage)
 
@@ -140,54 +140,55 @@ def cropOrion(image):
     label.config(text="Cropping Orion image...")
     checkOutputDir()
 
-    h=400 * dpiVar.get()
-    w=400 * dpiVar.get()
+    # Height and width are set once and used for all bulls
+    h=int((400/3507)*image.shape[0])
+    w=int((400/2550)*image.shape[1])
 
-    y=425 * dpiVar.get()
-    x=1070 * dpiVar.get()
+    y=int((425/3507)*image.shape[0])
+    x=int((1070/2550)*image.shape[1])
     crop1 = image[y:y+h, x:x+w]
 
-    y=425 * dpiVar.get()
-    x=1920 * dpiVar.get()
+    y=int((425/3507)*image.shape[0])
+    x=int((1920/2550)*image.shape[1])
     crop2 = image[y:y+h, x:x+w]
 
-    y=1175 * dpiVar.get()
-    x=1920 * dpiVar.get()
+    y=int((1175/3507)*image.shape[0])
+    x=int((1920/2550)*image.shape[1])
 
     crop3 = image[y:y+h, x:x+w]
 
-    y=1925 * dpiVar.get()
-    x=1920 * dpiVar.get()
+    y=int((1925/3507)*image.shape[0])
+    x=int((1920/2550)*image.shape[1])
 
     crop4 = image[y:y+h, x:x+w]
 
-    y=2680 * dpiVar.get()
-    x=1920 * dpiVar.get()
+    y=int((2680/3507)*image.shape[0])
+    x=int((1920/2550)*image.shape[1])
 
     crop5 = image[y:y+h, x:x+w]
 
-    y=2680 * dpiVar.get()
-    x=1070 * dpiVar.get()
+    y=int((2680/3507)*image.shape[0])
+    x=int((1070/2550)*image.shape[1])
 
     crop6 = image[y:y+h, x:x+w]
 
-    y=420 * dpiVar.get()
-    x=225 * dpiVar.get()
+    y=int((420/3507)*image.shape[0])
+    x=int((225/2550)*image.shape[1])
 
     crop7 = image[y:y+h, x:x+w]
 
-    y=1175 * dpiVar.get()
-    x=225 * dpiVar.get()
+    y=int((1175/3507)*image.shape[0])
+    x=int((225/2550)*image.shape[1])
 
     crop8 = image[y:y+h, x:x+w]
 
-    y=1925 * dpiVar.get()
-    x=225 * dpiVar.get()
+    y=int((1925/3507)*image.shape[0])
+    x=int((225/2550)*image.shape[1])
 
     crop9 = image[y:y+h, x:x+w]
 
-    y=2680 * dpiVar.get()
-    x=225 * dpiVar.get()
+    y=int((2680/3507)*image.shape[0])
+    x=int((225/2550)*image.shape[1])
 
     crop10 = image[y:y+h, x:x+w]
 
@@ -366,44 +367,44 @@ def cropRight(image):
     checkOutputDir()
 
     #region Crop the image
-    if dpiVar.get() == 2:
-        dsize = (2550, 3507)
-        image = cv2.resize(image, dsize, interpolation = cv2.INTER_LINEAR)
+    # if dpiVar.get() == 2:
+    #     dsize = (2550, 3507)
+    #     image = cv2.resize(image, dsize, interpolation = cv2.INTER_LINEAR)
 
-    y=275
-    x=720
-    h=580
-    w=580
+    y=int((275/3507)*image.shape[0])
+    x=int((720/2550)*image.shape[1])
+    h=int((580/3507)*image.shape[0])
+    w=int((580/2550)*image.shape[1])
     crop1 = image[y:y+h, x:x+w]
 
-    y=275
-    x=1760
-    h=580
-    w=580
+    y=int((275/3507)*image.shape[0])
+    x=int((1760/2550)*image.shape[1])
+    h=int((580/3507)*image.shape[0])
+    w=int((580/2550)*image.shape[1])
     crop2 = image[y:y+h, x:x+w]
 
-    y=1070
-    x=1760
-    h=580
-    w=580
+    y=int((1070/3507)*image.shape[0])
+    x=int((1760/2550)*image.shape[1])
+    h=int((580/3507)*image.shape[0])
+    w=int((580/2550)*image.shape[1])
     crop3 = image[y:y+h, x:x+w]
 
-    y=1880
-    x=1760
-    h=580
-    w=580
+    y=int((1880/3507)*image.shape[0])
+    x=int((1760/2550)*image.shape[1])
+    h=int((580/3507)*image.shape[0])
+    w=int((580/2550)*image.shape[1])
     crop4 = image[y:y+h, x:x+w]
 
-    y=2680
-    x=1760
-    h=580
-    w=580
+    y=int((2680/3507)*image.shape[0])
+    x=int((1760/2550)*image.shape[1])
+    h=int((580/3507)*image.shape[0])
+    w=int((580/2550)*image.shape[1])
     crop5 = image[y:y+h, x:x+w]
 
-    y=2680
-    x=720
-    h=580
-    w=580
+    y=int((2680/3507)*image.shape[0])
+    x=int((720/2550)*image.shape[1])
+    h=int((580/3507)*image.shape[0])
+    w=int((580/2550)*image.shape[1])
     crop6 = image[y:y+h, x:x+w]
     #endregion
 
@@ -450,32 +451,32 @@ def cropLeft(image):
     cv2.imwrite("images/output/vertical-flipped.jpg", verticalFlippedImage)
 
     #region Crop each image
-    if dpiVar.get() == 2:
-        dsize = (2550, 3507)
-        verticalFlippedImage = cv2.resize(verticalFlippedImage, dsize, interpolation = cv2.INTER_LINEAR)
+    # if dpiVar.get() == 2:
+    #     dsize = (2550, 3507)
+    #     verticalFlippedImage = cv2.resize(verticalFlippedImage, dsize, interpolation = cv2.INTER_LINEAR)
 
-    y=240
-    x=185
-    h=580
-    w=580
+    y=int((240/3507)*image.shape[0])
+    x=int((185/2550)*image.shape[1])
+    h=int((580/3507)*image.shape[0])
+    w=int((580/2550)*image.shape[1])
     crop2 = verticalFlippedImage[y:y+h, x:x+w]
 
-    y=1040
-    x=185
-    h=580
-    w=580
+    y=int((1040/3507)*image.shape[0])
+    x=int((185/2550)*image.shape[1])
+    h=int((580/3507)*image.shape[0])
+    w=int((580/2550)*image.shape[1])
     crop3 = verticalFlippedImage[y:y+h, x:x+w]
 
-    y=1840
-    x=185
-    h=580
-    w=580
+    y=int((1840/3507)*image.shape[0])
+    x=int((185/2550)*image.shape[1])
+    h=int((580/3507)*image.shape[0])
+    w=int((580/2550)*image.shape[1])
     crop4 = verticalFlippedImage[y:y+h, x:x+w]
 
-    y=2645
-    x=185
-    h=580
-    w=580
+    y=int((2645/3507)*image.shape[0])
+    x=int((185/2550)*image.shape[1])
+    h=int((580/3507)*image.shape[0])
+    w=int((580/2550)*image.shape[1])
     crop5 = verticalFlippedImage[y:y+h, x:x+w]
     #endregion
 
@@ -559,7 +560,8 @@ def analyzeTarget():
     # Make sure to count which entry this is! Starts at ZERO not one.
     filemenu.entryconfigure(1, state=NORMAL)
 
-    #showOutput()
+    if showOutputWhenFinishedVar.get():
+        showOutput()
 
 # Runs the analyzeImage function for every image that has been cropped out
 def analyzeTargetOrion():
@@ -619,7 +621,8 @@ def analyzeTargetOrion():
     # Make sure to count which entry this is! Starts at ZERO not one.
     filemenu.entryconfigure(1, state=NORMAL)
 
-    #showOutput()
+    if showOutputWhenFinishedVar.get():
+        showOutput()
 
 # Shows the results of the program in a separate window and provides buttons for opening CSV files
 def showOutput():
@@ -647,7 +650,7 @@ def showOutput():
     openTargetCSVButton.grid(row=0, column=0)
     outputTopFrame.grid_columnconfigure(0, weight=1)
     
-    scoreLabel = ttk.Label(outputTopFrame, text=str(score) + "-" + str(xCount) + "X")
+    scoreLabel = ttk.Label(outputTopFrame, text=str(score) + "-" + str(xCount) + "X", font='bold')
     scoreLabel.grid(row=0, column=1)
     outputTopFrame.grid_columnconfigure(1, weight=1)
 
@@ -749,6 +752,8 @@ def createCSV():
 
 # Opens and analyzes all files in a folder
 def openFolder():
+    showOutputWhenFinishedBackup = showOutputWhenFinishedVar.get()
+    showOutputWhenFinishedVar.set(False)
     label.config(text="Opening folder")
     folder = filedialog.askdirectory()
     fileNum = 0
@@ -766,9 +771,12 @@ def openFolder():
             if fileNum == 2:
                 analyzeTarget()
                 fileNum = 0
+    showOutputWhenFinishedVar.set(showOutputWhenFinishedBackup)
 
 # Opens and analyzes all files in a folder
 def openFolderOrion():
+    showOutputWhenFinishedBackup = showOutputWhenFinishedVar.get()
+    showOutputWhenFinishedVar.set(False)
     label.config(text="Opening folder")
     folder = filedialog.askdirectory()
     for file in os.listdir(folder):
@@ -779,6 +787,7 @@ def openFolderOrion():
             fileImage = cv2.imread(path)
             cropOrion(fileImage)
             analyzeTargetOrion()
+    showOutputWhenFinishedVar.set(showOutputWhenFinishedBackup)
 
 # Allows viewing of trends from existing data files
 def showTrends():
@@ -986,6 +995,7 @@ def openSettings():
         config.read('config.ini')
         config.set('settings', 'dpi', str(dpiVar.get()))
         config.set('settings', 'darkMode', str(darkModeVar.get()))
+        config.set('settings', 'showOutputWhenFinished', str(showOutputWhenFinishedVar.get()))
 
         config.set('orion', 'orionKernelSizeDpi1', str(orionKernelSizeDpi1.get()))
         config.set('orion', 'orionKernelSizeDpi2', str(orionKernelSizeDpi2.get()))
@@ -1002,6 +1012,7 @@ def openSettings():
         config.set('orion', 'orionMinContourAreaDpi1', str(orionMinContourAreaDpi1.get()))
         config.set('orion', 'orionMinContourAreaDpi2', str(orionMinContourAreaDpi2.get()))
         config.set('orion', 'orionMaxContourAreaDpi1', str(orionMaxContourAreaDpi1.get()))
+        config.set('orion', 'orionMaxContourAreaDpi2', str(orionMaxContourAreaDpi2.get()))
         config.set('orion', 'orionMaxContourAreaDpi2', str(orionmaxHoleRadiusDpi2.get()))
         config.set('orion', 'orionmaxHoleRadiusDpi1', str(orionmaxHoleRadiusDpi1.get()))
         config.set('orion', 'orionmaxHoleRadiusDpi2', str(orionmaxHoleRadiusDpi2.get()))
@@ -1033,8 +1044,8 @@ def openSettings():
     #region Create toplevel window
     settingsWindow = tk.Toplevel(root)
     settingsWindow.title("Target Analysis")
-    settingsWindow.minsize(width=400, height=750)
-    settingsWindow.geometry("400x800")
+    settingsWindow.minsize(width=500, height=620)
+    settingsWindow.geometry("500x620")
     settingsWindow.iconbitmap("assets/icon.ico")
     #endregion
 
@@ -1042,33 +1053,47 @@ def openSettings():
     settingsTopFrame = ttk.Frame(settingsWindow)
     settingsTopFrame.pack(side=TOP, expand=False, pady=5, fill=X)
 
-    settingsDpiFrame = ttk.Frame(settingsWindow)
-    settingsDpiFrame.pack(side=TOP, fill=X)
+    settingsGlobalLabelFrame = ttk.Frame(settingsWindow)
+    settingsGlobalLabelFrame.pack(side=TOP, fill=X)
 
-    dpiSeparator = ttk.Separator(settingsWindow, orient=HORIZONTAL)
-    dpiSeparator.pack(side=TOP, fill=X, pady=5)
+    settingsDpiFrame = ttk.Frame(settingsWindow)
+    settingsDpiFrame.pack(side=TOP, fill=X, padx=5)
+
+    settingsShowOutputFrame = ttk.Frame(settingsWindow)
+    settingsShowOutputFrame.pack(side=TOP, fill=X, padx=5)
+
+    settingsDarkModeFrame = ttk.Frame(settingsWindow)
+    settingsDarkModeFrame.pack(side=TOP, fill=X, padx=5)
+
+    settingsGlobalSeparator = ttk.Separator(settingsWindow, orient=HORIZONTAL)
+    settingsGlobalSeparator.pack(side=TOP, fill=X, pady=5)
 
     settingsBottomFrame = ttk.Frame(settingsWindow)
-    settingsBottomFrame.pack(side=TOP, expand=True, fill=BOTH)
+    settingsBottomFrame.pack(side=TOP, fill=X)
+
+    settingsButtonsFrame = ttk.Frame(settingsWindow)
+    settingsButtonsFrame.pack(side=BOTTOM, fill=X)
 
     # Notebook allows for a tabbed view
     settingsTabControl = ttk.Notebook(settingsBottomFrame)
 
     settingstab1NRAA17 = ttk.Frame(settingsTabControl)
     settingstab2orion = ttk.Frame(settingsTabControl)
+    settingstab3orionDPI2 = ttk.Frame(settingsTabControl)
 
-    settingsTabControl.add(settingstab1NRAA17, text ='NRA A-17 Settings')
-    settingsTabControl.add(settingstab2orion, text ='NRA/USAS-50 Orion Settings')
+    settingsTabControl.add(settingstab1NRAA17, text ='NRA A-17')
+    settingsTabControl.add(settingstab2orion, text ='NRA/USAS-50 Orion 300dpi')
+    settingsTabControl.add(settingstab3orionDPI2, text ='NRA/USAS-50 Orion 600dpi')
 
-    settingsTabControl.pack(side=tk.TOP, expand=True, fill=BOTH, padx=10, pady=5)
+    settingsTabControl.pack(side=TOP, fill=X, padx=10, pady=5)
 
-    saveSeparator = ttk.Separator(settingsWindow, orient=HORIZONTAL)
+    saveSeparator = ttk.Separator(settingsButtonsFrame, orient=HORIZONTAL)
     saveSeparator.pack(side=TOP, fill=X)
 
-    revertButton = ttk.Button(settingsWindow, text="Revert settings to default", command=revertSettings)
+    revertButton = ttk.Button(settingsButtonsFrame, text="Revert settings to default", command=revertSettings)
     revertButton.pack(side=LEFT, pady=5, padx=5)
 
-    saveButton = ttk.Button(settingsWindow, text="Save Settings", command=updateConfig)
+    saveButton = ttk.Button(settingsButtonsFrame, text="Save Settings", command=updateConfig)
     saveButton.pack(side=RIGHT, pady=5, padx=5)
     #endregion
 
@@ -1078,25 +1103,32 @@ def openSettings():
     settingsLabel2 = ttk.Label(settingsTopFrame, text="⚠️ Change these only if the software does not work properly ⚠️")
     settingsLabel2.pack(side=TOP)
     labelSeparator = ttk.Separator(settingsTopFrame, orient=HORIZONTAL)
-    labelSeparator.pack(side=TOP, fill=X, pady=10)
+    labelSeparator.pack(side=TOP, fill=X, pady=(5, 0))
     #endregion
 
-    #region Create dpi widgets
-    settingsLabel1 = ttk.Label(settingsDpiFrame, text="Global settings", font = 'bold')
-    settingsLabel1.grid(row=0, column=0)
+    #region Create top widgets
+    settingsLabel1 = ttk.Label(settingsGlobalLabelFrame, text="Global settings", font = 'bold')
+    settingsLabel1.pack()
+
     dpiButton300 = ttk.Radiobutton(settingsDpiFrame, text="300 dpi scanner", variable=dpiVar, value=1)
     dpiButton300.grid(row=1, column=0)
     dpiButton600 = ttk.Radiobutton(settingsDpiFrame, text="600 dpi scanner", variable=dpiVar, value=2)
     dpiButton600.grid(row=1, column=1)
 
+    global showOutputWhenFinishedVar
+    showOutputWhenFinishedCheckButtonSettings = ttk.Checkbutton(settingsShowOutputFrame, text='Show output when finished', style='Switch.TCheckbutton', variable=showOutputWhenFinishedVar, onvalue=True, offvalue=False)
+    showOutputWhenFinishedCheckButtonSettings.grid(column=0, row=0)
+
     global darkModeVar
-    darkModeCheckbutton = ttk.Checkbutton(settingsDpiFrame, text='Use dark theme', style='Switch.TCheckbutton', variable=darkModeVar, onvalue=True, offvalue=False, command=switchDarkMode)
-    darkModeCheckbutton.grid(column=0, row=2)
+    darkModeCheckbutton = ttk.Checkbutton(settingsDarkModeFrame, text='Use dark theme', style='Switch.TCheckbutton', variable=darkModeVar, onvalue=True, offvalue=False, command=switchDarkMode)
+    darkModeCheckbutton.grid(column=0, row=0)
     #endregion
 
     #region Create NRA A-17 widgets
     settingsLabel2 = ttk.Label(settingstab1NRAA17, text="NRA A-17 settings" , font='bold')
     settingsLabel2.grid(row=0, column=0, columnspan=2)
+
+    
 
     nraKernalSizeLabel = ttk.Label(settingstab1NRAA17, text="NRA A-17 Kernel Size")
     nraKernalSizeLabel.grid(row=1, column=0)
@@ -1128,7 +1160,7 @@ def openSettings():
     nraThreshMaxEntry = ttk.Entry(settingstab1NRAA17, textvariable=nraThreshMax)
     nraThreshMaxEntry.grid(row=6, column=1)
 
-    nraMorphologyOpeningKernelSizeLabel = ttk.Label(settingstab1NRAA17, text="NRA A-17 Morphology Opening Kernal Size")
+    nraMorphologyOpeningKernelSizeLabel = ttk.Label(settingstab1NRAA17, text="NRA A-17 Morph Kernal Size")
     nraMorphologyOpeningKernelSizeLabel.grid(row=7, column=0)
     nraMorphologyOpeningKernelSizeEntry = ttk.Entry(settingstab1NRAA17, textvariable=nraMorphologyOpeningKernelSize)
     nraMorphologyOpeningKernelSizeEntry.grid(row=7, column=1)
@@ -1150,17 +1182,20 @@ def openSettings():
     #endregion
 
     #region Create Orion widgets
-    settingsLabel1 = ttk.Label(settingstab2orion, text="Orion settings" , font='bold')
+    settingsLabel1 = ttk.Label(settingstab2orion, text="Orion settings (300dpi)" , font='bold')
     settingsLabel1.grid(row=0, column=0, columnspan=2)
+
+    settingsLabelOrion600 = ttk.Label(settingstab3orionDPI2, text="Orion settings (600dpi)" , font='bold')
+    settingsLabelOrion600.grid(row=0, column=0, columnspan=2)
 
     orionKernelSizeDpi1Label = ttk.Label(settingstab2orion, text="Orion Kernel Size dpi 1")
     orionKernelSizeDpi1Label.grid(row=1, column=0)
     orionKernelSizeDpi1Entry = ttk.Entry(settingstab2orion, textvariable=orionKernelSizeDpi1)
     orionKernelSizeDpi1Entry.grid(row=1, column=1)
 
-    orionKernelSizeDpi2Label = ttk.Label(settingstab2orion, text="Orion Kernel Size dpi 2")
+    orionKernelSizeDpi2Label = ttk.Label(settingstab3orionDPI2, text="Orion Kernel Size dpi 2")
     orionKernelSizeDpi2Label.grid(row=2, column=0)
-    orionKernelSizeDpi2Entry = ttk.Entry(settingstab2orion, textvariable=orionKernelSizeDpi2)
+    orionKernelSizeDpi2Entry = ttk.Entry(settingstab3orionDPI2, textvariable=orionKernelSizeDpi2)
     orionKernelSizeDpi2Entry.grid(row=2, column=1)
 
     orionParam1Dpi1Label = ttk.Label(settingstab2orion, text="Orion Param1 dpi 1")
@@ -1173,14 +1208,14 @@ def openSettings():
     orionParam2Dpi1Entry = ttk.Entry(settingstab2orion, textvariable=orionParam2Dpi1)
     orionParam2Dpi1Entry.grid(row=4, column=1)
 
-    orionParam1Dpi2Label = ttk.Label(settingstab2orion, text="Orion Param1 dpi 2")
+    orionParam1Dpi2Label = ttk.Label(settingstab3orionDPI2, text="Orion Param1 dpi 2")
     orionParam1Dpi2Label.grid(row=5, column=0)
-    orionParam1Dpi2Entry = ttk.Entry(settingstab2orion, textvariable=orionParam1Dpi2)
+    orionParam1Dpi2Entry = ttk.Entry(settingstab3orionDPI2, textvariable=orionParam1Dpi2)
     orionParam1Dpi2Entry.grid(row=5, column=1)
 
-    orionParam2Dpi2Label = ttk.Label(settingstab2orion, text="Orion Param2 dpi 2")
+    orionParam2Dpi2Label = ttk.Label(settingstab3orionDPI2, text="Orion Param2 dpi 2")
     orionParam2Dpi2Label.grid(row=6, column=0)
-    orionParam2Dpi2Entry = ttk.Entry(settingstab2orion, textvariable=orionParam2Dpi2)
+    orionParam2Dpi2Entry = ttk.Entry(settingstab3orionDPI2, textvariable=orionParam2Dpi2)
     orionParam2Dpi2Entry.grid(row=6, column=1)
 
     orionMinRadiusDpi1Label = ttk.Label(settingstab2orion, text="Orion MinRadius dpi 1")
@@ -1188,9 +1223,9 @@ def openSettings():
     orionMinRadiusDpi1Entry = ttk.Entry(settingstab2orion, textvariable=orionMinRadiusDpi1)
     orionMinRadiusDpi1Entry.grid(row=7, column=1)
 
-    orionMinRadiusDpi2Label = ttk.Label(settingstab2orion, text="Orion MinRadius dpi 2")
+    orionMinRadiusDpi2Label = ttk.Label(settingstab3orionDPI2, text="Orion MinRadius dpi 2")
     orionMinRadiusDpi2Label.grid(row=8, column=0)
-    orionMinRadiusDpi2Entry = ttk.Entry(settingstab2orion, textvariable=orionMinRadiusDpi2)
+    orionMinRadiusDpi2Entry = ttk.Entry(settingstab3orionDPI2, textvariable=orionMinRadiusDpi2)
     orionMinRadiusDpi2Entry.grid(row=8, column=1)
 
     orionThreshMinLabel = ttk.Label(settingstab2orion, text="Orion thresh min")
@@ -1203,6 +1238,16 @@ def openSettings():
     orionThreshMaxEntry = ttk.Entry(settingstab2orion, textvariable=orionThreshMax)
     orionThreshMaxEntry.grid(row=10, column=1)
 
+    orionThreshMinLabel = ttk.Label(settingstab3orionDPI2, text="Orion thresh min")
+    orionThreshMinLabel.grid(row=9, column=0)
+    orionThreshMinEntry = ttk.Entry(settingstab3orionDPI2, textvariable=orionThreshMin)
+    orionThreshMinEntry.grid(row=9, column=1)
+
+    orionThreshMaxLabel = ttk.Label(settingstab3orionDPI2, text="Orion thresh max")
+    orionThreshMaxLabel.grid(row=10, column=0)
+    orionThreshMaxEntry = ttk.Entry(settingstab3orionDPI2, textvariable=orionThreshMax)
+    orionThreshMaxEntry.grid(row=10, column=1)
+
     orionMinContourAreaDpi1Label = ttk.Label(settingstab2orion, text="Orion min cnt area dpi 1")
     orionMinContourAreaDpi1Label.grid(row=11, column=0)
     orionMinContourAreaDpi1Entry = ttk.Entry(settingstab2orion, textvariable=orionMinContourAreaDpi1)
@@ -1213,14 +1258,14 @@ def openSettings():
     orionMaxContourAreaDpi1Entry = ttk.Entry(settingstab2orion, textvariable=orionMaxContourAreaDpi1)
     orionMaxContourAreaDpi1Entry.grid(row=12, column=1)
 
-    orionMinContourAreaDpi2Label = ttk.Label(settingstab2orion, text="Orion min cnt area dpi 2")
+    orionMinContourAreaDpi2Label = ttk.Label(settingstab3orionDPI2, text="Orion min cnt area dpi 2")
     orionMinContourAreaDpi2Label.grid(row=13, column=0)
-    orionMinContourAreaDpi2Entry = ttk.Entry(settingstab2orion, textvariable=orionMinContourAreaDpi2)
+    orionMinContourAreaDpi2Entry = ttk.Entry(settingstab3orionDPI2, textvariable=orionMinContourAreaDpi2)
     orionMinContourAreaDpi2Entry.grid(row=13, column=1)
 
-    orionMaxContourAreaDpi2Label = ttk.Label(settingstab2orion, text="Orion max cnt area dpi 2")
+    orionMaxContourAreaDpi2Label = ttk.Label(settingstab3orionDPI2, text="Orion max cnt area dpi 2")
     orionMaxContourAreaDpi2Label.grid(row=14, column=0)
-    orionMaxContourAreaDpi2Entry = ttk.Entry(settingstab2orion, textvariable=orionMaxContourAreaDpi2)
+    orionMaxContourAreaDpi2Entry = ttk.Entry(settingstab3orionDPI2, textvariable=orionMaxContourAreaDpi2)
     orionMaxContourAreaDpi2Entry.grid(row=14, column=1)
 
     orionmaxHoleRadiusDpi1Label = ttk.Label(settingstab2orion, text="Orion min hole rad dpi 1")
@@ -1228,9 +1273,9 @@ def openSettings():
     orionmaxHoleRadiusDpi1Entry = ttk.Entry(settingstab2orion, textvariable=orionmaxHoleRadiusDpi1)
     orionmaxHoleRadiusDpi1Entry.grid(row=15, column=1)
 
-    orionmaxHoleRadiusDpi2Label = ttk.Label(settingstab2orion, text="Orion min hole rad dpi 2")
+    orionmaxHoleRadiusDpi2Label = ttk.Label(settingstab3orionDPI2, text="Orion min hole rad dpi 2")
     orionmaxHoleRadiusDpi2Label.grid(row=16, column=0)
-    orionmaxHoleRadiusDpi2Entry = ttk.Entry(settingstab2orion, textvariable=orionmaxHoleRadiusDpi2)
+    orionmaxHoleRadiusDpi2Entry = ttk.Entry(settingstab3orionDPI2, textvariable=orionmaxHoleRadiusDpi2)
     orionmaxHoleRadiusDpi2Entry.grid(row=16, column=1)
     #endregion
 
@@ -1250,6 +1295,7 @@ def updateSettingsFromConfigFile(file):
     config.read(file)
     dpiVar.set(config.getint("settings", "dpi"))
     darkModeVar.set(config.getboolean("settings", "darkMode"))
+    showOutputWhenFinishedVar.set(config.getboolean("settings", "showOutputWhenFinished"))
     switchDarkMode()
 
     orionKernelSizeDpi1.set(config.getint("orion", "orionKernelSizeDpi1"))
@@ -1290,6 +1336,7 @@ def saveSettingsToConfigFile(file):
     config.add_section('settings')
     config.set('settings', 'dpi', str(dpiVar.get()))
     config.set('settings', 'darkMode', str(darkModeVar.get()))
+    config.set('settings', 'showOutputWhenFinished', str(showOutputWhenFinishedVar.get()))
 
     config.add_section('orion')
     config.set('orion', 'orionKernelSizeDpi1', str(orionKernelSizeDpi1.get()))
@@ -1830,7 +1877,7 @@ def analyzeOrionImage(image):
                 maxHoleRadius = orionmaxHoleRadiusDpi1.get()
             if dpiVar.get() == 2:
                 maxHoleRadius = orionmaxHoleRadiusDpi2.get()
-
+            
             if holeRadius < maxHoleRadius:
                 #cv2.circle(output,holeCenter,holeRadius,(0,255,0),2) # Enclosing circle
                 cv2.circle(output, holeCenter, 1, (0, 0, 255), 3) # Dot at the center
@@ -1893,16 +1940,13 @@ def analyzeOrionImage(image):
     cv2.waitKey(0)
     cv2.imwrite(image + "-output.jpg", output)
 
-#region Initialize tkinter
+#region Initialize tkinter window
 root = tk.Tk()
 # Set the initial theme
 root.tk.call("source", "assets/sun-valley/sun-valley.tcl")
-#root.tk.call("source", "azure.tcl")
-#ttk.Style().theme_use('azure')
 root.tk.call("set_theme", "light")
-#root = ThemedTk(theme="breeze")
-root.minsize(530,400)
-root.geometry("530x400")
+root.minsize(550,400)
+root.geometry("550x400")
 root.iconbitmap("assets/icon.ico")
 root.title("Target Analysis")
 
@@ -1912,6 +1956,7 @@ root.title("Target Analysis")
 # DPI is consistent across all targets that would be scanned. Therefore, it only needs to be set once for all of them.
 dpiVar = tk.IntVar(root, 1)
 darkModeVar = tk.BooleanVar(root, False)
+showOutputWhenFinishedVar = tk.BooleanVar(root, True)
 
 #region While many similar parameters exist for non-Orion targets, each has been tuned for its use case and therefore are unique to Orion scanning.
 orionKernelSizeDpi1 = tk.IntVar(root, 2)
