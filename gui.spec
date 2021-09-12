@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(['gui.pyw'],
-             pathex=['D:\\Libraries\\Documents\\GitHub\\Target-Analysis'],
+             pathex=['D:\\Libraries\\Documents\\GitHub\\Target-Analysis - Copy'],
              binaries=[],
              datas=[
                  ("assets/*", "assets"),
@@ -17,7 +17,7 @@ a = Analysis(['gui.pyw'],
                  ("help/*", "help"),
                  ("images/*", "images"),
                  ("images/output/.gitkeep", "images/output"),
-                 ("*", ".")],
+                 ("./*.md", ".")],
              hiddenimports=[],
              hookspath=[],
              hooksconfig={},
