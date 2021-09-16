@@ -560,7 +560,9 @@ def analyzeTarget():
     # Make sure to count which entry this is! Starts at ZERO not one.
     filemenu.entryconfigure(1, state=NORMAL)
 
-    if showOutputWhenFinishedVar.get():
+    if individualOutputTypeVar.get() == "tkinter":
+        openAnalysisWindow()
+    elif showOutputWhenFinishedVar.get():
         showOutput()
 
 # Runs the analyzeImage function for every image that has been cropped out
@@ -621,8 +623,11 @@ def analyzeTargetOrion():
     # Make sure to count which entry this is! Starts at ZERO not one.
     filemenu.entryconfigure(1, state=NORMAL)
 
-    if showOutputWhenFinishedVar.get():
+    if individualOutputTypeVar.get() == "tkinter":
+        openAnalysisWindow()
+    elif showOutputWhenFinishedVar.get():
         showOutput()
+        
 
 # Shows the results of the program in a separate window and provides buttons for opening CSV files
 def showOutput():
@@ -996,6 +1001,7 @@ def openSettings():
         config.set('settings', 'dpi', str(dpiVar.get()))
         config.set('settings', 'darkMode', str(darkModeVar.get()))
         config.set('settings', 'showOutputWhenFinished', str(showOutputWhenFinishedVar.get()))
+        config.set('settings', 'individualOutputType', str(individualOutputTypeVar.get()))
 
         config.set('orion', 'orionKernelSizeDpi1', str(orionKernelSizeDpi1.get()))
         config.set('orion', 'orionKernelSizeDpi2', str(orionKernelSizeDpi2.get()))
@@ -1061,6 +1067,9 @@ def openSettings():
     settingsShowOutputFrame = ttk.Frame(settingsWindow)
     settingsShowOutputFrame.pack(side=TOP, fill=X, padx=5)
 
+    settingsIndivdualOutputFrame = ttk.Frame(settingsWindow)
+    settingsIndivdualOutputFrame.pack(side=TOP, fill=X, padx=5)
+
     settingsDarkModeFrame = ttk.Frame(settingsWindow)
     settingsDarkModeFrame.pack(side=TOP, fill=X, padx=5)
 
@@ -1117,6 +1126,10 @@ def openSettings():
     global showOutputWhenFinishedVar
     showOutputWhenFinishedCheckButtonSettings = ttk.Checkbutton(settingsShowOutputFrame, text='Show output when finished', style='Switch.TCheckbutton', variable=showOutputWhenFinishedVar, onvalue=True, offvalue=False)
     showOutputWhenFinishedCheckButtonSettings.grid(column=0, row=0)
+
+    global individualOutputTypeVar
+    individualOutputTypeCheckButtonSettings = ttk.Checkbutton(settingsIndivdualOutputFrame, text='Use new analysis display', style='Switch.TCheckbutton', variable=individualOutputTypeVar, onvalue="tkinter", offvalue="legacy")
+    individualOutputTypeCheckButtonSettings.grid(column=0, row=0)
 
     global darkModeVar
     darkModeCheckbutton = ttk.Checkbutton(settingsDarkModeFrame, text='Use dark theme', style='Switch.TCheckbutton', variable=darkModeVar, onvalue=True, offvalue=False, command=switchDarkMode)
@@ -1280,6 +1293,121 @@ def openSettings():
 
     settingsWindow.protocol("WM_DELETE_WINDOW", onCloseSettings)
 
+# Show analysis output for each image
+def openAnalysisWindow():
+    def loadImages():
+        global outputImages
+        global outputImageNames
+        outputImages = []
+        outputImageNames = []
+        for file in os.listdir("images/output"):
+            if file.endswith("output.jpg"):
+                outputImages.append(ImageTk.PhotoImage(Image.open("images/output/" + file).resize((600, 600), Image.ANTIALIAS)))
+                outputImageNames.append(file)
+        
+        # Prepare image names lists for use by ordering them in a clockwise fashion, starting with the top middle target image.
+        # Define the correct order for the list
+        clockwiseOrder = {"top-mid.jpg-output.jpg" : 0, 
+                            "top-right.jpg-output.jpg" : 1, 
+                            "upper-right.jpg-output.jpg" : 2, 
+                            "lower-right.jpg-output.jpg" : 3, 
+                            "bottom-right.jpg-output.jpg" : 4, 
+                            "bottom-mid.jpg-output.jpg" : 5,
+                            "bottom-left.jpg-output.jpg" : 6,
+                            "lower-left.jpg-output.jpg" : 7,
+                            "upper-left.jpg-output.jpg" : 8, 
+                            "top-left.jpg-output.jpg" : 9}
+        # Sort the images and image names list by the image names according to the clockwise order
+        sortedZipped = sorted(zip(outputImages, outputImageNames), key=lambda d: clockwiseOrder[d[1]])
+        # Unzip the sorted list into images and image names
+        outputImages = [x for x, y in sortedZipped]
+        outputImageNames = [y for x, y in sortedZipped]
+        # Create friendly names for use in the GUI by removing the file extension and "-output" from the image name,
+        # replacing the hyphens with spaces and capitalizing the first letter of each word.
+        global outputFriendlyNames
+        outputFriendlyNames = [(y.split(".jpg-output.jpg")[0]).replace("-", " ").capitalize() for x, y in sortedZipped]
+
+    def clearCanvas():
+        analysisCanvas.delete("all")
+
+    def showImage(index):
+        analysisCanvas.create_image(0, 0, anchor="nw", image=outputImages[index])
+        analysisTopLabel.config(text=outputFriendlyNames[index])
+
+    def onNextButtonPressed():
+        global imageIndex
+        if imageIndex < len(outputImages) - 1:
+            imageIndex += 1
+            clearCanvas()
+            showImage(imageIndex)
+        updateButtons()
+
+    def onBackButtonPressed():
+        global imageIndex
+        if imageIndex > 0:
+            imageIndex -= 1
+            clearCanvas()
+            showImage(imageIndex)
+        updateButtons()
+
+    def onFinishButtonPressed():
+        analysisWindow.destroy()
+        if showOutputWhenFinishedVar.get():
+            showOutput()
+
+    def updateButtons():
+        if imageIndex == 0:
+            analysisBackButton.config(state=DISABLED)
+        else:
+            analysisBackButton.config(state=NORMAL)
+
+        if imageIndex == len(outputImages)-1:
+            analysisNextButton.config(text="Finish", style="Accent.TButton", command=onFinishButtonPressed)
+        else:
+            analysisNextButton.config(state=NORMAL, text="Next", style="Button.TButton")
+
+    analysisWindow = tk.Toplevel(root)
+    analysisWindow.title("Target Analysis")
+    analysisWindow.minsize(width=600, height=690)
+    analysisWindow.geometry("600x690")
+    analysisWindow.iconbitmap("assets/icon.ico")
+
+    #region Create frames
+    analysisTopFrame = ttk.Frame(analysisWindow)
+    analysisTopFrame.pack(side=TOP, fill=X)
+
+    analysisImagesFrame = ttk.Frame(analysisWindow)
+    analysisImagesFrame.pack(side=TOP, fill=X)
+
+    analysisBottomFrame = ttk.Frame(analysisWindow)
+    analysisBottomFrame.pack(side=BOTTOM, fill=X)
+    #endregion
+
+    #region Create top label
+    analysisTopLabel = ttk.Label(analysisTopFrame, text="Analysis", font="bold")
+    analysisTopLabel.pack(pady=10)
+    #endregion
+
+    #region Create canvas
+    analysisCanvas = tk.Canvas(analysisImagesFrame, width=600, height=600)
+    analysisCanvas.pack()
+    #endregion
+
+    #region Create buttons
+    analysisNextButton = ttk.Button(analysisBottomFrame, text="Next", command=onNextButtonPressed)#, style="Accent.TButton")
+    analysisNextButton.pack(side=RIGHT, padx=5, pady=5)
+    analysisBackButton = ttk.Button(analysisBottomFrame, text="Back", command=onBackButtonPressed)#, style="Accent.TButton")
+    analysisBackButton.pack(side=LEFT, padx=5, pady=5)
+    #endregion
+
+    #region Show first image
+    global imageIndex
+    imageIndex = 0
+    loadImages()
+    clearCanvas()
+    showImage(imageIndex)
+    updateButtons()
+
 # Enables/Disables dark theme UI based on darkMode boolean variable state
 def switchDarkMode():
         if darkModeVar.get() == True:
@@ -1295,6 +1423,7 @@ def updateSettingsFromConfigFile(file):
     dpiVar.set(config.getint("settings", "dpi"))
     darkModeVar.set(config.getboolean("settings", "darkMode"))
     showOutputWhenFinishedVar.set(config.getboolean("settings", "showOutputWhenFinished"))
+    individualOutputTypeVar.set(config.get('settings', 'individualOutputType'))
     switchDarkMode()
 
     orionKernelSizeDpi1.set(config.getint("orion", "orionKernelSizeDpi1"))
@@ -1336,6 +1465,7 @@ def saveSettingsToConfigFile(file):
     config.set('settings', 'dpi', str(dpiVar.get()))
     config.set('settings', 'darkMode', str(darkModeVar.get()))
     config.set('settings', 'showOutputWhenFinished', str(showOutputWhenFinishedVar.get()))
+    config.set('settings', 'individualOutputType', str(individualOutputTypeVar.get()))
 
     config.add_section('orion')
     config.set('orion', 'orionKernelSizeDpi1', str(orionKernelSizeDpi1.get()))
@@ -1706,8 +1836,9 @@ def analyzeImage(image):
                     csvfile.close()
     #endregion
 
-    cv2.imshow("output", output) # Optional but make sure to use waitkey below if enabled, or else only image will show up.
-    cv2.waitKey(0)
+    if individualOutputTypeVar.get() == "legacy":
+        cv2.imshow("output", output) # Optional but make sure to use waitkey below if enabled, or else only image will show up.
+        cv2.waitKey(0)
     cv2.imwrite(image + "-output.jpg", output)
 
 # Derived from analyzeImage
@@ -1935,8 +2066,9 @@ def analyzeOrionImage(image):
                     csvfile.close()
     #endregion
 
-    cv2.imshow("output", output) # Optional but make sure to use waitkey below if enabled, or else only image will show up.
-    cv2.waitKey(0)
+    if individualOutputTypeVar.get() == "legacy":
+        cv2.imshow("output", output) # Optional but make sure to use waitkey below if enabled, or else only image will show up.
+        cv2.waitKey(0)
     cv2.imwrite(image + "-output.jpg", output)
 
 #region Initialize tkinter window
@@ -1956,6 +2088,7 @@ root.title("Target Analysis")
 dpiVar = tk.IntVar(root, 1)
 darkModeVar = tk.BooleanVar(root, False)
 showOutputWhenFinishedVar = tk.BooleanVar(root, True)
+individualOutputTypeVar = tk.StringVar(root, "tkinter")
 
 #region While many similar parameters exist for non-Orion targets, each has been tuned for its use case and therefore are unique to Orion scanning.
 orionKernelSizeDpi1 = tk.IntVar(root, 2)
@@ -2024,6 +2157,7 @@ filemenu.add_separator()
 filemenu.add_command(label="⚠ Clear data", command=clearData)
 filemenu.add_separator()
 filemenu.add_command(label="❌ Exit", command=root.quit)
+#filemenu.add_command(label="Analysis Window", command=openAnalysisWindow)
 menubar.add_cascade(label="File", menu=filemenu)
 
 helpmenu = tk.Menu(menubar, tearoff=0)
