@@ -12,8 +12,8 @@
 ## Therefore, you are not permitted to copy, distribute,  ##
 ## or modify this work and claim it is your own.          ##
 ## Maintainer: Sigmond Kukla                              ##
-## Email: picoplanetdev@gmail.com (business)              ##
-##        skukla61@mtlstudents.net (school)               ##
+## Contact: picoplanetdev@gmail.com (business)            ##
+##          skukla61@mtlstudents.net (school)             ##
 ## Status: Released, active development                   ##
 ############################################################
 #endregion
@@ -37,91 +37,98 @@ from configparser import ConfigParser
 
 # Loads an image for the left side of the target
 def loadImageLeft():
-    leftCanvas.delete("all")
+    leftCanvas.delete("all") # Clear the left canvas in case it already has an image
 
-    imageFile = filedialog.askopenfilename()
-    leftImage = cv2.imread(imageFile)
+    imageFile = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
+    leftImage = cv2.imread(imageFile) # Load the image for OpenCV image
 
+    # If the user wants to use information from the file name, do so
     if useFileInfo.get() is True:
         setInfoFromFile(imageFile)
 
-    leftCanvas.grid(row = 0, column = 0)
+    leftCanvas.grid(row = 0, column = 0) # Refresh the canvas
     
-    global leftPreview
-    leftPreview = ImageTk.PhotoImage(Image.open(imageFile).resize((230, 350), Image.ANTIALIAS))
-    leftCanvas.create_image(0, 0, anchor="nw", image=leftPreview)
+    global leftPreview # Images must be stored globally to be show on the canvas
+    leftPreview = ImageTk.PhotoImage(Image.open(imageFile).resize((230, 350), Image.ANTIALIAS)) # Store the image as a tkinter photo image and resize it
+    leftCanvas.create_image(0, 0, anchor="nw", image=leftPreview) # Place the image on the canvas
 
-    label.config(text="Right image loaded")
+    label.config(text="Right image loaded") # Update the main label
 
-    root.geometry("550x540")
+    root.geometry("550x540") # Increase the window size to accomodate the image
 
-    cropLeft(leftImage)
+    cropLeft(leftImage) # Crop the image to prepare for analysis
 
 # Loads an image for the right side of the target
 def loadImageRight():
-    rightCanvas.delete("all")
+    rightCanvas.delete("all") # Clear the right canvas in case it already has an image
 
-    imageFile = filedialog.askopenfilename()
-    rightImage = cv2.imread(imageFile)
+    imageFile = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
+    rightImage = cv2.imread(imageFile) # Load the image for OpenCV image
 
+    # If the user wants to use information from the file name, do so
     if useFileInfo.get() is True:
         setInfoFromFile(imageFile)
 
-    rightCanvas.grid(row = 0, column = 1)
+    rightCanvas.grid(row = 0, column = 1) # Refresh the canvas
     
-    global rightPreview
-    rightPreview = ImageTk.PhotoImage(Image.open(imageFile).resize((230, 350), Image.ANTIALIAS))
-    rightCanvas.create_image(0, 0, anchor="nw", image=rightPreview)
+    global rightPreview # Images must be stored globally to be show on the canvas
+    rightPreview = ImageTk.PhotoImage(Image.open(imageFile).resize((230, 350), Image.ANTIALIAS)) # Store the image as a tkinter photo image and resize it
+    rightCanvas.create_image(0, 0, anchor="nw", image=rightPreview) # Place the image on the canvas
 
-    label.config(text="Left image loaded")
+    label.config(text="Left image loaded") # Update the main label
 
-    root.geometry("550x540")
+    root.geometry("550x540") # Increase the window size to accomodate the image
 
-    cropRight(rightImage)
+    cropRight(rightImage) # Crop the image to prepare for analysis
 
 # Loads an image taken by a smartphone camera that includes the entire target (CURRENTLY DISABLED)
 def loadSingleImage():
-    imageFile = filedialog.askopenfilename()
-    singleImage = cv2.imread(imageFile)
+    imageFile = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
+    singleImage = cv2.imread(imageFile) # Load the image for OpenCV image
 
+    # If the user wants to use information from the file name, do so
     if useFileInfo.get() is True:
         setInfoFromFile(imageFile)
 
-    label.config(text="Single image loaded")
+    label.config(text="Single image loaded") # Update the main label
 
-    cropSingle(singleImage)
+    cropSingle(singleImage) # Crop the image to prepare for analysis
 
-# Derived from loadSingleImage and loadImage<Left/Right>
+# Loads an image for an Orion target
 def loadImageOrion():
-    orionSingleCanvas.delete("all")
-    imageFile = filedialog.askopenfilename()
-    singleImage = cv2.imread(imageFile)
+    orionSingleCanvas.delete("all") # Clear the orion single canvas in case it already has an image
 
+    imageFile = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
+    singleImage = cv2.imread(imageFile) # Load the image for OpenCV image
+
+    # If the user wants to use information from the file name, do so
     if useFileInfo.get() is True:
         setInfoFromFile(imageFile)
 
-    orionSingleCanvas.grid(row = 0, column = 1)
+    orionSingleCanvas.grid(row = 0, column = 1) # Refresh the canvas
     
-    global orionPreview
-    orionPreview = ImageTk.PhotoImage(Image.open(imageFile).resize((230, 350), Image.ANTIALIAS))
-    orionSingleCanvas.create_image(0, 0, anchor="nw", image=orionPreview)
+    global orionPreview # Images must be stored globally to be show on the canvas
+    orionPreview = ImageTk.PhotoImage(Image.open(imageFile).resize((230, 350), Image.ANTIALIAS)) # Store the image as a tkinter photo image and resize it
+    orionSingleCanvas.create_image(0, 0, anchor="nw", image=orionPreview) # Place the image on the canvas
 
-    label.config(text="Orion single image loaded")
+    label.config(text="Orion image loaded") # Update the main label
 
-    root.geometry("550x540")
+    root.geometry("550x540") # Increase the window size to accomodate the image
 
-    cropOrion(singleImage)
+    cropOrion(singleImage) # Crop the image to prepare for analysis
 
 # Somewhat derived from loadSingleImage (CURRENTLY DISABLED)
 def loadOutdoorBull():
-    imageFile = filedialog.askopenfilename()
-    singleImage = cv2.imread(imageFile)
+    imageFile = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
+    singleImage = cv2.imread(imageFile) # Load the image for OpenCV image
 
+    # If the user wants to use information from the file name, do so
     if useFileInfo.get() is True:
         setInfoFromFile(imageFile)
 
-    label.config(text="Single image loaded")
+    label.config(text="Outdoor image loaded") # Update the main label
 
+    # Perform the cropping and analysis automatically
     checkOutputDir()
 
     dsize = (int(singleImage.shape[1] * 0.2), int(singleImage.shape[0] * 0.2))
@@ -134,12 +141,14 @@ def loadOutdoorBull():
 
     analyzeOutdoorImage("images/output/outdoorBull.jpg")
 
-# Crop image for orion target
+# Crop image for an Orion target
 def cropOrion(image):
-    label.config(text="Cropping Orion image...")
-    checkOutputDir()
+    label.config(text="Cropping Orion image...") # Update the main label
+    checkOutputDir() # Make sure the output directory exists
 
     # Height and width are set once and used for all bulls
+    # The height and width are determined by the size of the image multipled by a ratio,
+    # allowing slight deviations in printer resolution to be ignored
     h=int((400/3507)*image.shape[0])
     w=int((400/2550)*image.shape[1])
 
@@ -191,6 +200,7 @@ def cropOrion(image):
 
     crop10 = image[y:y+h, x:x+w]
 
+    # Save the cropped images
     cv2.imwrite("images/output/top-mid.jpg", crop1)
     cv2.imwrite("images/output/top-right.jpg", crop2)
     cv2.imwrite("images/output/upper-right.jpg", crop3)
@@ -361,9 +371,9 @@ def cropSingle(image):
 
 # Crop image for right side of the target and start analysis process
 def cropRight(image):
-    label.config(text="Cropping right side...")
+    label.config(text="Cropping right side...") # Update main label
 
-    checkOutputDir()
+    checkOutputDir() # Make sure that output directory exists
 
     #region Crop the image
     # if dpiVar.get() == 2:
@@ -441,9 +451,9 @@ def cropRight(image):
 
 # Crop image for left side of the target and start analysis process
 def cropLeft(image):
-    label.config(text="Cropping left side...")
+    label.config(text="Cropping left side...") # Update main label
 
-    checkOutputDir()
+    checkOutputDir() # Make sure that output directory exists
 
     # Flips the image vertically and horizontally before cropping
     verticalFlippedImage = cv2.flip(image, -1)
@@ -506,21 +516,24 @@ def cropLeft(image):
 
 # Runs the analyzeImage function for every image that has been cropped out
 def analyzeTarget():
-    label.config(text="Analyzing target...")
+    label.config(text="Analyzing target...") # Update main label
 
+    # Create and store a name for the target output file
     global csvName
     csvName = "data/data-" + nameVar.get() + dayVar.get() + monthVar.get() + yearVar.get() + targetNumVar.get() + ".csv"
 
-    #print(str(os.getcwd())+"\\"+csvName)
+    # If the CSV file already exists, delete it
     if os.path.exists(str(os.getcwd()) +"\\" + csvName):
-        #print("CSV already exists. Removing old version")
+        print("CSV already exists. Removing old version")
         os.remove(os.getcwd() + "\\" + csvName)
     
+    # Create the CSV file template
     with open(csvName, 'x', newline="") as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         filewriter.writerow(["Image", "Dropped", "X", "HoleX", "HoleY", "Distance", "HoleRatioX", "HoleRatioY"])
         csvfile.close()
 
+    # Analyze each cropped image
     analyzeImage("images/output/top-mid.jpg")
     analyzeImage("images/output/top-right.jpg")
     analyzeImage("images/output/upper-right.jpg")
@@ -532,10 +545,12 @@ def analyzeTarget():
     analyzeImage("images/output/upper-left.jpg")
     analyzeImage("images/output/top-left.jpg")
 
+    # Create variables to store the score and x count
     global score, xCount
     score = 100
     xCount = 0
 
+    # Update the score and x count from the saved target CSV file
     with open(csvName) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         line_count = 0
@@ -545,29 +560,40 @@ def analyzeTarget():
                 xCount += int(row[2])
             line_count += 1
     
-    #print(str(os.getcwd()) +"data\data.csv")
+    # If a global data CSV doesn't exist, create it
     if not os.path.exists(str(os.getcwd()) +"\data\data.csv"):
         createCSV()
 
+    # Save the target's basic info to the global data CSV
     with open("data/data.csv", 'a', newline="") as csvfile:
                 filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                 filewriter.writerow([nameVar.get(), dayVar.get() + " " + monthVar.get() + " " + yearVar.get(), targetNumVar.get(), score, xCount])
                 csvfile.close()
 
-    label.config(text="Done")
+    label.config(text="Done") # Update main label
 
-    # Make sure to count which entry this is! Starts at ZERO not one.
+    # Enable the "Show Output" menu item
+    # If any menu items have been added above this, make sure to recount them to get the correct index
+    # Counting starts at zero.
     filemenu.entryconfigure(1, state=NORMAL)
 
+    
     if individualOutputTypeVar.get() == "tkinter":
+        # If the user uses the new analysis window, open it
+        # There is no need to show the output here, instead, if it is needed,
+        # it will be shown when the Finish button is pressed in the analysis window
         openAnalysisWindow()
     elif showOutputWhenFinishedVar.get():
-        showOutput()
+        showOutput() # Otherwise, show the output now that analysis has finished
 
 # Runs the analyzeImage function for every image that has been cropped out
+# TODO: This seems a little redundant, can I combine it with the analyzeTarget function?
+# In the meantime, refer to the above function for comments.
+# The only different I have seen is the function calls
 def analyzeTargetOrion():
-    label.config(text="Analyzing Orion target...")
+    label.config(text="Analyzing Orion target...") # Update main label
 
+    # Create and store a name for the target output file
     global csvName
     csvName = "data/data-" + nameVar.get() + dayVar.get() + monthVar.get() + yearVar.get() + targetNumVar.get() + ".csv"
 
@@ -629,35 +655,38 @@ def analyzeTargetOrion():
 
 # Shows the results of the program in a separate window and provides buttons for opening CSV files
 def showOutput():
-    label.config(text="Showing output")
+    label.config(text="Showing output") # Update main label
 
-    #region Create Toplevel window
-    targetWindow = tk.Toplevel(root)
-    targetWindow.minsize(525,750)
-    targetWindow.geometry("525x750")
-    targetWindow.iconbitmap("assets/icon.ico")
-    targetWindow.title("Target Analysis")
+    #region Create window
+    showOutputWindow = tk.Toplevel(root)
+    showOutputWindow.minsize(525,750)
+    showOutputWindow.geometry("525x750")
+    showOutputWindow.iconbitmap("assets/icon.ico")
+    showOutputWindow.title("Target Analysis")
     #endregion
 
     #region Create frames
-    outputTopFrame = ttk.Frame(targetWindow)
+    # Only buttons and labels go in the top frame
+    outputTopFrame = ttk.Frame(showOutputWindow)
     outputTopFrame.pack(side=TOP, fill=X, expand=True, pady=10)
 
-    outputBottomFrame = ttk.Frame(targetWindow)
+    # Target images are shown in the bottom frame
+    outputBottomFrame = ttk.Frame(showOutputWindow)
     outputBottomFrame.pack(side=TOP, fill=X)
     #endregion
 
     #region Create buttons and info at the top
-    #print(csvName)
+    # Create a button to open the target CSV file
     openTargetCSVButton = ttk.Button(outputTopFrame, text="Open target CSV", command=lambda: openFile('"' + os.getcwd() + "\\" + csvName + '"'))
     openTargetCSVButton.grid(row=0, column=0)
     outputTopFrame.grid_columnconfigure(0, weight=1)
     
+    # Create a label for the score
     scoreLabel = ttk.Label(outputTopFrame, text=str(score) + "-" + str(xCount) + "X", font='bold')
     scoreLabel.grid(row=0, column=1)
     outputTopFrame.grid_columnconfigure(1, weight=1)
 
-    #print('"' + os.getcwd() + "data/data.csv" + '"')
+    # Create a button to open the global data CSV file
     openDataCSVButton = ttk.Button(outputTopFrame, text="Open data CSV", command=lambda: openFile('"' + os.getcwd() + "/data/data.csv" + '"'))
     openDataCSVButton.grid(row=0, column=2)
     outputTopFrame.grid_columnconfigure(2, weight=1)
@@ -736,67 +765,92 @@ def showOutput():
     #endregion
 
 # Open the working folder in Explorer
+# TODO: Make this work on any operating system
 def showFolder():
-    os.system("explorer " + '"' + os.getcwd() + '"')
-    label.config(text="Working directory opened in Explorer")
+    os.system("explorer " + '"' + os.getcwd() + '"') # Run a system command to open the folder using Explorer (Windows only)
+    label.config(text="Working directory opened in Explorer") # Update the main label
 
-# Open documentation with associated editor
+# Open documentation with associated viewer
 def openFile(file):
-    label.config(text="Opening file " + str(file))
-    os.system(file)
+    label.config(text="Opening file " + str(file)) # Update the main label
+    os.system(file) # Run a system command to open the file using the default viewer (should work on any operating system)
 
-# Create a template CSV file
+# Create CSV file set up for the global data csv
 def createCSV():
+    # Open the CSV file
     with open('data/data.csv', 'x', newline="") as csvfile:
-        filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        filewriter.writerow(['Name', 'Date', 'Target Number', 'Score','X'])
-        csvfile.close()
-    label.config(text="Created CSV data file")
+        filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL) # Create a filewriter
+        filewriter.writerow(['Name', 'Date', 'Target Number', 'Score','X']) # Write the header row
+        csvfile.close() # Close the file
+    label.config(text="Created CSV data file") # Update the main label
 
-# Opens and analyzes all files in a folder
+# Opens and analyzes all files in a folder (more complex because it has to distinguish between left and right images)
 def openFolder():
+    # Temporarily save the showOutputWhenFinishedVar to restore after the function is done
+    # Then set it to false so that the output is not shown (because for large folders it could take a while)
     showOutputWhenFinishedBackup = showOutputWhenFinishedVar.get()
     showOutputWhenFinishedVar.set(False)
-    label.config(text="Opening folder")
-    folder = filedialog.askdirectory()
-    fileNum = 0
+
+    label.config(text="Opening folder") # Update the main label
+
+    folder = filedialog.askdirectory() # Get the folder to open
+    fileNum = 0 # Keep track of how many files have been opened
+    
+    # os.listdir() returns a list of all files in the folder
     for file in os.listdir(folder):
+        # Ignore files that are not images
+        # TODO: Add support for other jpg variants (like .jpg)
         if file.endswith(".jpeg"):
-            path = os.getcwd() + "\images\\" + file
-            setInfoFromFile(file)
-            #print(path)
-            fileImage = cv2.imread(path)
+            path = os.getcwd() + "\images\\" + file # Get the path to the file
+            setInfoFromFile(file) # Set the info from the file (correct naming is important for this operation)
+            fileImage = cv2.imread(path) # Open the image
+
+            # Check if the image is a left or right image
             if "left" in file:
                 cropLeft(fileImage)
             elif "right" in file:
                 cropRight(fileImage)
-            fileNum += 1
+            
+            fileNum += 1 # Increment the file number
+
+            # For every two files opened, analyze the target
+            # Again, it is imperative that the naming convention is correct
+            # See the README for more information
             if fileNum == 2:
                 analyzeTarget()
-                fileNum = 0
-    showOutputWhenFinishedVar.set(showOutputWhenFinishedBackup)
+                fileNum = 0 # Reset the file number and continue
+    
+    showOutputWhenFinishedVar.set(showOutputWhenFinishedBackup) # Revert the showOutputWhenFinishedVar to its original value
 
 # Opens and analyzes all files in a folder
 def openFolderOrion():
+    # Temporarily save the showOutputWhenFinishedVar to restore after the function is done
+    # Then set it to false so that the output is not shown (because for large folders it could take a while)
     showOutputWhenFinishedBackup = showOutputWhenFinishedVar.get()
     showOutputWhenFinishedVar.set(False)
-    label.config(text="Opening folder")
-    folder = filedialog.askdirectory()
+
+    label.config(text="Opening folder") # Update the main label
+
+    folder = filedialog.askdirectory() # Get the folder to open
+    
+    # os.listdir() returns a list of all files in the folder
     for file in os.listdir(folder):
+        # Ignore files that are not images
+        # TODO: Add support for other jpg variants (like .jpg)
         if file.endswith(".jpeg"):
-            path = folder + "\\" + file
-            setInfoFromFile(file)
-            print(path)
-            fileImage = cv2.imread(path)
-            cropOrion(fileImage)
-            analyzeTargetOrion()
-    showOutputWhenFinishedVar.set(showOutputWhenFinishedBackup)
+            path = folder + "\\" + file # Get the path to the file
+            setInfoFromFile(file) # Set the info from the file (correct naming is important for this operation)
+            fileImage = cv2.imread(path) # Open the image for OpenCV
+            cropOrion(fileImage) # Crop the image
+            analyzeTargetOrion() # Analyze the target
+    
+    showOutputWhenFinishedVar.set(showOutputWhenFinishedBackup) # Revert the showOutputWhenFinishedVar to its original value
 
 # Allows viewing of trends from existing data files
 def showTrends():
-    label.config(text="Showing trends window")
+    label.config(text="Showing trends window") # Update the main label
 
-    #region Create Toplevel window
+    #region Create window
     trendsWindow = tk.Toplevel(root)
     trendsWindow.minsize(250,100)
     trendsWindow.geometry("250x100")
@@ -804,30 +858,36 @@ def showTrends():
     trendsWindow.title("Target Analysis")
     #endregion
 
-
     def showMostMissed():
-        bulls = [0,0,0,0,0,0,0,0,0,0]
-        folder = filedialog.askdirectory()
-        for file in os.listdir(folder):
-            if not "data.csv" in file and not ".gitkeep" in file:
-                with open("data/" + file) as csv_file:
-                    csv_reader = csv.reader(csv_file, delimiter=',')
-                    line_count = 0
-                    for row in csv_reader:
-                        #print(line_count)
-                        if line_count != 0 and line_count <= 10:
-                            bulls[line_count-1] += int(row[1])
-                        line_count += 1
-                    csv_file.close()
-        #print(bulls)
+        bulls = [0,0,0,0,0,0,0,0,0,0] # Create a list of bulls to keep track of the most missed targets
 
+        folder = filedialog.askdirectory() # Get the folder to open
+        # os.listdir() returns a list of all files in the folder
+        for file in os.listdir(folder):
+            # Ignore files that are not target CSVs
+            if not "data.csv" in file and not ".gitkeep" in file:
+                # Open the CSV file
+                with open("data/" + file) as csv_file:
+                    csv_reader = csv.reader(csv_file, delimiter=',') # Create a CSV reader
+                    line_count = 0 # Keep track of the line number
+                    for row in csv_reader:
+                        # Ignore the header row and rows beyond ten (if there are more than ten rows, there is a problem)
+                        if line_count != 0 and line_count <= 10:
+                            bulls[line_count-1] += int(row[1]) # Add the score from each bull to the bulls list
+                        line_count += 1 # Increment the line number
+                    csv_file.close() # Close the file
+
+        # Create a frame to display the data
         frame = ttk.Frame(trendsWindow)
         frame.pack(pady=5)
-        trendsWindow.geometry("250x300")
 
+        trendsWindow.geometry("250x300") # Resize the window to accomodate the data display
+
+        # Create a label for a header
         mostMissedLabel = ttk.Label(frame, text="Most missed is highest number")
         mostMissedLabel.grid(row=0, column=0, columnspan=3)
 
+        #region Create a label for each bull
         label1 = ttk.Label(frame, text=str(bulls[0]), borderwidth=2, relief=RIDGE, padding=10)
         label1.grid(row=1,column=0)
 
@@ -857,37 +917,48 @@ def showTrends():
 
         label10 = ttk.Label(frame, text=str(bulls[9]), borderwidth=2, relief=RIDGE, padding=10)
         label10.grid(row=4,column=1)
-    
-    def showTrendGraph():
-        dataCSV = filedialog.askopenfilename()
+        #endregion
 
+    def showTrendGraph():
+        dataCSV = filedialog.askopenfilename() # Get the CSV file to open (this can be a backup to accomodate for multiple shooters)
+
+        # Create some arrays for relevant data
         dates = []
         scores = []
         xCount = []
+
+        # Open the CSV file
         with open(dataCSV) as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=',')
-            line_count = 0
+            csv_reader = csv.reader(csv_file, delimiter=',') # Create a CSV reader
+            line_count = 0 # Keep track of the line number
             for row in csv_reader:
+                # Ignore the header row
                 if line_count != 0:
-                    dates.append(row[1])
-                    scores.append(row[3])
-                    xCount.append(row[4])
-                line_count += 1
-            csv_file.close()
+                    dates.append(row[1]) # The dates are in the second column
+                    scores.append(row[3]) # The scores are in the fourth column
+                    xCount.append(row[4]) # The xCount are in the fifth column
+                line_count += 1 # Increment the line number
+            csv_file.close() # Close the file
         
+        # Zip the data together, with the dates first
+        # Then sort the data using the date as the key
         sortedZipped = sorted(zip(dates,scores,xCount), key=lambda date: datetime.datetime.strptime(date[0], "%d %B %Y"))
 
+        # Unpack the data back into separate lists
         dates,scores,xCount = map(list,zip(*sortedZipped))
 
+        # Convert the scores and xCount back
         scores = list(map(int, scores))
         xCount = list(map(int, xCount))
 
+        # Create some matplotlib plots to show data
         fig,axs = plt.subplots(2)
 
+        # Plot the scores and xCount on separate graphs
         axs[0].plot(dates,scores, marker='o', color = 'blue')
-
         axs[1].plot(dates,xCount, marker='x', color = 'orange')
 
+        # Create a label for each point for the scores graph
         for x,y in zip(dates,scores):
             label = y
             axs[0].annotate(label, # this is the text
@@ -896,6 +967,7 @@ def showTrends():
                         xytext=(-15,0), # distance from text to points (x,y)
                         ha='center') # horizontal alignment can be left, right or center
 
+        # Create a label for each point for the xCount graph
         for x,y in zip(dates,xCount):
             label = str(y) + "X"
             axs[1].annotate(label, # this is the text
@@ -904,29 +976,39 @@ def showTrends():
                         xytext=(-15,0), # distance from text to points (x,y)
                         ha='center') # horizontal alignment can be left, right or center
 
+        # Convert the dates to numbers
         datesNum = matplotlib.dates.datestr2num(dates)
 
+        # Create a trendline for the scores graph
         z = np.polyfit(datesNum, scores, 1)
         p = np.poly1d(z)
 
+        # Plot the trendline on the scores graph
         axs[0].plot(dates,p(datesNum), 'r--')
 
+        # Set the x axis user-facing label to Date for both graphs
         axs[0].set_xlabel('Date')
         axs[1].set_xlabel('Date')
-
+        
+        # Set the y axis user-facing label to Score and X Count for each graph respectively
         axs[0].set_ylabel('Score')
         axs[1].set_ylabel('X Count')
 
+        # Angle the dates at a 40 degree angle for both graphs
         axs[0].xaxis.set_tick_params(rotation=40)
         axs[1].xaxis.set_tick_params(rotation=40)
 
+        # Add some space between the graphs
         plt.subplots_adjust(hspace=0.8)
 
+        # Show the plots
         plt.show()
 
+    # Create a button to load a folder of data (for one shooter) to show which bull has the highest value (thus the most missed)
     loadFolderButton = ttk.Button(trendsWindow, text="Load Folder (for most missed)", command=showMostMissed)
     loadFolderButton.pack(padx=10, pady=10)
 
+    # Create a button to load a global data CSV (for one shooter) to show improvement over time
     loadCSVButton = ttk.Button(trendsWindow, text="Load CSV (for graph)", command=showTrendGraph)
     loadCSVButton.pack(padx=10, pady=0)
 
