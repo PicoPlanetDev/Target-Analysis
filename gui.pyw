@@ -22,9 +22,8 @@
 from tkinter.constants import BOTH, BOTTOM, CENTER, DISABLED, EW, FLAT, HORIZONTAL, LEFT, NORMAL, NSEW, RIDGE, RIGHT, S, SOLID, SUNKEN, TOP, X
 import cv2
 import tkinter as tk
-from tkinter import StringVar, ttk
-from ttkthemes import ThemedTk
-from tkinter import Frame, filedialog
+from tkinter import ttk
+from tkinter import filedialog
 from PIL import ImageTk,Image
 import os
 import csv
@@ -626,8 +625,7 @@ def analyzeTargetOrion():
     if individualOutputTypeVar.get() == "tkinter":
         openAnalysisWindow()
     elif showOutputWhenFinishedVar.get():
-        showOutput()
-        
+        showOutput()   
 
 # Shows the results of the program in a separate window and provides buttons for opening CSV files
 def showOutput():
@@ -1002,6 +1000,7 @@ def openSettings():
         config.set('settings', 'darkMode', str(darkModeVar.get()))
         config.set('settings', 'showOutputWhenFinished', str(showOutputWhenFinishedVar.get()))
         config.set('settings', 'individualOutputType', str(individualOutputTypeVar.get()))
+        config.set('settings', 'useFileInfo', str(useFileInfo.get()))
 
         config.set('orion', 'orionKernelSizeDpi1', str(orionKernelSizeDpi1.get()))
         config.set('orion', 'orionKernelSizeDpi2', str(orionKernelSizeDpi2.get()))
@@ -1049,8 +1048,8 @@ def openSettings():
     #region Create toplevel window
     settingsWindow = tk.Toplevel(root)
     settingsWindow.title("Target Analysis")
-    settingsWindow.minsize(width=500, height=620)
-    settingsWindow.geometry("500x620")
+    settingsWindow.minsize(width=500, height=640)
+    settingsWindow.geometry("500x640")
     settingsWindow.iconbitmap("assets/icon.ico")
     #endregion
 
@@ -1424,6 +1423,7 @@ def updateSettingsFromConfigFile(file):
     darkModeVar.set(config.getboolean("settings", "darkMode"))
     showOutputWhenFinishedVar.set(config.getboolean("settings", "showOutputWhenFinished"))
     individualOutputTypeVar.set(config.get('settings', 'individualOutputType'))
+    useFileInfo.set(config.getboolean("settings", "useFileInfo"))
     switchDarkMode()
 
     orionKernelSizeDpi1.set(config.getint("orion", "orionKernelSizeDpi1"))
@@ -1466,6 +1466,7 @@ def saveSettingsToConfigFile(file):
     config.set('settings', 'darkMode', str(darkModeVar.get()))
     config.set('settings', 'showOutputWhenFinished', str(showOutputWhenFinishedVar.get()))
     config.set('settings', 'individualOutputType', str(individualOutputTypeVar.get()))
+    config.set('settings', 'useFileInfo', str(useFileInfo.get()))
 
     config.add_section('orion')
     config.set('orion', 'orionKernelSizeDpi1', str(orionKernelSizeDpi1.get()))
@@ -2089,6 +2090,7 @@ dpiVar = tk.IntVar(root, 1)
 darkModeVar = tk.BooleanVar(root, False)
 showOutputWhenFinishedVar = tk.BooleanVar(root, True)
 individualOutputTypeVar = tk.StringVar(root, "tkinter")
+useFileInfo = tk.BooleanVar(root, True)
 
 #region While many similar parameters exist for non-Orion targets, each has been tuned for its use case and therefore are unique to Orion scanning.
 orionKernelSizeDpi1 = tk.IntVar(root, 2)
@@ -2210,8 +2212,6 @@ labelSeparator.pack(side=TOP, fill=X)
 #endregion
 
 #region Options area uses optionsFrame
-
-# Month, day, year, and target number on same line
 monthVar = tk.StringVar()
 monthVar.set("Month")
 monthEntry = ttk.Entry(optionsFrame, textvariable=monthVar, width=10)
@@ -2232,7 +2232,6 @@ targetNumVar.set("Num")
 targetNumEntry = ttk.Entry(optionsFrame, textvariable=targetNumVar, width=5)
 targetNumEntry.grid(column = 3, row = 0, sticky=NSEW, padx=2.5, pady=5)
 
-# Name goes below
 nameVar = tk.StringVar()
 nameVar.set("Name")
 nameEntry = ttk.Entry(optionsFrame, textvariable=nameVar, width=30)
@@ -2242,11 +2241,7 @@ nameEntry.grid(column = 0, row = 1, columnspan = 4, sticky=NSEW, padx=2.5)
 todayButton = ttk.Button(optionsFrame, text="Use Today", command=setInfoFromToday)
 todayButton.grid(column=4, row=0, rowspan=2, padx=2.5)
 
-useFileInfo = tk.BooleanVar()
-useFileInfo.set(True)
-#useFileInfoCheckbutton = ttk.Checkbutton(optionsFrame, text='Use info from file', style='Switch', variable=useFileInfo, onvalue=True, offvalue=False)
-useFileInfoCheckbutton = ttk.Checkbutton(optionsFrame, text='Use info from file', style='Switch.TCheckbutton', variable=useFileInfo, onvalue=True, offvalue=False)
-#useFileInfoCheckbutton = ttk.Checkbutton(optionsFrame, text="Use info from file", variable=useFileInfo, onvalue=True, offvalue=False)
+useFileInfoCheckbutton = ttk.Checkbutton(optionsFrame, text='Use info from file', style='Switch.TCheckbutton', variable=useFileInfo, onvalue=True, offvalue=False, command=saveSettingsToConfigFile)
 useFileInfoCheckbutton.grid(column=5, row=0, rowspan=2, padx=5)
 #endregion
 
