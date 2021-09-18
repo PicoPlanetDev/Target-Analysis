@@ -993,47 +993,6 @@ def clearData():
 
 # Create a settings window
 def openSettings():
-    def updateConfig():
-        config = ConfigParser()
-        config.read('config.ini')
-        config.set('settings', 'dpi', str(dpiVar.get()))
-        config.set('settings', 'darkMode', str(darkModeVar.get()))
-        config.set('settings', 'showOutputWhenFinished', str(showOutputWhenFinishedVar.get()))
-        config.set('settings', 'individualOutputType', str(individualOutputTypeVar.get()))
-        config.set('settings', 'useFileInfo', str(useFileInfo.get()))
-
-        config.set('orion', 'orionKernelSizeDpi1', str(orionKernelSizeDpi1.get()))
-        config.set('orion', 'orionKernelSizeDpi2', str(orionKernelSizeDpi2.get()))
-        config.set('orion', 'orionParam1Dpi1', str(orionParam1Dpi1.get()))
-        config.set('orion', 'orionParam2Dpi1', str(orionParam2Dpi1.get()))
-        config.set('orion', 'orionMinRadiusDpi1', str(orionMinRadiusDpi1.get()))
-        config.set('orion', 'orionParam1Dpi2', str(orionParam1Dpi2.get()))
-        config.set('orion', 'orionParam2Dpi2', str(orionParam2Dpi2.get()))
-        config.set('orion', 'orionMinRadiusDpi2', str(orionMinRadiusDpi2.get()))
-        config.set('orion', 'orionThreshMin', str(orionThreshMin.get()))
-        config.set('orion', 'orionThreshMax', str(orionThreshMax.get()))
-        config.set('orion', 'orionMorphologyOpeningKernelSizeDpi1', str(orionMorphologyOpeningKernelSizeDpi1.get()))
-        config.set('orion', 'orionMorphologyOpeningKernelSizeDpi2', str(orionMorphologyOpeningKernelSizeDpi2.get()))
-        config.set('orion', 'orionMinContourAreaDpi1', str(orionMinContourAreaDpi1.get()))
-        config.set('orion', 'orionMinContourAreaDpi2', str(orionMinContourAreaDpi2.get()))
-        config.set('orion', 'orionMaxContourAreaDpi1', str(orionMaxContourAreaDpi1.get()))
-        config.set('orion', 'orionMaxContourAreaDpi2', str(orionMaxContourAreaDpi2.get()))
-        config.set('orion', 'orionmaxHoleRadiusDpi1', str(orionmaxHoleRadiusDpi1.get()))
-        config.set('orion', 'orionmaxHoleRadiusDpi2', str(orionmaxHoleRadiusDpi2.get()))
-
-        config.set('nra', 'nraKernalSize', str(nraKernalSize.get()))
-        config.set('nra', 'nraParam1', str(nraParam1.get()))
-        config.set('nra', 'nraParam2', str(nraParam2.get()))
-        config.set('nra', 'nraMinRadius', str(nraMinRadius.get()))
-        config.set('nra', 'nraThreshMin', str(nraThreshMin.get()))
-        config.set('nra', 'nraThreshMax', str(nraThreshMax.get()))
-        config.set('nra', 'nraMorphologyOpeningKernelSize', str(nraMorphologyOpeningKernelSize.get()))
-        config.set('nra', 'nraMinContourArea', str(nraMinContourArea.get()))
-        config.set('nra', 'nraMaxContourArea', str(nraMaxContourArea.get()))
-        config.set('nra', 'nramaxHoleRadius', str(nramaxHoleRadius.get()))
-
-        with open('config.ini', 'w') as f:
-            config.write(f)
 
     def onCloseSettings():
         updateConfig()
@@ -1457,7 +1416,7 @@ def updateSettingsFromConfigFile(file):
     nramaxHoleRadius.set(config.getint("nra", "nramaxHoleRadius"))
 
 # Save settings to config file
-def saveSettingsToConfigFile(file):
+def createDefaultConfigFile(file):
     config = ConfigParser()
 
     config.read(file)
@@ -1502,6 +1461,49 @@ def saveSettingsToConfigFile(file):
 
     with open(file, 'w') as f:
         config.write(f)
+
+# Updates config.ini file with current settings
+def updateConfig():
+        config = ConfigParser()
+        config.read('config.ini')
+        config.set('settings', 'dpi', str(dpiVar.get()))
+        config.set('settings', 'darkMode', str(darkModeVar.get()))
+        config.set('settings', 'showOutputWhenFinished', str(showOutputWhenFinishedVar.get()))
+        config.set('settings', 'individualOutputType', str(individualOutputTypeVar.get()))
+        config.set('settings', 'useFileInfo', str(useFileInfo.get()))
+
+        config.set('orion', 'orionKernelSizeDpi1', str(orionKernelSizeDpi1.get()))
+        config.set('orion', 'orionKernelSizeDpi2', str(orionKernelSizeDpi2.get()))
+        config.set('orion', 'orionParam1Dpi1', str(orionParam1Dpi1.get()))
+        config.set('orion', 'orionParam2Dpi1', str(orionParam2Dpi1.get()))
+        config.set('orion', 'orionMinRadiusDpi1', str(orionMinRadiusDpi1.get()))
+        config.set('orion', 'orionParam1Dpi2', str(orionParam1Dpi2.get()))
+        config.set('orion', 'orionParam2Dpi2', str(orionParam2Dpi2.get()))
+        config.set('orion', 'orionMinRadiusDpi2', str(orionMinRadiusDpi2.get()))
+        config.set('orion', 'orionThreshMin', str(orionThreshMin.get()))
+        config.set('orion', 'orionThreshMax', str(orionThreshMax.get()))
+        config.set('orion', 'orionMorphologyOpeningKernelSizeDpi1', str(orionMorphologyOpeningKernelSizeDpi1.get()))
+        config.set('orion', 'orionMorphologyOpeningKernelSizeDpi2', str(orionMorphologyOpeningKernelSizeDpi2.get()))
+        config.set('orion', 'orionMinContourAreaDpi1', str(orionMinContourAreaDpi1.get()))
+        config.set('orion', 'orionMinContourAreaDpi2', str(orionMinContourAreaDpi2.get()))
+        config.set('orion', 'orionMaxContourAreaDpi1', str(orionMaxContourAreaDpi1.get()))
+        config.set('orion', 'orionMaxContourAreaDpi2', str(orionMaxContourAreaDpi2.get()))
+        config.set('orion', 'orionmaxHoleRadiusDpi1', str(orionmaxHoleRadiusDpi1.get()))
+        config.set('orion', 'orionmaxHoleRadiusDpi2', str(orionmaxHoleRadiusDpi2.get()))
+
+        config.set('nra', 'nraKernalSize', str(nraKernalSize.get()))
+        config.set('nra', 'nraParam1', str(nraParam1.get()))
+        config.set('nra', 'nraParam2', str(nraParam2.get()))
+        config.set('nra', 'nraMinRadius', str(nraMinRadius.get()))
+        config.set('nra', 'nraThreshMin', str(nraThreshMin.get()))
+        config.set('nra', 'nraThreshMax', str(nraThreshMax.get()))
+        config.set('nra', 'nraMorphologyOpeningKernelSize', str(nraMorphologyOpeningKernelSize.get()))
+        config.set('nra', 'nraMinContourArea', str(nraMinContourArea.get()))
+        config.set('nra', 'nraMaxContourArea', str(nraMaxContourArea.get()))
+        config.set('nra', 'nramaxHoleRadius', str(nramaxHoleRadius.get()))
+
+        with open('config.ini', 'w') as f:
+            config.write(f)
 
 # Ensures that an image/output directory is available to save images
 def checkOutputDir():
@@ -2132,12 +2134,12 @@ if os.path.isfile("config.ini"):
     updateSettingsFromConfigFile("config.ini")
 else:
     # If the file does not exist, create it and set the default values
-    saveSettingsToConfigFile("config.ini")
+    createDefaultConfigFile("config.ini")
 
 # If there is not config backup, create one now
 if not os.path.isfile("config-backup.ini"):
     # If the file does not exist, create it and set the default values
-    saveSettingsToConfigFile("config-backup.ini")
+    createDefaultConfigFile("config-backup.ini")
 #endregion
 
 #region Menubar with File and Help menus
@@ -2241,7 +2243,7 @@ nameEntry.grid(column = 0, row = 1, columnspan = 4, sticky=NSEW, padx=2.5)
 todayButton = ttk.Button(optionsFrame, text="Use Today", command=setInfoFromToday)
 todayButton.grid(column=4, row=0, rowspan=2, padx=2.5)
 
-useFileInfoCheckbutton = ttk.Checkbutton(optionsFrame, text='Use info from file', style='Switch.TCheckbutton', variable=useFileInfo, onvalue=True, offvalue=False, command=saveSettingsToConfigFile)
+useFileInfoCheckbutton = ttk.Checkbutton(optionsFrame, text='Use info from file', style='Switch.TCheckbutton', variable=useFileInfo, onvalue=True, offvalue=False, command=updateConfig)
 useFileInfoCheckbutton.grid(column=5, row=0, rowspan=2, padx=5)
 #endregion
 
