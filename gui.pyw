@@ -515,7 +515,7 @@ def cropLeft(image):
     #label.config(text="Done")
 
 # Runs the analyzeImage function for every image that has been cropped out
-def analyzeTarget():
+def analyzeTarget(type):
     label.config(text="Analyzing target...") # Update main label
 
     # Create and store a name for the target output file
@@ -534,16 +534,28 @@ def analyzeTarget():
         csvfile.close()
 
     # Analyze each cropped image
-    analyzeImage("images/output/top-mid.jpg")
-    analyzeImage("images/output/top-right.jpg")
-    analyzeImage("images/output/upper-right.jpg")
-    analyzeImage("images/output/lower-right.jpg")
-    analyzeImage("images/output/bottom-right.jpg")
-    analyzeImage("images/output/bottom-mid.jpg")
-    analyzeImage("images/output/bottom-left.jpg")
-    analyzeImage("images/output/lower-left.jpg")
-    analyzeImage("images/output/upper-left.jpg")
-    analyzeImage("images/output/top-left.jpg")
+    if type == "nra":
+        analyzeImage("images/output/top-mid.jpg")
+        analyzeImage("images/output/top-right.jpg")
+        analyzeImage("images/output/upper-right.jpg")
+        analyzeImage("images/output/lower-right.jpg")
+        analyzeImage("images/output/bottom-right.jpg")
+        analyzeImage("images/output/bottom-mid.jpg")
+        analyzeImage("images/output/bottom-left.jpg")
+        analyzeImage("images/output/lower-left.jpg")
+        analyzeImage("images/output/upper-left.jpg")
+        analyzeImage("images/output/top-left.jpg")
+    elif type == "orion":
+        analyzeOrionImage("images/output/top-mid.jpg")
+        analyzeOrionImage("images/output/top-right.jpg")
+        analyzeOrionImage("images/output/upper-right.jpg")
+        analyzeOrionImage("images/output/lower-right.jpg")
+        analyzeOrionImage("images/output/bottom-right.jpg")
+        analyzeOrionImage("images/output/bottom-mid.jpg")
+        analyzeOrionImage("images/output/bottom-left.jpg")
+        analyzeOrionImage("images/output/lower-left.jpg")
+        analyzeOrionImage("images/output/upper-left.jpg")
+        analyzeOrionImage("images/output/top-left.jpg")
 
     # Create variables to store the score and x count
     global score, xCount
@@ -585,73 +597,6 @@ def analyzeTarget():
         openAnalysisWindow()
     elif showOutputWhenFinishedVar.get():
         showOutput() # Otherwise, show the output now that analysis has finished
-
-# Runs the analyzeImage function for every image that has been cropped out
-# TODO: This seems a little redundant, can I combine it with the analyzeTarget function?
-# In the meantime, refer to the above function for comments.
-# The only different I have seen is the function calls
-def analyzeTargetOrion():
-    label.config(text="Analyzing Orion target...") # Update main label
-
-    # Create and store a name for the target output file
-    global csvName
-    csvName = "data/data-" + nameVar.get() + dayVar.get() + monthVar.get() + yearVar.get() + targetNumVar.get() + ".csv"
-
-    #print(str(os.getcwd())+"\\"+csvName)
-    if os.path.exists(str(os.getcwd()) +"\\" + csvName):
-        #print("CSV already exists. Removing old version")
-        os.remove(os.getcwd() + "\\" + csvName)
-    
-    with open(csvName, 'x', newline="") as csvfile:
-        filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        filewriter.writerow(["Image", "Dropped", "X", "HoleX", "HoleY", "Distance", "HoleRatioX", "HoleRatioY"])
-        csvfile.close()
-
-    analyzeOrionImage("images/output/top-mid.jpg")
-    analyzeOrionImage("images/output/top-right.jpg")
-    analyzeOrionImage("images/output/upper-right.jpg")
-    analyzeOrionImage("images/output/lower-right.jpg")
-    analyzeOrionImage("images/output/bottom-right.jpg")
-    analyzeOrionImage("images/output/bottom-mid.jpg")
-    analyzeOrionImage("images/output/bottom-left.jpg")
-    analyzeOrionImage("images/output/lower-left.jpg")
-    analyzeOrionImage("images/output/upper-left.jpg")
-    analyzeOrionImage("images/output/top-left.jpg")
-
-    # Make sure to count which entry this is! Starts at ZERO not one.
-    filemenu.entryconfigure(1, state=NORMAL)
-
-    global score, xCount
-    score = 100
-    xCount = 0
-
-    with open(csvName) as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter=',')
-        line_count = 0
-        for row in csv_reader:
-            if line_count != 0:
-                score -= int(row[1])
-                xCount += int(row[2])
-            line_count += 1
-    
-    #print(str(os.getcwd()) +"data\data.csv")
-    if not os.path.exists(str(os.getcwd()) +"\data\data.csv"):
-        createCSV()
-
-    with open("data/data.csv", 'a', newline="") as csvfile:
-                filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-                filewriter.writerow([nameVar.get(), dayVar.get() + " " + monthVar.get() + " " + yearVar.get(), targetNumVar.get(), score, xCount])
-                csvfile.close()
-
-    label.config(text="Done")
-
-    # Make sure to count which entry this is! Starts at ZERO not one.
-    filemenu.entryconfigure(1, state=NORMAL)
-
-    if individualOutputTypeVar.get() == "tkinter":
-        openAnalysisWindow()
-    elif showOutputWhenFinishedVar.get():
-        showOutput()   
 
 # Shows the results of the program in a separate window and provides buttons for opening CSV files
 def showOutput():
@@ -765,8 +710,10 @@ def showOutput():
     #endregion
 
 # Open the working folder in Explorer
-# TODO: Make this work on any operating system
+# NotTODO Make this work on any operating system
+# I a just going to display a warning message for now that should only be visible if the function fails on non Windows systems
 def showFolder():
+    label.config(text="Opening folder... ONLY WORKS ON WINDOWS")
     os.system("explorer " + '"' + os.getcwd() + '"') # Run a system command to open the folder using Explorer (Windows only)
     label.config(text="Working directory opened in Explorer") # Update the main label
 
@@ -799,8 +746,7 @@ def openFolder():
     # os.listdir() returns a list of all files in the folder
     for file in os.listdir(folder):
         # Ignore files that are not images
-        # TODO: Add support for other jpg variants (like .jpg)
-        if file.endswith(".jpeg"):
+        if file.endswith(".jpeg") or file.endswith(".jpg"):
             path = os.getcwd() + "\images\\" + file # Get the path to the file
             setInfoFromFile(file) # Set the info from the file (correct naming is important for this operation)
             fileImage = cv2.imread(path) # Open the image
@@ -817,7 +763,7 @@ def openFolder():
             # Again, it is imperative that the naming convention is correct
             # See the README for more information
             if fileNum == 2:
-                analyzeTarget()
+                analyzeTarget("nra")
                 fileNum = 0 # Reset the file number and continue
     
     showOutputWhenFinishedVar.set(showOutputWhenFinishedBackup) # Revert the showOutputWhenFinishedVar to its original value
@@ -836,13 +782,12 @@ def openFolderOrion():
     # os.listdir() returns a list of all files in the folder
     for file in os.listdir(folder):
         # Ignore files that are not images
-        # TODO: Add support for other jpg variants (like .jpg)
-        if file.endswith(".jpeg"):
+        if file.endswith(".jpeg") or file.endswith(".jpg"):
             path = folder + "\\" + file # Get the path to the file
             setInfoFromFile(file) # Set the info from the file (correct naming is important for this operation)
             fileImage = cv2.imread(path) # Open the image for OpenCV
             cropOrion(fileImage) # Crop the image
-            analyzeTargetOrion() # Analyze the target
+            analyzeTarget("orion") # Analyze the target
     
     showOutputWhenFinishedVar.set(showOutputWhenFinishedBackup) # Revert the showOutputWhenFinishedVar to its original value
 
@@ -1080,8 +1025,7 @@ def clearData():
     # List all the files in the folder
     for file in os.listdir(path):
         # If the file is a JPG (meaning that it was probably generated by the software, delete it)
-        # TODO: Add support for .jpeg also
-        if file.endswith(".jpg"):
+        if file.endswith(".jpg") or file.endswith(".jpeg"):
             os.remove(path + "\\" + file)
 
     label.config(text="/data and /images/output directories cleared") # Update the main label
@@ -2413,7 +2357,7 @@ useFileInfoCheckbutton.grid(column=5, row=0, rowspan=2, padx=5)
 leftImageButton = ttk.Button(buttonsFrame, text = "Select left image", command = loadImageLeft)
 leftImageButton.grid(row=0, column=0, padx=5, pady=5)
 
-analyzeTargetButton = ttk.Button(buttonsFrame, text = "Analyze target", command = analyzeTarget)
+analyzeTargetButton = ttk.Button(buttonsFrame, text = "Analyze target", command = lambda: analyzeTarget("nra"))
 analyzeTargetButton.grid(row=0, column=1, padx=5, pady=5)
 
 rightImageButton = ttk.Button(buttonsFrame, text = "Select right image", command = loadImageRight)
@@ -2427,7 +2371,7 @@ rightImageButton.grid(row=0, column=3, padx=5, pady=5)
 loadImageButton = ttk.Button(orionButtonsFrame, text = "Select image", command = loadImageOrion)
 loadImageButton.grid(row=0, column=0, padx=5, pady=5)
 
-analyzeOrionTargetButton = ttk.Button(orionButtonsFrame, text = "Analyze target", command = analyzeTargetOrion)
+analyzeOrionTargetButton = ttk.Button(orionButtonsFrame, text = "Analyze target", command = lambda: analyzeTarget("orion"))
 analyzeOrionTargetButton.grid(row=0, column=1, padx=5, pady=5)
 
 analyzeOrionTargetButton = ttk.Button(orionButtonsFrame, text = "Open folder", command = openFolderOrion)
