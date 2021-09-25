@@ -606,7 +606,7 @@ def showOutput():
     showOutputWindow = tk.Toplevel(root)
     showOutputWindow.minsize(525,750)
     showOutputWindow.geometry("525x750")
-    showOutputWindow.tk.call('wm', 'iconphoto', showOutputWindow._w, tk.PhotoImage(file='assets/icon.ico'))
+    showOutputWindow.tk.call('wm', 'iconphoto', showOutputWindow._w, tk.PhotoImage(file='assets/icon.png'))
     showOutputWindow.title("Target Analysis")
     #endregion
 
@@ -799,7 +799,7 @@ def showTrends():
     trendsWindow = tk.Toplevel(root)
     trendsWindow.minsize(250,100)
     trendsWindow.geometry("250x100")
-    trendsWindow.tk.call('wm', 'iconphoto', trendsWindow._w, tk.PhotoImage(file='assets/icon.ico'))
+    trendsWindow.tk.call('wm', 'iconphoto', trendsWindow._w, tk.PhotoImage(file='assets/icon.png'))
     trendsWindow.title("Target Analysis")
     #endregion
 
@@ -1049,7 +1049,7 @@ def openSettings():
     settingsWindow.title("Target Analysis")
     settingsWindow.minsize(width=500, height=640)
     settingsWindow.geometry("500x640")
-    settingsWindow.tk.call('wm', 'iconphoto', settingsWindow._w, tk.PhotoImage(file='assets/icon.ico'))
+    settingsWindow.tk.call('wm', 'iconphoto', settingsWindow._w, tk.PhotoImage(file='assets/icon.png'))
     #endregion
 
     #region Create frames
@@ -1397,7 +1397,7 @@ def openAnalysisWindow():
     analysisWindow.title("Target Analysis")
     analysisWindow.minsize(width=600, height=690)
     analysisWindow.geometry("600x690")
-    analysisWindow.tk.call('wm', 'iconphoto', analysisWindow._w, tk.PhotoImage(file='assets/icon.ico'))
+    analysisWindow.tk.call('wm', 'iconphoto', analysisWindow._w, tk.PhotoImage(file='assets/icon.png'))
     #endregion
 
     #region Create frames
@@ -2178,7 +2178,7 @@ root.tk.call("set_theme", "light")
 # Set up the window geometry
 root.minsize(550,400)
 root.geometry("550x400")
-root.tk.call('wm', 'iconphoto', root._w, tk.PhotoImage(file='assets/icon.ico'))
+root.tk.call('wm', 'iconphoto', root._w, tk.PhotoImage(file='assets/icon.png'))
 root.title("Target Analysis")
 #endregion
 
