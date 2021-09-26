@@ -22,7 +22,7 @@
 #endregion
 
 #region Import libraries
-from tkinter.constants import BOTH, BOTTOM, CENTER, DISABLED, EW, FLAT, HORIZONTAL, LEFT, NORMAL, NSEW, RIDGE, RIGHT, S, SOLID, SUNKEN, TOP, X
+from tkinter.constants import BOTH, BOTTOM, DISABLED, HORIZONTAL, LEFT, NORMAL, NSEW, RIDGE, RIGHT, TOP, X
 import cv2
 import tkinter as tk
 from tkinter import ttk
@@ -40,6 +40,8 @@ from configparser import ConfigParser
 
 # Loads an image for the left side of the target
 def loadImageLeft():
+    label.config(text="Loading left image...") # Update the main label
+
     leftCanvas.delete("all") # Clear the left canvas in case it already has an image
 
     imageFile = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
@@ -63,6 +65,8 @@ def loadImageLeft():
 
 # Loads an image for the right side of the target
 def loadImageRight():
+    label.config(text="Loading right image...") # Update the main label
+
     rightCanvas.delete("all") # Clear the right canvas in case it already has an image
 
     imageFile = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
@@ -99,6 +103,8 @@ def loadSingleImage():
 
 # Loads an image for an Orion target
 def loadImageOrion():
+    label.config(text="Loading image...") # Update the main label
+
     orionSingleCanvas.delete("all") # Clear the orion single canvas in case it already has an image
 
     imageFile = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
@@ -146,7 +152,7 @@ def loadOutdoorBull():
 
 # Crop image for an Orion target
 def cropOrion(image):
-    label.config(text="Cropping Orion image...") # Update the main label
+    label.config(text="Cropping image...") # Update the main label
     checkOutputDir() # Make sure the output directory exists
 
     # Height and width are set once and used for all bulls
@@ -214,6 +220,8 @@ def cropOrion(image):
     cv2.imwrite("images/output/upper-left.jpg", crop8)
     cv2.imwrite("images/output/lower-left.jpg", crop9)
     cv2.imwrite("images/output/bottom-left.jpg", crop10)
+
+    label.config(text="Cropped image") # Update the main label
 
 # Runs perspective transform to the image and crops it to 10 output images (CURRENTLY DISABLED)
 def cropSingle(image):
@@ -374,7 +382,7 @@ def cropSingle(image):
 
 # Crop image for right side of the target and start analysis process
 def cropRight(image):
-    label.config(text="Cropping right side...") # Update main label
+    label.config(text="Cropping right image...") # Update main label
 
     checkOutputDir() # Make sure that output directory exists
 
@@ -428,9 +436,11 @@ def cropRight(image):
     cv2.imwrite("images/output/bottom-right.jpg", crop5)
     cv2.imwrite("images/output/bottom-mid.jpg", crop6)
 
+    label.config(text="Cropped right image") # Update the main label
+
 # Crop image for left side of the target and start analysis process
 def cropLeft(image):
-    label.config(text="Cropping left side...") # Update main label
+    label.config(text="Cropping left image...") # Update main label
 
     checkOutputDir() # Make sure that output directory exists
 
@@ -473,6 +483,8 @@ def cropLeft(image):
     cv2.imwrite("images/output/upper-left.jpg", crop3)
     cv2.imwrite("images/output/lower-left.jpg", crop4)
     cv2.imwrite("images/output/bottom-left.jpg", crop5)
+
+    label.config(text="Cropped image") # Update the main label
 
 # Runs the analyzeImage function for every image that has been cropped out
 def analyzeTarget(type):
