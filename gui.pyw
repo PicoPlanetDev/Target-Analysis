@@ -682,7 +682,7 @@ def showOutput():
     #endregion
 
 # Open the working folder in Explorer
-# NotTODO Make this work on any operating system
+# TODO Make this work on any operating system
 # I a just going to display a warning message for now that should only be visible if the function fails on non Windows systems
 def showFolder():
     label.config(text="Opening folder... ONLY WORKS ON WINDOWS")
@@ -2276,7 +2276,7 @@ orionBottomFrame.pack(side=tk.TOP)
 #endregion
 
 #region Label at top of the frame alerts the user to the program's actions uses topFrame
-label = ttk.Label(topFrame, text="Click File -> Load Image to get started")
+label = ttk.Label(topFrame, text="Load an image to get started")
 label.pack(side=tk.TOP, padx=10, pady=5)
 
 # Add a separator line
