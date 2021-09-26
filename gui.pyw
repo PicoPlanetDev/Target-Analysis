@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: UTF-8 -*-
+
 #region Information
 ############################################################
 ## Target Analysis                                        ##
@@ -425,30 +428,6 @@ def cropRight(image):
     cv2.imwrite("images/output/bottom-right.jpg", crop5)
     cv2.imwrite("images/output/bottom-mid.jpg", crop6)
 
-    #region (OLD) Open Explorer to the location of the images
-    #os.system("explorer " + '"' + os.getcwd() + "\images" + '"')
-    #endregion
-
-    #region (OLD) Run the analysis program on all of the images
-    #os.system("python " + '"' + os.getcwd() + "\improved.py" + '"' + " --image " + '"' + os.getcwd() + "\images\\output\\top-mid.jpg" + '"')
-    #os.system("python " + '"' + os.getcwd() + "\improved.py" + '"' + " --image " + '"' + os.getcwd() + "\images\\output\\top-right.jpg" + '"')
-    #os.system("python " + '"' + os.getcwd() + "\improved.py" + '"' + " --image " + '"' + os.getcwd() + "\images\\output\\upper-right.jpg" + '"')
-    #os.system("python " + '"' + os.getcwd() + "\improved.py" + '"' + " --image " + '"' + os.getcwd() + "\images\\output\\lower-right.jpg" + '"')
-    #os.system("python " + '"' + os.getcwd() + "\improved.py" + '"' + " --image " + '"' + os.getcwd() + "\images\\output\\bottom-right.jpg" + '"')
-    #os.system("python " + '"' + os.getcwd() + "\improved.py" + '"' + " --image " + '"' + os.getcwd() + "\images\\output\\bottom-mid.jpg" + '"')
-    #endregion
-
-    #region (OLD) Run the analysis function
-    # analyzeImage("images/output/top-mid.jpg")
-    # analyzeImage("images/output/top-right.jpg")
-    # analyzeImage("images/output/upper-right.jpg")
-    # analyzeImage("images/output/lower-right.jpg")
-    # analyzeImage("images/output/bottom-right.jpg")
-    # analyzeImage("images/output/bottom-mid.jpg")
-    #endregion
-    
-    #label.config(text="Done")
-
 # Crop image for left side of the target and start analysis process
 def cropLeft(image):
     label.config(text="Cropping left side...") # Update main label
@@ -494,25 +473,6 @@ def cropLeft(image):
     cv2.imwrite("images/output/upper-left.jpg", crop3)
     cv2.imwrite("images/output/lower-left.jpg", crop4)
     cv2.imwrite("images/output/bottom-left.jpg", crop5)
-
-    # Open Explorer to the location of the images
-    #os.system("explorer " + '"' + os.getcwd() + "\images" + '"')
-
-    #region (OLD) Run the analysis program on all of the images
-    #os.system("python " + '"' + os.getcwd() + "\improved.py" + '"' + " --image " + '"' + os.getcwd() + "\images\\output\\top-left.jpg" + '"' + " --month " + monthVar.get() + " --day " + dayVar.get() + " --year " + yearVar.get() + " --name " + nameVar.get())
-    #os.system("python " + '"' + os.getcwd() + "\improved.py" + '"' + " --image " + '"' + os.getcwd() + "\images\\output\\upper-left.jpg" + '"' + " --month " + monthVar.get() + " --day " + dayVar.get() + " --year " + yearVar.get() + " --name " + nameVar.get())
-    #os.system("python " + '"' + os.getcwd() + "\improved.py" + '"' + " --image " + '"' + os.getcwd() + "\images\\output\\lower-left.jpg" + '"' + " --month " + monthVar.get() + " --day " + dayVar.get() + " --year " + yearVar.get() + " --name " + nameVar.get())
-    #os.system("python " + '"' + os.getcwd() + "\improved.py" + '"' + " --image " + '"' + os.getcwd() + "\images\\output\\bottom-left.jpg" + '"' + " --month " + monthVar.get() + " --day " + dayVar.get() + " --year " + yearVar.get() + " --name " + nameVar.get())
-    #endregion
-
-    #region (OLD) Run the analysis function on each image
-    # analyzeImage("images/output/top-left.jpg")
-    # analyzeImage("images/output/upper-left.jpg")
-    # analyzeImage("images/output/lower-left.jpg")
-    # analyzeImage("images/output/bottom-left.jpg")
-    #endregion
-
-    #label.config(text="Done")
 
 # Runs the analyzeImage function for every image that has been cropped out
 def analyzeTarget(type):
