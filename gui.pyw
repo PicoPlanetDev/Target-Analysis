@@ -595,15 +595,15 @@ def analyzeTarget(type):
     # If any menu items have been added above this, make sure to recount them to get the correct index
     # Counting starts at zero.
     filemenu.entryconfigure(1, state=NORMAL)
-
     
-    if individualOutputTypeVar.get() == "tkinter":
-        # If the user uses the new analysis window, open it
-        # There is no need to show the output here, instead, if it is needed,
-        # it will be shown when the Finish button is pressed in the analysis window
-        openAnalysisWindow()
-    elif showOutputWhenFinishedVar.get():
-        showOutput() # Otherwise, show the output now that analysis has finished
+    if not isOpeningFolder:
+        if individualOutputTypeVar.get() == "tkinter":
+            # If the user uses the new analysis window, open it
+            # There is no need to show the output here, instead, if it is needed,
+            # it will be shown when the Finish button is pressed in the analysis window
+            openAnalysisWindow()
+        elif showOutputWhenFinishedVar.get():
+            showOutput() # Otherwise, show the output now that analysis has finished
 
 # Shows the results of the program in a separate window and provides buttons for opening CSV files
 def showOutput():
@@ -718,7 +718,6 @@ def showOutput():
 
 # Open the working folder in Explorer
 # TODO Make this work on any operating system
-# I a just going to display a warning message for now that should only be visible if the function fails on non Windows systems
 def showFolder():
     label.config(text="Opening folder... ONLY WORKS ON WINDOWS")
     os.system("explorer " + '"' + os.getcwd() + '"') # Run a system command to open the folder using Explorer (Windows only)
@@ -738,14 +737,16 @@ def createCSV():
         csvfile.close() # Close the file
     label.config(text="Created CSV data file") # Update the main label
 
-# Opens and analyzes all files in a folder (more complex because it has to distinguish between left and right images)
+# Opens and analyzes all files in a folder (more complex than Orion because it has to distinguish between left and right images)
 def openFolder():
+    global isOpeningFolder
+    isOpeningFolder = True # Set a flag to indicate that the folder is being opened
     # Temporarily save the showOutputWhenFinishedVar to restore after the function is done
     # Then set it to false so that the output is not shown (because for large folders it could take a while)
     showOutputWhenFinishedBackup = showOutputWhenFinishedVar.get()
     showOutputWhenFinishedVar.set(False)
 
-    label.config(text="Opening folder") # Update the main label
+    label.config(text="Analyzing folder. This could take a while.") # Update the main label
 
     folder = filedialog.askdirectory() # Get the folder to open
     fileNum = 0 # Keep track of how many files have been opened
@@ -754,10 +755,9 @@ def openFolder():
     for file in os.listdir(folder):
         # Ignore files that are not images
         if file.endswith(".jpeg") or file.endswith(".jpg"):
-            path = os.getcwd() + "/images/" + file # Get the path to the file
+            path = folder + "/" + file # Get the path to the file
             setInfoFromFile(file) # Set the info from the file (correct naming is important for this operation)
             fileImage = cv2.imread(path) # Open the image
-
             # Check if the image is a left or right image
             if "left" in file:
                 cropLeft(fileImage)
@@ -772,11 +772,15 @@ def openFolder():
             if fileNum == 2:
                 analyzeTarget("nra")
                 fileNum = 0 # Reset the file number and continue
-    
+    label.config(text="Done. Open the /data folder to view results") # Update the main label
     showOutputWhenFinishedVar.set(showOutputWhenFinishedBackup) # Revert the showOutputWhenFinishedVar to its original value
+    isOpeningFolder = False # Set a flag to indicate that the folder is being opened
 
 # Opens and analyzes all files in a folder
 def openFolderOrion():
+    global tabControl
+    global isOpeningFolder
+    isOpeningFolder = True # Keep track of whether or not the folder is being opened
     # Temporarily save the showOutputWhenFinishedVar to restore after the function is done
     # Then set it to false so that the output is not shown (because for large folders it could take a while)
     showOutputWhenFinishedBackup = showOutputWhenFinishedVar.get()
@@ -794,32 +798,13 @@ def openFolderOrion():
             setInfoFromFile(file) # Set the info from the file (correct naming is important for this operation)
             fileImage = cv2.imread(path) # Open the image for OpenCV
             cropOrion(fileImage) # Crop the image
-            analyzeTarget("orion") # Analyze the target
+            if tabControl.index("current") == 1: # If the tab is the Orion tab
+                analyzeTarget("orion") # Analyze the target
+            elif tabControl.index("current") == 2: # If the tab is the Orion as NRA tab
+                analyzeTarget("orion-nrascoring") # Analyze the target
     
     showOutputWhenFinishedVar.set(showOutputWhenFinishedBackup) # Revert the showOutputWhenFinishedVar to its original value
-
-# Opens and analyzes all files in a folder
-def openFolderOrionAsNRA():
-    # Temporarily save the showOutputWhenFinishedVar to restore after the function is done
-    # Then set it to false so that the output is not shown (because for large folders it could take a while)
-    showOutputWhenFinishedBackup = showOutputWhenFinishedVar.get()
-    showOutputWhenFinishedVar.set(False)
-
-    label.config(text="Opening folder") # Update the main label
-
-    folder = filedialog.askdirectory() # Get the folder to open
-    
-    # os.listdir() returns a list of all files in the folder
-    for file in os.listdir(folder):
-        # Ignore files that are not images
-        if file.endswith(".jpeg") or file.endswith(".jpg"):
-            path = folder + "/" + file # Get the path to the file
-            setInfoFromFile(file) # Set the info from the file (correct naming is important for this operation)
-            fileImage = cv2.imread(path) # Open the image for OpenCV
-            cropOrion(fileImage) # Crop the image
-            analyzeTarget("orion-nrascoring") # Analyze the target
-    
-    showOutputWhenFinishedVar.set(showOutputWhenFinishedBackup) # Revert the showOutputWhenFinishedVar to its original value
+    isOpeningFolder = False # Keep track of whether or not the folder is being opened
 
 # Allows viewing of trends from existing data files
 def showTrends():
@@ -1023,7 +1008,7 @@ def setInfoFromFile(file):
     # The final section of the filename can be any length and it is "left" or "right" for NRA A-17 targets
     # However, Orion targets use only one scan so that space can hold the shooter's name
     # This is a kind of hacky way to determine if this is an Orion target
-    if tabControl.tab(tabControl.select(), "text") == "NRA/USAS-50":
+    if tabControl.index("current") == 1 or tabControl.index("current") == 2:
         nameVar.set(filename[9:-6])
 
     # Update the main label
@@ -1636,7 +1621,7 @@ def checkOutputDir():
         os.mkdir(path)
     # Otherwise, nothing needs to be done
 
-# Analyze an outdoor bull (CURRENTLY DISABLED) (ALSO NOT COMMENTED)
+# Analyze an outdoor bull (CURRENTLY DISABLED) (ALSO NOT DOCUMENTED)
 def analyzeOutdoorImage(image):
     # Basic implementation of the distance formula
     def ComputeDistance(x1, y1, x2, y2):
@@ -1736,7 +1721,7 @@ def analyzeOutdoorImage(image):
     for contour in contours:
         # Get the area of the contours
         area = cv2.contourArea(contour)
-        print(area)
+        #print(area)
         # Check if area is between max and min values for a bullet hole. Area is usually about 1000
         if area<200 and area>50:
             # Draw the detected contour for debugging
@@ -1747,7 +1732,7 @@ def analyzeOutdoorImage(image):
             (holeX,holeY),holeRadius = cv2.minEnclosingCircle(contour)
             holeCenter = (int(holeX),int(holeY))
             holeRadius = int(holeRadius)
-            print("HoleRadius: " + str(holeRadius))
+            #print("HoleRadius: " + str(holeRadius))
             if holeRadius < 40:
                 #cv2.circle(output,holeCenter,holeRadius,(0,255,0),2) # Enclosing circle
                 cv2.circle(output, holeCenter, 1, (0, 0, 255), 3) # Dot at the center
@@ -1900,7 +1885,7 @@ def analyzeImage(image):
     for contour in contours:
         # Get the area of the contours
         area = cv2.contourArea(contour)
-        print(area)
+        #print(area)
         # Check if area is between max and min values for a bullet hole. Area is usually about 1000
         if area<nraMaxContourArea.get() and area>nraMinContourArea.get():
 
@@ -2146,11 +2131,11 @@ def analyzeOrionImage(image):
                 #cv2.circle(output,holeCenter,int(innerSpindleRadius),(255,255,0),2)
 
                 distance = ComputeDistance(holeX, holeY, a, b)
-                print("Distance: " + str(distance))
-                print("Inner Spindle: " + str(innerSpindleRadius))
+                #print("Distance: " + str(distance))
+                #print("Inner Spindle: " + str(innerSpindleRadius))
                 # print("D-O: " + str(distance-outerSpindleRadius))
                 # print("D+O: " + str(distance+outerSpindleRadius))
-                print("pixelTen: " + str(pixelTen))
+                #print("pixelTen: " + str(pixelTen))
                 # print("pixelNine: " + str(pixelNine))
                 # print("pixelEight: " + str(pixelEight))
                 # print("pixelSeven: " + str(pixelSeven))
@@ -2431,6 +2416,7 @@ darkModeVar = tk.BooleanVar(root, False)
 showOutputWhenFinishedVar = tk.BooleanVar(root, True)
 individualOutputTypeVar = tk.StringVar(root, "tkinter")
 useFileInfo = tk.BooleanVar(root, True)
+isOpeningFolder = False
 
 #region While many similar parameters exist for non-Orion targets, each has been tuned for its use case and therefore are unique to Orion scanning.
 orionKernelSizeDpi1 = tk.IntVar(root, 2)
