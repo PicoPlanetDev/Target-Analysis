@@ -528,7 +528,17 @@ def analyzeTarget(type):
         analyzeOrionImage("images/output/lower-left.jpg")
         analyzeOrionImage("images/output/upper-left.jpg")
         analyzeOrionImage("images/output/top-left.jpg")
-
+    elif type == "orion-nrascoring":
+        analyzeOrionImageNRAScoring("images/output/top-mid.jpg")
+        analyzeOrionImageNRAScoring("images/output/top-right.jpg")
+        analyzeOrionImageNRAScoring("images/output/upper-right.jpg")
+        analyzeOrionImageNRAScoring("images/output/lower-right.jpg")
+        analyzeOrionImageNRAScoring("images/output/bottom-right.jpg")
+        analyzeOrionImageNRAScoring("images/output/bottom-mid.jpg")
+        analyzeOrionImageNRAScoring("images/output/bottom-left.jpg")
+        analyzeOrionImageNRAScoring("images/output/lower-left.jpg")
+        analyzeOrionImageNRAScoring("images/output/upper-left.jpg")
+        analyzeOrionImageNRAScoring("images/output/top-left.jpg")
     # Create variables to store the score and x count
     global score, xCount
     score = 100
@@ -2142,6 +2152,218 @@ def analyzeOrionImage(image):
         cv2.waitKey(0)
     cv2.imwrite(image + "-output.jpg", output) # Save the output image
 
+# Derived from analyzeOrionImage and analyzeImage
+def analyzeOrionImageNRAScoring(image):
+    # Basic implementation of the distance formula
+    def ComputeDistance(x1, y1, x2, y2):
+        return math.sqrt(((x2 - x1) ** 2)+((y2 - y1) ** 2))
+
+    #region multipliers are from NRA A-17 target in millimeters
+    # because scoring is performed according to the NRA A-17 target
+    outer = 46.150
+    five = 37.670/outer
+    six = 29.210/outer
+    seven = 20.750/outer
+    eight = 12.270/outer
+    nine = 3.810/outer
+
+    spindleRadius = 2.83
+    outerSpindleRadius = 4.5
+    #endregion
+
+    # Hold local dropped points and x count variables
+    droppedPoints = 0
+    xCount = 0
+
+    img = cv2.imread(image) # Read in the image for OpenCV
+    output = img.copy() # Create a copy of the image to draw on
+
+    #region Identify the target's outer ring
+    # Convert the image to grayscale
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    
+    if dpiVar.get() == 1:
+        # Blur using 3 * 3 kernel
+        gray_blurred = cv2.blur(gray, (orionKernelSizeDpi1.get(), orionKernelSizeDpi1.get()))
+        
+
+    if dpiVar.get() == 2:
+        # Blur using 3 * 3 kernel
+        gray_blurred = cv2.blur(gray, (orionKernelSizeDpi2.get(), orionKernelSizeDpi2.get()))
+
+    #cv2.imshow("gray_blurred", gray_blurred)
+
+    # Currently not performing any threshold operation
+    #threshold_image=cv2.inRange(gray_blurred, 100, 255)
+    #cv2.imshow("threshold_image", threshold_image)
+    
+    # Apply Hough transform on the blurred image.
+    if dpiVar.get() == 1:
+        detected_circles = cv2.HoughCircles(gray_blurred, cv2.HOUGH_GRADIENT, orionParam1Dpi1.get(), orionParam2Dpi1.get(), minRadius = orionMinRadiusDpi1.get())
+
+    if dpiVar.get() == 2:
+        detected_circles = cv2.HoughCircles(gray_blurred, cv2.HOUGH_GRADIENT, orionParam1Dpi2.get(), orionParam2Dpi2.get(), minRadius = orionMinRadiusDpi2.get())
+    
+    # Draw circles that are detected
+    if detected_circles is not None:
+
+        # Convert the circle parameters a, b and r to integers
+        detected_circles = np.uint16(np.around(detected_circles))
+    
+        for pt in detected_circles[0, :]:
+            a, b, r = pt[0], pt[1], pt[2]
+
+            # Draw a small circle (of radius 1) to show the center.
+            cv2.circle(output, (a, b), 1, (0, 0, 255), 3)
+
+            pixelOuter = r * 1.382564409826243
+
+            # Perform a calculation to determine if the system detected the wrong ring, and if so, correct the error
+            height, width, channels = img.shape
+
+            #print(str(r/width))
+            if r/width < 0.37 and r/width > 0.32:
+                pixelOuter = outer/23.63 * r
+                #print("Fixing radius proportions")
+            if r/width < 0.43 and r/width > 0.39:
+                pixelOuter = outer/28.75 * r
+
+            pixelFive = pixelOuter*five
+            pixelSix = pixelOuter*six
+            pixelSeven = pixelOuter*seven
+            pixelEight = pixelOuter*eight
+            pixelNine = pixelOuter*nine
+
+            spindleRadius = spindleRadius*(pixelOuter/outer)
+            outerSpindleRadius = outerSpindleRadius*(pixelOuter/outer)
+
+            cv2.circle(output, (a, b), int(pixelOuter), (0, 255, 0), 2)
+            #cv2.circle(output, (a, b), int(pixelFour), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixelFive), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixelSix), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixelSeven), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixelEight), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixelNine), (0, 255, 0), 2)
+            #cv2.circle(output, (a, b), int(pixelTen), (0, 255, 0), 2)
+
+            # Draw a small circle to show the center.
+            cv2.circle(output, (a, b), 1, (0, 0, 255), 3)
+    #endregion
+
+    #region Identify the hole in the target
+    
+    img_thresholded = cv2.inRange(img, (orionThreshMin.get(), orionThreshMin.get(), orionThreshMin.get()), (orionThreshMax.get(), orionThreshMax.get(), orionThreshMax.get())) # Make the image binary using a threshold
+    #cv2.imshow('Image Thresholded', img_thresholded)
+
+    # Remove noise from the binary image using the opening operation
+    if dpiVar.get() == 1:
+        kernel = np.ones((orionMorphologyOpeningKernelSizeDpi1.get(),orionMorphologyOpeningKernelSizeDpi1.get()),np.uint8)
+    
+    if dpiVar.get() == 2:
+        kernel = np.ones((orionMorphologyOpeningKernelSizeDpi2.get(),orionMorphologyOpeningKernelSizeDpi2.get()),np.uint8)
+    
+    opening = cv2.morphologyEx(img_thresholded, cv2.MORPH_OPEN, kernel)
+    #cv2.imshow('opening',opening)
+
+    # Find contours based on the denoised image
+    contours, hierarchy = cv2.findContours(opening.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    #print("Contours: " + str(len(contours)))
+    for contour in contours:
+        
+        # Get the area of the contours
+        area = cv2.contourArea(contour)
+
+        #cv2.drawContours(output,[contour],0,(255,0,0),2)
+        # Check if area is between max and min values for a bullet hole. Area is usually about 1000
+
+        if dpiVar.get() == 1:
+            minArea = orionMinContourAreaDpi1.get()
+            maxArea = orionMaxContourAreaDpi1.get()
+        if dpiVar.get() == 2:
+            minArea = orionMinContourAreaDpi2.get()
+            maxArea = orionMaxContourAreaDpi2.get()
+
+        if area<maxArea and area>minArea:
+            # Draw the detected contour for debugging
+            #cv2.drawContours(output,[contour],0,(255,0,0),2)
+
+            # Create an enclosing circle that can represent the bullet hole
+            (holeX,holeY),holeRadius = cv2.minEnclosingCircle(contour)
+            holeCenter = (int(holeX),int(holeY))
+            holeRadius = int(holeRadius)
+            #print("Hole radius: " + str(holeRadius))
+            #cv2.circle(output, holeCenter, holeRadius, (255,0,0), 2)
+            # compute the center of the contour (different way than enclosing circle) (I don't even understand how it works)
+            # M = cv2.moments(contour)
+            # cX = int(M["m10"] / M["m00"])
+            # cY = int(M["m01"] / M["m00"])
+            
+            # holeX = cX
+            # holeY = cY
+
+            holeCenter = (int(holeX),int(holeY))
+
+            if dpiVar.get() == 1:
+                maxHoleRadius = orionmaxHoleRadiusDpi1.get()
+            if dpiVar.get() == 2:
+                maxHoleRadius = orionmaxHoleRadiusDpi2.get()
+            
+            if holeRadius < maxHoleRadius:
+                #cv2.circle(output,holeCenter,holeRadius,(0,255,0),2) # Enclosing circle
+                cv2.circle(output, holeCenter, 1, (0, 0, 255), 3) # Dot at the center
+
+                # Draw the spindle
+                cv2.circle(output,holeCenter,int(outerSpindleRadius),(0,255,255),2)
+                #cv2.circle(output,holeCenter,int(innerSpindleRadius),(255,255,0),2)
+
+                distance = ComputeDistance(holeX, holeY, a, b)
+
+                if distance-spindleRadius < pixelNine:
+                    print("X")
+                    cv2.putText(output, "X", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    xCount += 1
+
+                if distance+spindleRadius < pixelEight and distance-spindleRadius > pixelNine:
+                    print("0")
+                    cv2.putText(output, "0", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+
+                if distance+spindleRadius > pixelEight and distance+spindleRadius < pixelSeven:
+                    print("1")
+                    cv2.putText(output, "1", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    droppedPoints += 1
+
+                if distance+spindleRadius > pixelSeven and distance+spindleRadius < pixelSix:
+                    print("2")
+                    cv2.putText(output, "2", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    droppedPoints += 2
+
+                if distance+spindleRadius > pixelSix and distance+spindleRadius < pixelFive:
+                    print("3")
+                    cv2.putText(output, "3", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    droppedPoints += 3
+
+                if distance+spindleRadius > pixelFive and distance+spindleRadius < pixelOuter:
+                    print("4")
+                    cv2.putText(output, "4", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    droppedPoints += 4
+                                    
+
+                holeRatioX = (holeX-a) / pixelOuter
+                holeRatioY = (holeY-a) / pixelOuter
+
+                global csvName
+
+                with open(csvName, 'a', newline="") as csvfile:
+                    filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                    filewriter.writerow([image, droppedPoints, xCount, holeX, holeY, distance, holeRatioX, holeRatioY])
+                    csvfile.close()
+    #endregion
+
+    if individualOutputTypeVar.get() == "legacy":
+        cv2.imshow("output", output) # Optional but make sure to use waitkey below if enabled, or else only image will show up.
+        cv2.waitKey(0)
+    cv2.imwrite(image + "-output.jpg", output) # Save the output image
+
 #region Initialize tkinter window
 root = tk.Tk()
 # Set the initial theme
@@ -2346,8 +2568,11 @@ loadImageButton.grid(row=0, column=0, padx=5, pady=5)
 analyzeOrionTargetButton = ttk.Button(orionButtonsFrame, text = "Analyze target", command = lambda: analyzeTarget("orion"))
 analyzeOrionTargetButton.grid(row=0, column=1, padx=5, pady=5)
 
-analyzeOrionTargetButton = ttk.Button(orionButtonsFrame, text = "Open folder", command = openFolderOrion)
+analyzeOrionTargetButton = ttk.Button(orionButtonsFrame, text = "Analyze with Orion scoring", command = lambda: analyzeTarget("orion-nrascoring"))
 analyzeOrionTargetButton.grid(row=0, column=2, padx=5, pady=5)
+
+openFolderOrionTargetButton = ttk.Button(orionButtonsFrame, text = "Open folder", command = openFolderOrion)
+openFolderOrionTargetButton.grid(row=0, column=3, padx=5, pady=5)
 #endregion
 
 #region Add canvases for NRA A-17 target preview
