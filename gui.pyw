@@ -59,7 +59,7 @@ def loadImageLeft():
 
     label.config(text="Right image loaded") # Update the main label
 
-    root.geometry("550x540") # Increase the window size to accomodate the image
+    root.minsize(550,540) # Increase the window size to accomodate the image
 
     cropLeft(leftImage) # Crop the image to prepare for analysis
 
@@ -84,7 +84,7 @@ def loadImageRight():
 
     label.config(text="Left image loaded") # Update the main label
 
-    root.geometry("550x540") # Increase the window size to accomodate the image
+    root.minsize(550,540) # Increase the window size to accomodate the image
 
     cropRight(rightImage) # Crop the image to prepare for analysis
 
@@ -122,7 +122,32 @@ def loadImageOrion():
 
     label.config(text="Orion image loaded") # Update the main label
 
-    root.geometry("550x540") # Increase the window size to accomodate the image
+    root.minsize(550,540) # Increase the window size to accomodate the image
+
+    cropOrion(singleImage) # Crop the image to prepare for analysis
+
+# Loads an image for an Orion target
+def loadImageOrion():
+    label.config(text="Loading image...") # Update the main label
+
+    orionSingleCanvasNRA.delete("all") # Clear the orion single canvas in case it already has an image
+
+    imageFile = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
+    singleImage = cv2.imread(imageFile) # Load the image for OpenCV image
+
+    # If the user wants to use information from the file name, do so
+    if useFileInfo.get() is True:
+        setInfoFromFile(imageFile)
+
+    orionSingleCanvasNRA.grid(row = 0, column = 1) # Refresh the canvas
+    
+    global orionPreview # Images must be stored globally to be show on the canvas
+    orionPreview = ImageTk.PhotoImage(Image.open(imageFile).resize((230, 350), Image.ANTIALIAS)) # Store the image as a tkinter photo image and resize it
+    orionSingleCanvasNRA.create_image(0, 0, anchor="nw", image=orionPreview) # Place the image on the canvas
+
+    label.config(text="Orion image loaded") # Update the main label
+
+    root.minsize(550,540) # Increase the window size to accomodate the image
 
     cropOrion(singleImage) # Crop the image to prepare for analysis
 
@@ -770,6 +795,29 @@ def openFolderOrion():
             fileImage = cv2.imread(path) # Open the image for OpenCV
             cropOrion(fileImage) # Crop the image
             analyzeTarget("orion") # Analyze the target
+    
+    showOutputWhenFinishedVar.set(showOutputWhenFinishedBackup) # Revert the showOutputWhenFinishedVar to its original value
+
+# Opens and analyzes all files in a folder
+def openFolderOrionAsNRA():
+    # Temporarily save the showOutputWhenFinishedVar to restore after the function is done
+    # Then set it to false so that the output is not shown (because for large folders it could take a while)
+    showOutputWhenFinishedBackup = showOutputWhenFinishedVar.get()
+    showOutputWhenFinishedVar.set(False)
+
+    label.config(text="Opening folder") # Update the main label
+
+    folder = filedialog.askdirectory() # Get the folder to open
+    
+    # os.listdir() returns a list of all files in the folder
+    for file in os.listdir(folder):
+        # Ignore files that are not images
+        if file.endswith(".jpeg") or file.endswith(".jpg"):
+            path = folder + "/" + file # Get the path to the file
+            setInfoFromFile(file) # Set the info from the file (correct naming is important for this operation)
+            fileImage = cv2.imread(path) # Open the image for OpenCV
+            cropOrion(fileImage) # Crop the image
+            analyzeTarget("orion-nrascoring") # Analyze the target
     
     showOutputWhenFinishedVar.set(showOutputWhenFinishedBackup) # Revert the showOutputWhenFinishedVar to its original value
 
@@ -2477,9 +2525,11 @@ tabControl = ttk.Notebook(root)
 
 tab1indoor = ttk.Frame(tabControl)
 tab2orion = ttk.Frame(tabControl)
+tab3orionnra = ttk.Frame(tabControl)
 
 tabControl.add(tab1indoor, text ='NRA A-17')
 tabControl.add(tab2orion, text ='NRA/USAS-50')
+tabControl.add(tab3orionnra, text ='NRA/USAS-50 as NRA A-17')
 
 tabControl.pack(side=tk.TOP, fill=BOTH, padx=10, pady=10)
 
@@ -2495,6 +2545,12 @@ orionButtonsFrame.pack(side=tk.TOP)
 
 orionBottomFrame = ttk.Frame(tab2orion)
 orionBottomFrame.pack(side=tk.TOP)
+
+orionAsNraFrame = ttk.Frame(tab3orionnra)
+orionAsNraFrame.pack(side=tk.TOP)
+
+orionAsNraBottomFrame = ttk.Frame(tab3orionnra)
+orionAsNraBottomFrame.pack(side=tk.TOP)
 #endregion
 
 #region Label at top of the frame alerts the user to the program's actions uses topFrame
@@ -2568,11 +2624,19 @@ loadImageButton.grid(row=0, column=0, padx=5, pady=5)
 analyzeOrionTargetButton = ttk.Button(orionButtonsFrame, text = "Analyze target", command = lambda: analyzeTarget("orion"))
 analyzeOrionTargetButton.grid(row=0, column=1, padx=5, pady=5)
 
-analyzeOrionTargetButton = ttk.Button(orionButtonsFrame, text = "Analyze with Orion scoring", command = lambda: analyzeTarget("orion-nrascoring"))
-analyzeOrionTargetButton.grid(row=0, column=2, padx=5, pady=5)
-
 openFolderOrionTargetButton = ttk.Button(orionButtonsFrame, text = "Open folder", command = openFolderOrion)
-openFolderOrionTargetButton.grid(row=0, column=3, padx=5, pady=5)
+openFolderOrionTargetButton.grid(row=0, column=2, padx=5, pady=5)
+#endregion
+
+#region Buttons for Orion NRA/USAS-50 scored as NRA A-17 target loading and analysis
+loadImageButtonOrionNRA = ttk.Button(orionAsNraFrame, text = "Select image", command = loadImageOrion)
+loadImageButtonOrionNRA.grid(row=0, column=0, padx=5, pady=5)
+
+analyzeOrionTargetButtonNRA = ttk.Button(orionAsNraFrame, text = "Analyze with Orion scoring", command = lambda: analyzeTarget("orion-nrascoring"))
+analyzeOrionTargetButtonNRA.grid(row=0, column=1, padx=5, pady=5)
+
+openFolderOrionTargetButtonNRA = ttk.Button(orionAsNraFrame, text = "Open folder", command = openFolderOrion)
+openFolderOrionTargetButtonNRA.grid(row=0, column=2, padx=5, pady=5)
 #endregion
 
 #region Add canvases for NRA A-17 target preview
@@ -2586,6 +2650,11 @@ rightCanvas.grid(row = 0, column = 1, padx=5, pady=5)
 #region Add a single canvas for Orion NRA/USAS-50 target preview
 orionSingleCanvas = tk.Canvas(orionBottomFrame, width=230,height=300)
 orionSingleCanvas.grid(row = 0, column = 0)
+#endregion
+
+#region Add a single canvas for Orion NRA/USAS-50 scored as NRA A-17 target preview
+orionSingleCanvasNRA = tk.Canvas(orionAsNraBottomFrame, width=230,height=300)
+orionSingleCanvasNRA.grid(row = 0, column = 0)
 #endregion
 
 tk.mainloop()
