@@ -1030,6 +1030,178 @@ def set_info_from_today():
     # Update the main label
     main_label.config(text="Set date to: " + month_var.get() + " " + day_var.get() + " " + year_var.get() + " with target number " + target_num_var.get())
 
+# Sets shooter name from bubbled in initials on Orion targets
+def set_name_from_bubbles(image):
+    DEFAULT_RADIUS = 15
+
+    image = cv2.imread("images/sigmondSJKBubbleTest.jpg")
+
+    #region Crop image to only include the bubble zones
+    h=int((250/3507)*image.shape[0])
+    w=int((1135/2550)*image.shape[1])
+    y=0
+    x=int((1415/2550)*image.shape[1])
+    crop = image[y:y+h, x:x+w]
+
+    def image_resize(image, width=None, height=None, inter=cv2.INTER_AREA):
+        """
+        image (cv2 image): image to be resized
+        width (int): width of resized image, None for automatic
+        height (int): height of resized image, None for automatic
+        inter (cv2 interpolation): interpolation method
+        """
+        dim = None
+        (h, w) = image.shape[:2]
+        if width is None and height is None:
+            return image
+        if width is None:
+            r = height / float(h)
+            dim = (int(w * r), height)
+        else:
+            r = width / float(w)
+            dim = (width, int(h * r))
+        resized = cv2.resize(image, dim, interpolation=inter)
+        return resized
+
+    crop = image_resize(crop, width=1135, height=250) # Resize image to fit the coordinate system that the algorithm uses later
+    output = crop.copy() # Make a copy for later
+    #endregion
+
+    #region Preprocess the image for circle detection
+    gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
+    thresh = cv2.threshold(gray, 190, 255, cv2.THRESH_BINARY)[1]
+    opening = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, np.ones((7, 7), np.uint8))
+    #endregion
+
+    #region Identify circles in the image
+    circles = cv2.HoughCircles(opening, cv2.HOUGH_GRADIENT, 1, 10, param1=30, param2=20, minRadius=10, maxRadius=50) # Detect circles
+    circles = np.uint16(np.around(circles)) # Dunno what this does but it works
+    #endregion
+
+    # Draw circle and center of circle on image
+    def draw_circle_points(image, a, b, r):
+        cv2.circle(image, (a, b), r, (0, 255, 0), 2)
+        cv2.circle(image, (a, b), 1, (0, 0, 255), 2)
+
+    # Based on coordinates of the circle, return a capital letter A-Z
+    def classify_letter(x, y):
+        # Letters 
+        # A B C D E F G H I J K L M on top row
+        # N O P Q R S T U V W X Y Z on bottom row
+
+        letter_x_positions = {
+            0: (60,100),
+            1: (105, 140),
+            2: (145, 180),
+            3: (190, 225),
+            4: (230, 270),
+            5: (275, 305),
+            6: (310, 350),
+            7: (355, 395),
+            8: (400, 435),
+            9: (440, 475),
+            10: (480, 520),
+            11: (525, 560),
+            12: (565, 600)
+        }
+
+        y_positions = {
+            0: (95,135),
+            1: (145, 185),
+        }
+
+        letter_key = None
+        for key, value in letter_x_positions.items():
+            if(value[0] <= x and x <= value[1]):
+                letter_key = key
+        
+        y_position_key = None
+        for key, value in y_positions.items():
+            if(value[0] <= y and y <= value[1]):
+                y_position_key = key
+        
+        if(letter_key is None or y_position_key is None):
+            return None
+
+        letters_dictionary = {
+            0: "A",
+            1: "B",
+            2: "C",
+            3: "D",
+            4: "E",
+            5: "F",
+            6: "G",
+            7: "H",
+            8: "I",
+            9: "J",
+            10: "K",
+            11: "L",
+            12: "M",
+            13: "N",
+            14: "O",
+            15: "P",
+            16: "Q",
+            17: "R",
+            18: "S",
+            19: "T",
+            20: "U",
+            21: "V",
+            22: "W",
+            23: "X",
+            24: "Y",
+            25: "Z"
+        }
+
+        both_rows_key = letter_key + (y_position_key * 13)
+        letter = letters_dictionary[both_rows_key]
+        return letter
+
+    # Check if region around point is filled
+    def check_if_filled(x, y, r):
+        check_points_x = range(x-r, x+r)
+        check_points_y = range(y-r, y+r)
+        values = []
+        for x in check_points_x:
+            for y in check_points_y:
+                values.append(thresh[y][x])
+        total = sum(values) / len(values)
+        if total <= 100:
+            return True
+        return False
+
+    letters = []
+
+    for pt in circles[0, :]:
+        a, b, r = pt[0], pt[1], pt[2]
+        draw_circle_points(output, a, b, r)
+
+        if check_if_filled(a, b, DEFAULT_RADIUS):
+            letter = classify_letter(a, b)
+            # Optionally put the detected letter on the image
+            # if letter is not None:
+            #     cv2.putText(output, letter, (a, b), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+            letters.append(letter)
+            #print(letter)
+
+    #print(letters)
+
+    def initals_to_name(letter_list):
+        letters = sorted(letter_list) # Sort the given list of letters
+        letters_string = "".join(letters) # and convert it to a string
+
+        initals_list = ["SK", "SJK", "AJ", "EG", "JT"]
+        for i in range(len(initals_list)):
+            initals_list[i] = "".join(sorted(initals_list[i]))
+        
+        names_list = ["Sigmond", "Sigmond", "Alex", "Emory", "JT"]
+
+        name_index = initals_list.index(letters_string)
+        name = names_list[name_index]
+        return name
+
+    name = initals_to_name(letters)
+    name_var.set(name)
+
 # Delete all files in the data folder
 def clear_data():
     path = str(os.getcwd()) + "/data" # Set the path to the data folder
