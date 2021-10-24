@@ -1547,12 +1547,17 @@ def open_settings():
 
     #region Create names
     # Frame is named 'settingstab4names'
+    # TODO: Add built in support for editing names file
     names_label = ttk.Label(settingstab4names, text="Initials to Names mapping", font=BOLD)
     names_label.pack(padx=5, pady=5, fill=X)
     description_label = ttk.Label(settingstab4names, text="Initials and Names are stored in an INI file which must be manually edited.")
     description_label.pack(padx=5, pady=5, fill=X)
     namesButton = ttk.Button(settingstab4names, text="Open names file", command=open_names_file)
     namesButton.pack(padx=5, pady=5)
+    names_info_label = ttk.Label(settingstab4names, text="Make sure to set the index to the number of names in the list (key + 1)")
+    names_info_label.pack(padx=5, pady=5, fill=X)
+    names_info_label2 = ttk.Label(settingstab4names, text="So if the last entry is '5 = Sigmond' set 'index = 6'")
+    names_info_label2.pack(padx=5, pady=5, fill=X)
     #endregion
 
     settings_window.protocol("WM_DELETE_WINDOW", on_close_settings) # If the settings window is closing, run the on_close_settings function
