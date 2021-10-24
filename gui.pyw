@@ -39,7 +39,7 @@ from configparser import ConfigParser
 #endregion
 
 # Loads an image for the left side of the target
-def loadImageLeft():
+def load_image_left():
     label.config(text="Loading left image...") # Update the main label
 
     leftCanvas.delete("all") # Clear the left canvas in case it already has an image
@@ -49,7 +49,7 @@ def loadImageLeft():
 
     # If the user wants to use information from the file name, do so
     if useFileInfo.get() is True:
-        setInfoFromFile(imageFile)
+        set_info_from_file(imageFile)
 
     leftCanvas.grid(row = 0, column = 0) # Refresh the canvas
     
@@ -61,10 +61,10 @@ def loadImageLeft():
 
     root.minsize(550,540) # Increase the window size to accomodate the image
 
-    cropLeft(leftImage) # Crop the image to prepare for analysis
+    crop_left(leftImage) # Crop the image to prepare for analysis
 
 # Loads an image for the right side of the target
-def loadImageRight():
+def load_image_right():
     label.config(text="Loading right image...") # Update the main label
 
     rightCanvas.delete("all") # Clear the right canvas in case it already has an image
@@ -74,7 +74,7 @@ def loadImageRight():
 
     # If the user wants to use information from the file name, do so
     if useFileInfo.get() is True:
-        setInfoFromFile(imageFile)
+        set_info_from_file(imageFile)
 
     rightCanvas.grid(row = 0, column = 1) # Refresh the canvas
     
@@ -86,23 +86,23 @@ def loadImageRight():
 
     root.minsize(550,540) # Increase the window size to accomodate the image
 
-    cropRight(rightImage) # Crop the image to prepare for analysis
+    crop_right(rightImage) # Crop the image to prepare for analysis
 
 # Loads an image taken by a smartphone camera that includes the entire target (CURRENTLY DISABLED)
-def loadSingleImage():
+def load_image_single():
     imageFile = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
     singleImage = cv2.imread(imageFile) # Load the image for OpenCV image
 
     # If the user wants to use information from the file name, do so
     if useFileInfo.get() is True:
-        setInfoFromFile(imageFile)
+        set_info_from_file(imageFile)
 
     label.config(text="Single image loaded") # Update the main label
 
-    cropSingle(singleImage) # Crop the image to prepare for analysis
+    crop_single(singleImage) # Crop the image to prepare for analysis
 
 # Loads an image for an Orion target
-def loadImageOrion():
+def load_image_orion():
     label.config(text="Loading image...") # Update the main label
 
     orionSingleCanvas.delete("all") # Clear the orion single canvas in case it already has an image
@@ -112,7 +112,7 @@ def loadImageOrion():
 
     # If the user wants to use information from the file name, do so
     if useFileInfo.get() is True:
-        setInfoFromFile(imageFile)
+        set_info_from_file(imageFile)
 
     orionSingleCanvas.grid(row = 0, column = 1) # Refresh the canvas
     
@@ -124,10 +124,10 @@ def loadImageOrion():
 
     root.minsize(550,540) # Increase the window size to accomodate the image
 
-    cropOrion(singleImage) # Crop the image to prepare for analysis
+    crop_orion(singleImage) # Crop the image to prepare for analysis
 
 # Loads an image for an Orion target
-def loadImageOrion():
+def load_image_orion_nra():
     label.config(text="Loading image...") # Update the main label
 
     orionSingleCanvasNRA.delete("all") # Clear the orion single canvas in case it already has an image
@@ -137,7 +137,7 @@ def loadImageOrion():
 
     # If the user wants to use information from the file name, do so
     if useFileInfo.get() is True:
-        setInfoFromFile(imageFile)
+        set_info_from_file(imageFile)
 
     orionSingleCanvasNRA.grid(row = 0, column = 1) # Refresh the canvas
     
@@ -149,21 +149,21 @@ def loadImageOrion():
 
     root.minsize(550,540) # Increase the window size to accomodate the image
 
-    cropOrion(singleImage) # Crop the image to prepare for analysis
+    crop_orion(singleImage) # Crop the image to prepare for analysis
 
-# Somewhat derived from loadSingleImage (CURRENTLY DISABLED)
-def loadOutdoorBull():
+# Somewhat derived from load_image_single (CURRENTLY DISABLED)
+def load_image_outdoor():
     imageFile = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
     singleImage = cv2.imread(imageFile) # Load the image for OpenCV image
 
     # If the user wants to use information from the file name, do so
     if useFileInfo.get() is True:
-        setInfoFromFile(imageFile)
+        set_info_from_file(imageFile)
 
     label.config(text="Outdoor image loaded") # Update the main label
 
     # Perform the cropping and analysis automatically
-    checkOutputDir()
+    check_output_dir()
 
     dsize = (int(singleImage.shape[1] * 0.2), int(singleImage.shape[0] * 0.2))
     resized = cv2.resize(singleImage, dsize)
@@ -173,12 +173,12 @@ def loadOutdoorBull():
     global csvName
     csvName = "data/data-" + nameVar.get() + dayVar.get() + monthVar.get() + yearVar.get() + targetNumVar.get() + ".csv"
 
-    analyzeOutdoorImage("images/output/outdoorBull.jpg")
+    analyze_outdoor_image("images/output/outdoorBull.jpg")
 
 # Crop image for an Orion target
-def cropOrion(image):
+def crop_orion(image):
     label.config(text="Cropping image...") # Update the main label
-    checkOutputDir() # Make sure the output directory exists
+    check_output_dir() # Make sure the output directory exists
 
     # Height and width are set once and used for all bulls
     # The height and width are determined by the size of the image multipled by a ratio,
@@ -249,7 +249,7 @@ def cropOrion(image):
     label.config(text="Cropped image") # Update the main label
 
 # Runs perspective transform to the image and crops it to 10 output images (CURRENTLY DISABLED)
-def cropSingle(image):
+def crop_single(image):
     # Helper function for four_point_transform - puts points in order in a clockwise fashion with the top left point listed first
     def order_points(pts):
         # initialzie a list of coordinates that will be ordered
@@ -270,7 +270,7 @@ def cropSingle(image):
         rect[3] = pts[np.argmax(diff)]
         # return the ordered coordinates
         return rect
-    # Helper function for cropSingle - Calculates perspective transform for an image
+    # Helper function for crop_single - Calculates perspective transform for an image
     def four_point_transform(image, pts):
         # obtain a consistent order of the points and unpack them
         # individually
@@ -303,7 +303,7 @@ def cropSingle(image):
         warped = cv2.warpPerspective(image, M, (maxWidth, maxHeight))
         # return the warped image
         return warped
-    # Helper function for cropSingle - Appends to list clicked points on the image
+    # Helper function for crop_single - Appends to list clicked points on the image
     def singleImageClicked(event, x, y, flags, params):
         if event == cv2.EVENT_LBUTTONDOWN:
             singleImageClickPosition.append((x*5,y*5))
@@ -313,7 +313,7 @@ def cropSingle(image):
 
     label.config(text="Cropping single image...")
 
-    checkOutputDir()
+    check_output_dir()
 
     global singleImageClickPosition
     singleImageClickPosition = []
@@ -406,10 +406,10 @@ def cropSingle(image):
     cv2.imwrite("images/output/top-left.jpg", crop10)
 
 # Crop image for right side of the target and start analysis process
-def cropRight(image):
+def crop_right(image):
     label.config(text="Cropping right image...") # Update main label
 
-    checkOutputDir() # Make sure that output directory exists
+    check_output_dir() # Make sure that output directory exists
 
     #region Crop the image
     # if dpiVar.get() == 2:
@@ -464,10 +464,10 @@ def cropRight(image):
     label.config(text="Cropped right image") # Update the main label
 
 # Crop image for left side of the target and start analysis process
-def cropLeft(image):
+def crop_left(image):
     label.config(text="Cropping left image...") # Update main label
 
-    checkOutputDir() # Make sure that output directory exists
+    check_output_dir() # Make sure that output directory exists
 
     # Flips the image vertically and horizontally before cropping
     verticalFlippedImage = cv2.flip(image, -1)
@@ -511,8 +511,8 @@ def cropLeft(image):
 
     label.config(text="Cropped image") # Update the main label
 
-# Runs the analyzeImage function for every image that has been cropped out
-def analyzeTarget(type):
+# Runs the analyze_image function for every image that has been cropped out
+def analyze_target(type):
     label.config(text="Analyzing target...") # Update main label
 
     # Create and store a name for the target output file
@@ -532,38 +532,38 @@ def analyzeTarget(type):
 
     # Analyze each cropped image
     if type == "nra":
-        analyzeImage("images/output/top-mid.jpg")
-        analyzeImage("images/output/top-right.jpg")
-        analyzeImage("images/output/upper-right.jpg")
-        analyzeImage("images/output/lower-right.jpg")
-        analyzeImage("images/output/bottom-right.jpg")
-        analyzeImage("images/output/bottom-mid.jpg")
-        analyzeImage("images/output/bottom-left.jpg")
-        analyzeImage("images/output/lower-left.jpg")
-        analyzeImage("images/output/upper-left.jpg")
-        analyzeImage("images/output/top-left.jpg")
+        analyze_image("images/output/top-mid.jpg")
+        analyze_image("images/output/top-right.jpg")
+        analyze_image("images/output/upper-right.jpg")
+        analyze_image("images/output/lower-right.jpg")
+        analyze_image("images/output/bottom-right.jpg")
+        analyze_image("images/output/bottom-mid.jpg")
+        analyze_image("images/output/bottom-left.jpg")
+        analyze_image("images/output/lower-left.jpg")
+        analyze_image("images/output/upper-left.jpg")
+        analyze_image("images/output/top-left.jpg")
     elif type == "orion":
-        analyzeOrionImage("images/output/top-mid.jpg")
-        analyzeOrionImage("images/output/top-right.jpg")
-        analyzeOrionImage("images/output/upper-right.jpg")
-        analyzeOrionImage("images/output/lower-right.jpg")
-        analyzeOrionImage("images/output/bottom-right.jpg")
-        analyzeOrionImage("images/output/bottom-mid.jpg")
-        analyzeOrionImage("images/output/bottom-left.jpg")
-        analyzeOrionImage("images/output/lower-left.jpg")
-        analyzeOrionImage("images/output/upper-left.jpg")
-        analyzeOrionImage("images/output/top-left.jpg")
+        analyze_orion_image("images/output/top-mid.jpg")
+        analyze_orion_image("images/output/top-right.jpg")
+        analyze_orion_image("images/output/upper-right.jpg")
+        analyze_orion_image("images/output/lower-right.jpg")
+        analyze_orion_image("images/output/bottom-right.jpg")
+        analyze_orion_image("images/output/bottom-mid.jpg")
+        analyze_orion_image("images/output/bottom-left.jpg")
+        analyze_orion_image("images/output/lower-left.jpg")
+        analyze_orion_image("images/output/upper-left.jpg")
+        analyze_orion_image("images/output/top-left.jpg")
     elif type == "orion-nrascoring":
-        analyzeOrionImageNRAScoring("images/output/top-mid.jpg")
-        analyzeOrionImageNRAScoring("images/output/top-right.jpg")
-        analyzeOrionImageNRAScoring("images/output/upper-right.jpg")
-        analyzeOrionImageNRAScoring("images/output/lower-right.jpg")
-        analyzeOrionImageNRAScoring("images/output/bottom-right.jpg")
-        analyzeOrionImageNRAScoring("images/output/bottom-mid.jpg")
-        analyzeOrionImageNRAScoring("images/output/bottom-left.jpg")
-        analyzeOrionImageNRAScoring("images/output/lower-left.jpg")
-        analyzeOrionImageNRAScoring("images/output/upper-left.jpg")
-        analyzeOrionImageNRAScoring("images/output/top-left.jpg")
+        analyze_orion_image_nra_scoring("images/output/top-mid.jpg")
+        analyze_orion_image_nra_scoring("images/output/top-right.jpg")
+        analyze_orion_image_nra_scoring("images/output/upper-right.jpg")
+        analyze_orion_image_nra_scoring("images/output/lower-right.jpg")
+        analyze_orion_image_nra_scoring("images/output/bottom-right.jpg")
+        analyze_orion_image_nra_scoring("images/output/bottom-mid.jpg")
+        analyze_orion_image_nra_scoring("images/output/bottom-left.jpg")
+        analyze_orion_image_nra_scoring("images/output/lower-left.jpg")
+        analyze_orion_image_nra_scoring("images/output/upper-left.jpg")
+        analyze_orion_image_nra_scoring("images/output/top-left.jpg")
     # Create variables to store the score and x count
     global score, xCount
     score = 100
@@ -581,7 +581,7 @@ def analyzeTarget(type):
     
     # If a global data CSV doesn't exist, create it
     if not os.path.exists(str(os.getcwd()) +"/data/data.csv"):
-        createCSV()
+        create_csv()
 
     # Save the target's basic info to the global data CSV
     with open("data/data.csv", 'a', newline="") as csvfile:
@@ -601,12 +601,12 @@ def analyzeTarget(type):
             # If the user uses the new analysis window, open it
             # There is no need to show the output here, instead, if it is needed,
             # it will be shown when the Finish button is pressed in the analysis window
-            openAnalysisWindow()
+            open_analysis_window()
         elif showOutputWhenFinishedVar.get():
-            showOutput() # Otherwise, show the output now that analysis has finished
+            show_output() # Otherwise, show the output now that analysis has finished
 
 # Shows the results of the program in a separate window and provides buttons for opening CSV files
-def showOutput():
+def show_output():
     label.config(text="Showing output") # Update main label
 
     #region Create window
@@ -629,7 +629,7 @@ def showOutput():
 
     #region Create buttons and info at the top
     # Create a button to open the target CSV file
-    openTargetCSVButton = ttk.Button(outputTopFrame, text="Open target CSV", command=lambda: openFile('"' + os.getcwd() + "/" + csvName + '"'))
+    openTargetCSVButton = ttk.Button(outputTopFrame, text="Open target CSV", command=lambda: open_file('"' + os.getcwd() + "/" + csvName + '"'))
     openTargetCSVButton.grid(row=0, column=0)
     outputTopFrame.grid_columnconfigure(0, weight=1)
     
@@ -639,7 +639,7 @@ def showOutput():
     outputTopFrame.grid_columnconfigure(1, weight=1)
 
     # Create a button to open the global data CSV file
-    openDataCSVButton = ttk.Button(outputTopFrame, text="Open data CSV", command=lambda: openFile('"' + os.getcwd() + "/data/data.csv" + '"'))
+    openDataCSVButton = ttk.Button(outputTopFrame, text="Open data CSV", command=lambda: open_file('"' + os.getcwd() + "/data/data.csv" + '"'))
     openDataCSVButton.grid(row=0, column=2)
     outputTopFrame.grid_columnconfigure(2, weight=1)
     #endregion
@@ -718,18 +718,18 @@ def showOutput():
 
 # Open the working folder in Explorer
 # TODO Make this work on any operating system
-def showFolder():
+def show_folder():
     label.config(text="Opening folder... ONLY WORKS ON WINDOWS")
     os.system("explorer " + '"' + os.getcwd() + '"') # Run a system command to open the folder using Explorer (Windows only)
     label.config(text="Working directory opened in Explorer") # Update the main label
 
 # Open documentation with associated viewer
-def openFile(file):
+def open_file(file):
     label.config(text="Opening file " + str(file)) # Update the main label
     os.system(file) # Run a system command to open the file using the default viewer (should work on any operating system)
 
 # Create CSV file set up for the global data csv
-def createCSV():
+def create_csv():
     # Open the CSV file
     with open('data/data.csv', 'x', newline="") as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL) # Create a filewriter
@@ -738,7 +738,7 @@ def createCSV():
     label.config(text="Created CSV data file") # Update the main label
 
 # Opens and analyzes all files in a folder (more complex than Orion because it has to distinguish between left and right images)
-def openFolder():
+def open_folder():
     global isOpeningFolder
     isOpeningFolder = True # Set a flag to indicate that the folder is being opened
     # Temporarily save the showOutputWhenFinishedVar to restore after the function is done
@@ -756,13 +756,13 @@ def openFolder():
         # Ignore files that are not images
         if file.endswith(".jpeg") or file.endswith(".jpg"):
             path = folder + "/" + file # Get the path to the file
-            setInfoFromFile(file) # Set the info from the file (correct naming is important for this operation)
+            set_info_from_file(file) # Set the info from the file (correct naming is important for this operation)
             fileImage = cv2.imread(path) # Open the image
             # Check if the image is a left or right image
             if "left" in file:
-                cropLeft(fileImage)
+                crop_left(fileImage)
             elif "right" in file:
-                cropRight(fileImage)
+                crop_right(fileImage)
             
             fileNum += 1 # Increment the file number
 
@@ -770,14 +770,14 @@ def openFolder():
             # Again, it is imperative that the naming convention is correct
             # See the README for more information
             if fileNum == 2:
-                analyzeTarget("nra")
+                analyze_target("nra")
                 fileNum = 0 # Reset the file number and continue
     label.config(text="Done. Open the /data folder to view results") # Update the main label
     showOutputWhenFinishedVar.set(showOutputWhenFinishedBackup) # Revert the showOutputWhenFinishedVar to its original value
     isOpeningFolder = False # Set a flag to indicate that the folder is being opened
 
 # Opens and analyzes all files in a folder
-def openFolderOrion():
+def open_folder_orion():
     global tabControl
     global isOpeningFolder
     isOpeningFolder = True # Keep track of whether or not the folder is being opened
@@ -795,19 +795,19 @@ def openFolderOrion():
         # Ignore files that are not images
         if file.endswith(".jpeg") or file.endswith(".jpg"):
             path = folder + "/" + file # Get the path to the file
-            setInfoFromFile(file) # Set the info from the file (correct naming is important for this operation)
+            set_info_from_file(file) # Set the info from the file (correct naming is important for this operation)
             fileImage = cv2.imread(path) # Open the image for OpenCV
-            cropOrion(fileImage) # Crop the image
+            crop_orion(fileImage) # Crop the image
             if tabControl.index("current") == 1: # If the tab is the Orion tab
-                analyzeTarget("orion") # Analyze the target
+                analyze_target("orion") # Analyze the target
             elif tabControl.index("current") == 2: # If the tab is the Orion as NRA tab
-                analyzeTarget("orion-nrascoring") # Analyze the target
+                analyze_target("orion-nrascoring") # Analyze the target
     
     showOutputWhenFinishedVar.set(showOutputWhenFinishedBackup) # Revert the showOutputWhenFinishedVar to its original value
     isOpeningFolder = False # Keep track of whether or not the folder is being opened
 
 # Allows viewing of trends from existing data files
-def showTrends():
+def show_trends():
     label.config(text="Showing trends window") # Update the main label
 
     #region Create window
@@ -973,7 +973,7 @@ def showTrends():
     loadCSVButton.pack(padx=10, pady=0)
 
 # Sets file options by parsing a correctly-named target         
-def setInfoFromFile(file):
+def set_info_from_file(file):
     filename = os.path.basename(file) # Get the filename alone in case it is given a full path
 
     dayVar.set(filename[0:2]) # Set the day
@@ -1015,7 +1015,7 @@ def setInfoFromFile(file):
     label.config(text="Set date to: " + monthVar.get() + " " + dayVar.get() + " " + yearVar.get() + " with target number " + targetNumVar.get())
 
 # Sets file options from today's date
-def setInfoFromToday():
+def set_info_from_today():
     today = datetime.datetime.now() # Get today's date
 
     monthVar.set(today.strftime("%B")) # Set the month from the date
@@ -1028,7 +1028,7 @@ def setInfoFromToday():
     label.config(text="Set date to: " + monthVar.get() + " " + dayVar.get() + " " + yearVar.get() + " with target number " + targetNumVar.get())
 
 # Delete all files in the data folder
-def clearData():
+def clear_data():
     path = str(os.getcwd()) + "/data" # Set the path to the data folder
     # List all the files in the folder
     for file in os.listdir(path):
@@ -1046,16 +1046,16 @@ def clearData():
     label.config(text="/data and /images/output directories cleared") # Update the main label
 
 # Create a settings window
-def openSettings():
+def open_settings():
     # If the settings window is going to be closed, save the changes and destroy the window
     def onCloseSettings():
-        updateConfig()
+        update_config()
         settingsWindow.destroy()
 
     # Update the settings using the config-backup.ini file, which should never be changed
     def revertSettings():
-        updateSettingsFromConfigFile("config-backup.ini")
-        updateConfig()
+        update_settings_from_config("config-backup.ini")
+        update_config()
 
     label.config(text="Showing settings window") # Update the main label
 
@@ -1115,7 +1115,7 @@ def openSettings():
     revertButton = ttk.Button(settingsButtonsFrame, text="Revert settings to default", command=revertSettings)
     revertButton.pack(side=LEFT, pady=5, padx=5)
 
-    saveButton = ttk.Button(settingsButtonsFrame, text="Save Settings", command=updateConfig)
+    saveButton = ttk.Button(settingsButtonsFrame, text="Save Settings", command=update_config)
     saveButton.pack(side=RIGHT, pady=5, padx=5)
     #endregion
 
@@ -1155,7 +1155,7 @@ def openSettings():
     # Dark mode switch
     # TODO: Figure out why dark mode makes labels more padded
     global darkModeVar
-    darkModeCheckbutton = ttk.Checkbutton(settingsDarkModeFrame, text='Use dark theme', style='Switch.TCheckbutton', variable=darkModeVar, onvalue=True, offvalue=False, command=switchDarkMode)
+    darkModeCheckbutton = ttk.Checkbutton(settingsDarkModeFrame, text='Use dark theme', style='Switch.TCheckbutton', variable=darkModeVar, onvalue=True, offvalue=False, command=update_dark_mode)
     darkModeCheckbutton.grid(column=0, row=0)
     #endregion
 
@@ -1325,7 +1325,7 @@ def openSettings():
     settingsWindow.protocol("WM_DELETE_WINDOW", onCloseSettings) # If the settings window is closing, run the onCloseSettings function
 
 # Show analysis output for each image
-def openAnalysisWindow():
+def open_analysis_window():
     # Load all of the images that have been saved from analysis
     def loadImages():
         # Create a list of images
@@ -1393,7 +1393,7 @@ def openAnalysisWindow():
     def onFinishButtonPressed():
         analysisWindow.destroy()
         if showOutputWhenFinishedVar.get():
-            showOutput()
+            show_output()
 
     # Update the buttons to show the correct state based on the current image index
     def updateButtons():
@@ -1456,7 +1456,7 @@ def openAnalysisWindow():
     updateButtons()
 
 # Enables/Disables dark theme UI based on darkMode boolean variable state
-def switchDarkMode():
+def update_dark_mode():
     # If dark mode is enabled, set the theme to dark
     if darkModeVar.get() == True:
         root.tk.call("set_theme", "dark") # Set the theme to dark
@@ -1464,7 +1464,7 @@ def switchDarkMode():
         root.tk.call("set_theme", "light") # Set the theme to light
 
 # Read settings from config file and apply them to the necessary tk vars
-def updateSettingsFromConfigFile(file):
+def update_settings_from_config(file):
     # Create a config parser
     config = ConfigParser()
 
@@ -1476,7 +1476,7 @@ def updateSettingsFromConfigFile(file):
     showOutputWhenFinishedVar.set(config.getboolean("settings", "showOutputWhenFinished"))
     individualOutputTypeVar.set(config.get('settings', 'individualOutputType'))
     useFileInfo.set(config.getboolean("settings", "useFileInfo"))
-    switchDarkMode() # Apply the dark mode setting
+    update_dark_mode() # Apply the dark mode setting
 
     # Continue setting variables for the Orion targets
     orionKernelSizeDpi1.set(config.getint("orion", "orionKernelSizeDpi1"))
@@ -1511,7 +1511,7 @@ def updateSettingsFromConfigFile(file):
     nramaxHoleRadius.set(config.getint("nra", "nramaxHoleRadius"))
 
 # Save settings to config file
-def createDefaultConfigFile(file):
+def create_default_config(file):
     # Create a config parser
     config = ConfigParser()
 
@@ -1522,7 +1522,7 @@ def createDefaultConfigFile(file):
     # Add the settings to the config file
     config.set('settings', 'dpi', str(dpiVar.get()))
     config.set('settings', 'darkMode', str(darkModeVar.get()))
-    config.set('settings', 'showOutputWhenFinished', str(showOutputWhenFinishedVar.get()))
+    config.set('settings', 'show_outputWhenFinished', str(showOutputWhenFinishedVar.get()))
     config.set('settings', 'individualOutputType', str(individualOutputTypeVar.get()))
     config.set('settings', 'useFileInfo', str(useFileInfo.get()))
 
@@ -1567,7 +1567,7 @@ def createDefaultConfigFile(file):
         config.write(f)
 
 # Updates config.ini file with current settings
-def updateConfig():
+def update_config():
     config = ConfigParser() # Create a config parser
 
     config.read('config.ini') # Read the config file
@@ -1614,7 +1614,7 @@ def updateConfig():
         config.write(f)
 
 # Ensures that an image/output directory is available to save images
-def checkOutputDir():
+def check_output_dir():
     path = os.getcwd() + "/images/output" # Store the path to the output directory
     # If the output directory does not exist, create it
     if os.path.isdir(path) == False:
@@ -1622,7 +1622,7 @@ def checkOutputDir():
     # Otherwise, nothing needs to be done
 
 # Analyze an outdoor bull (CURRENTLY DISABLED) (ALSO NOT DOCUMENTED)
-def analyzeOutdoorImage(image):
+def analyze_outdoor_image(image):
     # Basic implementation of the distance formula
     def ComputeDistance(x1, y1, x2, y2):
         return math.sqrt(((x2 - x1) ** 2)+((y2 - y1) ** 2))
@@ -1789,7 +1789,7 @@ def analyzeOutdoorImage(image):
     cv2.imwrite(image + "-output.jpg", output)
 
 # Derived from improved.py
-def analyzeImage(image):
+def analyze_image(image):
     # Basic implementation of the distance formula
     def ComputeDistance(x1, y1, x2, y2):
         return math.sqrt(((x2 - x1) ** 2)+((y2 - y1) ** 2))
@@ -1954,8 +1954,8 @@ def analyzeImage(image):
         cv2.waitKey(0)
     cv2.imwrite(image + "-output.jpg", output) # Save the output image
 
-# Derived from analyzeImage
-def analyzeOrionImage(image):
+# Derived from analyze_image
+def analyze_orion_image(image):
     # Basic implementation of the distance formula
     def ComputeDistance(x1, y1, x2, y2):
         return math.sqrt(((x2 - x1) ** 2)+((y2 - y1) ** 2))
@@ -2185,8 +2185,8 @@ def analyzeOrionImage(image):
         cv2.waitKey(0)
     cv2.imwrite(image + "-output.jpg", output) # Save the output image
 
-# Derived from analyzeOrionImage and analyzeImage
-def analyzeOrionImageNRAScoring(image):
+# Derived from analyze_orion_image and analyze_image
+def analyze_orion_image_nra_scoring(image):
     # Basic implementation of the distance formula
     def ComputeDistance(x1, y1, x2, y2):
         return math.sqrt(((x2 - x1) ** 2)+((y2 - y1) ** 2))
@@ -2455,43 +2455,43 @@ nramaxHoleRadius = tk.IntVar(root, 40)
 # Check for a config file. If it exists, load the values from it. Otherwise, create a config file frome the defaults.
 if os.path.isfile("config.ini"):
     # If the file exists, update settings to match the config file
-    updateSettingsFromConfigFile("config.ini")
+    update_settings_from_config("config.ini")
 else:
     # If the file does not exist, create it and set the default values
-    createDefaultConfigFile("config.ini")
+    create_default_config("config.ini")
 
 # If there is not config backup, create one now
 if not os.path.isfile("config-backup.ini"):
     # If the file does not exist, create it and set the default values
-    createDefaultConfigFile("config-backup.ini")
+    create_default_config("config-backup.ini")
 #endregion
 
 #region Menubar with File and Help menus
 menubar = tk.Menu(root)
 
 filemenu = tk.Menu(menubar, tearoff=0)
-#filemenu.add_command(label="Load left image", command=loadImageLeft)
-#filemenu.add_command(label="Load right image", command=loadImageRight)
-#filemenu.add_command(label="Load single image", command=loadSingleImage)
-#filemenu.add_command(label="Analyze target", command=analyzeTarget)
-#filemenu.add_command(label="Open Folder", command=openFolder)
-filemenu.add_command(label="Show in Explorer", command=showFolder)
-filemenu.add_command(label="Show Output", command=showOutput, state=DISABLED)
-filemenu.add_command(label="Show Trends", command=showTrends)
-#filemenu.add_command(label="(Experimental) Load Outdoor", command=loadOutdoorBull)
+#filemenu.add_command(label="Load left image", command=load_image_left)
+#filemenu.add_command(label="Load right image", command=load_image_right)
+#filemenu.add_command(label="Load single image", command=load_image_single)
+#filemenu.add_command(label="Analyze target", command=analyze_target)
+#filemenu.add_command(label="Open Folder", command=open_folder)
+filemenu.add_command(label="Show in Explorer", command=show_folder)
+filemenu.add_command(label="Show Output", command=show_output, state=DISABLED)
+filemenu.add_command(label="Show Trends", command=show_trends)
+#filemenu.add_command(label="(Experimental) Load Outdoor", command=load_image_outdoor)
 filemenu.add_separator()
-filemenu.add_command(label="Settings", command=openSettings)
+filemenu.add_command(label="Settings", command=open_settings)
 filemenu.add_separator()
-filemenu.add_command(label="Clear data", command=clearData)
+filemenu.add_command(label="Clear data", command=clear_data)
 filemenu.add_separator()
 filemenu.add_command(label="Exit", command=root.quit)
-#filemenu.add_command(label="Analysis Window", command=openAnalysisWindow)
+#filemenu.add_command(label="Analysis Window", command=open_analysis_window)
 menubar.add_cascade(label="File", menu=filemenu)
 
 helpmenu = tk.Menu(menubar, tearoff=0)
-helpmenu.add_command(label="README", command=lambda: openFile('"' + os.getcwd() + "/README.md" + '"'))
-helpmenu.add_command(label="Scanning diagram", command=lambda: openFile('"' + os.getcwd() + "/help/" + "scanner-digital.png" + '"'))
-helpmenu.add_command(label="Accuracy screenshot", command=lambda: openFile('"' + os.getcwd() + "/help/" + "accuracy-vs-hand-scored.png" + '"'))
+helpmenu.add_command(label="README", command=lambda: open_file('"' + os.getcwd() + "/README.md" + '"'))
+helpmenu.add_command(label="Scanning diagram", command=lambda: open_file('"' + os.getcwd() + "/help/" + "scanner-digital.png" + '"'))
+helpmenu.add_command(label="Accuracy screenshot", command=lambda: open_file('"' + os.getcwd() + "/help/" + "accuracy-vs-hand-scored.png" + '"'))
 menubar.add_cascade(label="Help", menu=helpmenu)
 
 root.config(menu=menubar)
@@ -2581,47 +2581,47 @@ nameEntry.grid(column = 0, row = 1, columnspan = 4, sticky=NSEW, padx=2.5)
 
 # Today button and use file info switch are placed to the right of the name and date
 # Use today's date button
-todayButton = ttk.Button(optionsFrame, text="Use Today", command=setInfoFromToday)
+todayButton = ttk.Button(optionsFrame, text="Use Today", command=set_info_from_today)
 todayButton.grid(column=4, row=0, rowspan=2, padx=2.5)
 
 # Use info from file switch
-useFileInfoCheckbutton = ttk.Checkbutton(optionsFrame, text='Use info from file', style='Switch.TCheckbutton', variable=useFileInfo, onvalue=True, offvalue=False, command=updateConfig)
+useFileInfoCheckbutton = ttk.Checkbutton(optionsFrame, text='Use info from file', style='Switch.TCheckbutton', variable=useFileInfo, onvalue=True, offvalue=False, command=update_config)
 useFileInfoCheckbutton.grid(column=5, row=0, rowspan=2, padx=5)
 #endregion
 
 #region Buttons for NRA A-17 target loading and analysis
-leftImageButton = ttk.Button(buttonsFrame, text = "Select left image", command = loadImageLeft)
+leftImageButton = ttk.Button(buttonsFrame, text = "Select left image", command = load_image_left)
 leftImageButton.grid(row=0, column=0, padx=5, pady=5)
 
-analyzeTargetButton = ttk.Button(buttonsFrame, text = "Analyze target", command = lambda: analyzeTarget("nra"))
-analyzeTargetButton.grid(row=0, column=1, padx=5, pady=5)
+analyze_targetButton = ttk.Button(buttonsFrame, text = "Analyze target", command = lambda: analyze_target("nra"))
+analyze_targetButton.grid(row=0, column=1, padx=5, pady=5)
 
-rightImageButton = ttk.Button(buttonsFrame, text = "Select right image", command = loadImageRight)
+rightImageButton = ttk.Button(buttonsFrame, text = "Select right image", command = load_image_right)
 rightImageButton.grid(row=0, column=2, padx=5, pady=5)
 
-rightImageButton = ttk.Button(buttonsFrame, text = "Open folder", command = openFolder)
+rightImageButton = ttk.Button(buttonsFrame, text = "Open folder", command = open_folder)
 rightImageButton.grid(row=0, column=3, padx=5, pady=5)
 #endregion
 
 #region Buttons for Orion NRA/USAS-50 target loading and analysis
-loadImageButton = ttk.Button(orionButtonsFrame, text = "Select image", command = loadImageOrion)
+loadImageButton = ttk.Button(orionButtonsFrame, text = "Select image", command = load_image_orion)
 loadImageButton.grid(row=0, column=0, padx=5, pady=5)
 
-analyzeOrionTargetButton = ttk.Button(orionButtonsFrame, text = "Analyze target", command = lambda: analyzeTarget("orion"))
+analyzeOrionTargetButton = ttk.Button(orionButtonsFrame, text = "Analyze target", command = lambda: analyze_target("orion"))
 analyzeOrionTargetButton.grid(row=0, column=1, padx=5, pady=5)
 
-openFolderOrionTargetButton = ttk.Button(orionButtonsFrame, text = "Open folder", command = openFolderOrion)
+openFolderOrionTargetButton = ttk.Button(orionButtonsFrame, text = "Open folder", command = open_folder_orion)
 openFolderOrionTargetButton.grid(row=0, column=2, padx=5, pady=5)
 #endregion
 
 #region Buttons for Orion NRA/USAS-50 scored as NRA A-17 target loading and analysis
-loadImageButtonOrionNRA = ttk.Button(orionAsNraFrame, text = "Select image", command = loadImageOrion)
+loadImageButtonOrionNRA = ttk.Button(orionAsNraFrame, text = "Select image", command = load_image_orion_nra)
 loadImageButtonOrionNRA.grid(row=0, column=0, padx=5, pady=5)
 
-analyzeOrionTargetButtonNRA = ttk.Button(orionAsNraFrame, text = "Analyze with Orion scoring", command = lambda: analyzeTarget("orion-nrascoring"))
+analyzeOrionTargetButtonNRA = ttk.Button(orionAsNraFrame, text = "Analyze with Orion scoring", command = lambda: analyze_target("orion-nrascoring"))
 analyzeOrionTargetButtonNRA.grid(row=0, column=1, padx=5, pady=5)
 
-openFolderOrionTargetButtonNRA = ttk.Button(orionAsNraFrame, text = "Open folder", command = openFolderOrion)
+openFolderOrionTargetButtonNRA = ttk.Button(orionAsNraFrame, text = "Open folder", command = open_folder_orion)
 openFolderOrionTargetButtonNRA.grid(row=0, column=2, padx=5, pady=5)
 #endregion
 
