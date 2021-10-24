@@ -22,7 +22,9 @@
 #endregion
 
 #region Import libraries
+from tkinter import font
 from tkinter.constants import BOTH, BOTTOM, DISABLED, HORIZONTAL, LEFT, NORMAL, NSEW, RIDGE, RIGHT, TOP, X
+from tkinter.font import BOLD
 import cv2
 import tkinter as tk
 from tkinter import ttk
@@ -245,6 +247,10 @@ def crop_orion(image):
     cv2.imwrite("images/output/upper-left.jpg", crop8)
     cv2.imwrite("images/output/lower-left.jpg", crop9)
     cv2.imwrite("images/output/bottom-left.jpg", crop10)
+
+    if use_bubbles_var.get() and (tab_control.index("current") == 1 or tab_control.index("current") == 2):
+        main_label.config(text="Setting name from bubbles...")
+        set_name_from_bubbles(image)
 
     main_label.config(text="Cropped image") # Update the main label
 
@@ -1032,9 +1038,9 @@ def set_info_from_today():
 
 # Sets shooter name from bubbled in initials on Orion targets
 def set_name_from_bubbles(image):
-    DEFAULT_RADIUS = 15
+    check_output_dir()
 
-    image = cv2.imread("images/sigmondSJKBubbleTest.jpg")
+    DEFAULT_RADIUS = 15
 
     #region Crop image to only include the bubble zones
     h=int((250/3507)*image.shape[0])
@@ -1178,10 +1184,12 @@ def set_name_from_bubbles(image):
         if check_if_filled(a, b, DEFAULT_RADIUS):
             letter = classify_letter(a, b)
             # Optionally put the detected letter on the image
-            # if letter is not None:
-            #     cv2.putText(output, letter, (a, b), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+            if letter is not None:
+                cv2.putText(output, letter, (a, b), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
             letters.append(letter)
             #print(letter)
+
+    cv2.imwrite("images/output/bubbles.jpg", output)
 
     #print(letters)
 
@@ -1189,11 +1197,10 @@ def set_name_from_bubbles(image):
         letters = sorted(letter_list) # Sort the given list of letters
         letters_string = "".join(letters) # and convert it to a string
 
-        initals_list = ["SK", "SJK", "AJ", "EG", "JT"]
+        initals_list, names_list = load_names_config()
+
         for i in range(len(initals_list)):
             initals_list[i] = "".join(sorted(initals_list[i]))
-        
-        names_list = ["Sigmond", "Sigmond", "Alex", "Emory", "JT"]
 
         name_index = initals_list.index(letters_string)
         name = names_list[name_index]
@@ -1201,6 +1208,40 @@ def set_name_from_bubbles(image):
 
     name = initals_to_name(letters)
     name_var.set(name)
+
+# Creates a default names config file
+def create_names_config():
+    config =  ConfigParser()
+
+    config.read('names.ini')
+
+    config.add_section('index')
+    config.set('index', 'index', '1')
+
+    config.add_section('initials')
+    config.set('initials', '0', 'SK')
+
+    config.add_section('names')
+    config.set('names', '0', 'Sigmond')
+
+    # Write the changes to the config file
+    with open('names.ini', 'w') as f:
+        config.write(f)
+
+# Loads initials and names from names.ini config file and and puts them into respective lists
+def load_names_config():
+    config =  ConfigParser()
+    config.read('names.ini')
+
+    index = config.getint('index', 'index')
+
+    initials_list = []
+    names_list = []
+    for i in range(index):
+        initials_list.append(config.get('initials', str(i)))
+        names_list.append(config.get('names', str(i)))
+    
+    return initials_list, names_list
 
 # Delete all files in the data folder
 def clear_data():
@@ -1232,13 +1273,18 @@ def open_settings():
         update_settings_from_config("config-backup.ini")
         update_config()
 
+    def open_names_file():
+        path = "'" + str(os.getcwd()) + '/' + 'names.ini' + "'"
+        print(path)
+        os.system("notepad " + path)
+
     main_label.config(text="Showing settings window") # Update the main label
 
     #region Create settings window
     settings_window = tk.Toplevel(root)
     settings_window.title("Target Analysis")
-    settings_window.minsize(width=500, height=640)
-    settings_window.geometry("500x640")
+    settings_window.minsize(width=600, height=640)
+    settings_window.geometry("600x640")
     settings_window.tk.call('wm', 'iconphoto', settings_window._w, tk.PhotoImage(file='assets/icon.png'))
     #endregion
 
@@ -1277,10 +1323,12 @@ def open_settings():
     settingstab1nraa17 = ttk.Frame(settings_tab_control)
     settingstab2orion = ttk.Frame(settings_tab_control)
     settingstab3orionDPI2 = ttk.Frame(settings_tab_control)
+    settingstab4names = ttk.Frame(settings_tab_control)
 
     settings_tab_control.add(settingstab1nraa17, text ='NRA A-17')
     settings_tab_control.add(settingstab2orion, text ='NRA/USAS-50 Orion 300dpi')
     settings_tab_control.add(settingstab3orionDPI2, text ='NRA/USAS-50 Orion 600dpi')
+    settings_tab_control.add(settingstab4names, text ='Names')
 
     settings_tab_control.pack(side=TOP, fill=X, padx=10, pady=5)
 
@@ -1497,6 +1545,16 @@ def open_settings():
     orionmax_hole_radius_dpi2_entry.grid(row=16, column=1)
     #endregion
 
+    #region Create names
+    # Frame is named 'settingstab4names'
+    names_label = ttk.Label(settingstab4names, text="Initials to Names mapping", font=BOLD)
+    names_label.pack(padx=5, pady=5, fill=X)
+    description_label = ttk.Label(settingstab4names, text="Initials and Names are stored in an INI file which must be manually edited.")
+    description_label.pack(padx=5, pady=5, fill=X)
+    namesButton = ttk.Button(settingstab4names, text="Open names file", command=open_names_file)
+    namesButton.pack(padx=5, pady=5)
+    #endregion
+
     settings_window.protocol("WM_DELETE_WINDOW", on_close_settings) # If the settings window is closing, run the on_close_settings function
 
 # Show analysis output for each image
@@ -1672,6 +1730,7 @@ def update_settings_from_config(file):
     orion_max_contour_area_dpi2.set(config.getint("orion", "orion_max_contour_area_dpi2"))
     orionmax_hole_radius_dpi1.set(config.getint("orion", "orionmax_hole_radius_dpi1"))
     orionmax_hole_radius_dpi2.set(config.getint("orion", "orionmax_hole_radius_dpi2"))
+    use_bubbles_var.set(config.getboolean("orion", "name_from_bubbles"))
 
     # Continue setting variables for the NRA A-17
     nra_kernal_size.set(config.getint("nra", "nra_kernal_size"))
@@ -1722,6 +1781,7 @@ def create_default_config(file):
     config.set('orion', 'orion_max_contour_area_dpi2', str(orion_max_contour_area_dpi2.get()))
     config.set('orion', 'orionmax_hole_radius_dpi1', str(orionmax_hole_radius_dpi1.get()))
     config.set('orion', 'orionmax_hole_radius_dpi2', str(orionmax_hole_radius_dpi2.get()))
+    config.set('orion', 'name_from_bubbles', str(use_bubbles_var.get()))
 
     # Add the NRA A-17 section to the config file
     config.add_section('nra')
@@ -1772,6 +1832,7 @@ def update_config():
     config.set('orion', 'orion_max_contour_area_dpi2', str(orion_max_contour_area_dpi2.get()))
     config.set('orion', 'orionmax_hole_radius_dpi1', str(orionmax_hole_radius_dpi1.get()))
     config.set('orion', 'orionmax_hole_radius_dpi2', str(orionmax_hole_radius_dpi2.get()))
+    config.set('orion', 'name_from_bubbles', str(use_bubbles_var.get()))
     # Continue updating the settings for the NRA A-17 section
     config.set('nra', 'nra_kernal_size', str(nra_kernal_size.get()))
     config.set('nra', 'nra_param1', str(nra_param1.get()))
@@ -2578,8 +2639,8 @@ root = tk.Tk()
 root.tk.call("source", "assets/sun-valley/sun-valley.tcl")
 root.tk.call("set_theme", "light")
 # Set up the window geometry
-root.minsize(550,400)
-root.geometry("550x400")
+root.minsize(600,400)
+root.geometry("600x400")
 root.tk.call('wm', 'iconphoto', root._w, tk.PhotoImage(file='assets/icon.png'))
 root.title("Target Analysis")
 #endregion
@@ -2591,6 +2652,7 @@ dark_mode_var = tk.BooleanVar(root, False)
 show_output_when_finished_var = tk.BooleanVar(root, True)
 individual_output_type_var = tk.StringVar(root, "tkinter")
 use_file_info_var = tk.BooleanVar(root, True)
+use_bubbles_var = tk.BooleanVar(root, False)
 is_opening_folder = False
 
 #region While many similar parameters exist for non-Orion targets, each has been tuned for its use case and therefore are unique to Orion scanning.
@@ -2639,6 +2701,12 @@ else:
 if not os.path.isfile("config-backup.ini"):
     # If the file does not exist, create it and set the default values
     create_default_config("config-backup.ini")
+
+#region If there is not a names config, create one now
+if not os.path.isfile("names.ini"):
+    # If the file does not exist, create it and set the default values
+    create_names_config()
+#endregion
 #endregion
 
 #region menubar with File and Help menus
@@ -2787,6 +2855,9 @@ analyze_orion_target_button.grid(row=0, column=1, padx=5, pady=5)
 
 open_folder_orion_target_button = ttk.Button(orion_buttons_frame, text = "Open folder", command = open_folder_orion)
 open_folder_orion_target_button.grid(row=0, column=2, padx=5, pady=5)
+
+use_bubbles_checkbutton = ttk.Checkbutton(orion_buttons_frame, text='Name from bubbles', style='Switch.TCheckbutton', variable=use_bubbles_var, onvalue=True, offvalue=False, command=update_config)
+use_bubbles_checkbutton.grid(column=3, row=0, padx=5, pady=5)
 #endregion
 
 #region Buttons for Orion NRA/USAS-50 scored as NRA A-17 target loading and analysis
@@ -2798,6 +2869,9 @@ analyze_orion_target_button_nra.grid(row=0, column=1, padx=5, pady=5)
 
 open_folder_orion_target_button_nra = ttk.Button(orion_as_nra_frame, text = "Open folder", command = open_folder_orion)
 open_folder_orion_target_button_nra.grid(row=0, column=2, padx=5, pady=5)
+
+use_bubbles_checkbutton_nra = ttk.Checkbutton(orion_as_nra_frame, text='Name from bubbles', style='Switch.TCheckbutton', variable=use_bubbles_var, onvalue=True, offvalue=False, command=update_config)
+use_bubbles_checkbutton_nra.grid(column=3, row=0, padx=5, pady=5)
 #endregion
 
 #region Add canvases for NRA A-17 target preview
