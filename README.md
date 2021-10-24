@@ -34,15 +34,13 @@ The images folder includes two scanned targets to test functionality. Run the so
 ## Documentation
 ### Information
 
-Created by Sigmond Kukla for the Mt. Lebanon Rifle Team in May, June, and July of 2021.
-
-Future people: Is COVID over yet?
+Created by Sigmond Kukla for the Mt. Lebanon Rifle Team in 2021. Project started in May 2021, currently in active development.
 
 ### Measurements
 
 *Disclaimer: This might not actually be what these rings are called... I'm just going off of what I used in the code.
 
-Measurements are from *NRA Smallbore Rifle Rules* January 2010 booklet.
+Measurements are from *NRA Smallbore Rifle Rules* January 2010 edition booklet.
 
 **NRA A-17 target:**
 - Outer ring   - 46.150 millimeters radius
@@ -50,17 +48,17 @@ Measurements are from *NRA Smallbore Rifle Rules* January 2010 booklet.
 - Six ring     - 29.210 millimeters radius
 - Seven ring   - 20.750 millimeters radius
 - Eight ring   - 12.270 millimeters radius
-- Nine ring    - 3.810 millimeters radius
+- Nine ring    - 03.810 millimeters radius
 
 **NRA/USAS-50 target:**
-- outer (three) = 33.38 millimeters radius
-- four = 28.5 millimeters radius
-- five = 23.63 millimeters radius
-- six = 18.75 millimeters radius
-- seven = 13.87 millimeters radius
-- eight = 9 millimeters radius
-- nine = 4.12 millimeters radius
-- ten = 0.76 millimeters radius
+- outer (three) - 33.38 millimeters radius
+- four          - 28.50 millimeters radius
+- five          - 23.63 millimeters radius
+- six           - 18.75 millimeters radius
+- seven         - 13.87 millimeters radius
+- eight         - 09.00 millimeters radius
+- nine          - 04.12 millimeters radius
+- ten           - 00.76 millimeters radius
 
 Inner scoring spindle on scoring gauge uses radius 2.8 millimeters (equivalent to ⌀5.6mm)
 Outer scoring spindle uses radius 4.5 millimeters (equivalent to ⌀9mm)
@@ -72,9 +70,9 @@ The target analysis system uses Hough Circles to identify a large circle in the 
 
 **If you installed Target Analysis using the bundled installation:**
 
-Nothing else is necessary. You should be able to simply open **gui.exe**
+Nothing else is necessary. You should be able to simply open **gui.exe** or **TargetAnalysis.exe**, depending on the version.
 
-**If you installed Target Analysis manually:**
+**If you installed Target Analysis manually (with Python):**
 
 Python 3 and the following Python packages must be installed:
 - opencv-python
@@ -84,12 +82,14 @@ Python 3 and the following Python packages must be installed:
 - ttkthemes
 
 You can do this automatically by running the **install_dependencies.bat** file in the Target-Analysis-main directory.
+If you are running Target Analysis on Linux, you must use the Python installation. You can install the required packages by using the following command:
+```$ pip install -r requirements.txt```
 
 ### Scanning
 
 #### NRA A-17 target scanning
 
-For a normal-sized scanner glass, two scans must be used for a standard NRA A-17 target.
+For a normal-sized scanner glass, two scans must be used.
 
 1. Place the target on the scanner glass with the top left of the back of the target pressed firmly into the back right corner of the glass.
 2. Scan the target to the computer, saving it as an IMAGE (jpeg file) in the Target Analysis -> "images" folder.
@@ -105,22 +105,22 @@ For example:
 
 #### Orion NRA/USAS-50 target scanning
 
-For an Orion Scoring System NRA/USAS-50 target, only one scan is necessary. 
+For an Orion Scoring System NRA/USAS-50 target, only one scan is necessary.
 Make sure that the corner of the target with the barcode is aligned to the front-right corner of the scanner.
 
 ### Usage
 
 **To score a target:**
-1. Select a target type by clicking one of the tabs on the main screen: **NRA A-17** or **NRA/USAS-50**. The NRA/USAS-50 is optimized for scoring an ORION target.
-2. Click Select Image or Open Folder. If you are scanning an NRA A-17 target, please select an image for both sides of the target.
-3. Click Analyze Target. Hit any key on the keyboard or click the [X] in the top right to see the next bull. The bulls are displayed in clockwise order, starting with the top-middle bull. The sighter bull(s) in the center are omitted.
+1. Select a target type by clicking one of the tabs on the main screen: **NRA A-17** or **NRA/USAS-50**. The NRA/USAS-50 is compatible with scoring ORION targets. You can also select the **NRA/USAS-50 as NRA A-17** tab to score an NRA/USAS-50 target as if it were NRA A-17.
+2. Click *Select Image* or *Open Folder*. If you are scanning an NRA A-17 target, please select an image for both sides of the target.
+3. Click Analyze Target. You may have to wait for a few seconds before anything appears. Depending on your version of Target Analysis, a you may have options to move forward or backward through the bulls. Otherwise, press any key on the keyboard or click the [X] in the top right to see the next bull. The bulls are displayed in clockwise order, starting with the top-middle bull. The sighter bull(s) in the center are omitted. After 10 bulls, you will either have a *Finish* button or will need to press the [X] to close the last bull.
 4.
-    1. Click File -> Show Output (as long as you scored a single target as opposed to using Open Folder) to see the score.
-    2. Click File -> Show in Explorer, then open the data directory, then open data.csv to view scores for targets analyzed using Open Folder.
+    1. After you close the last bull, an overview window may show up, indicating the score on each bull and the target score. If not, press **File -> Show Output** to view this window.
+    2. If you analyzed a batch of targets using *Open Folder*, a data folder will appear. Open the ```data.csv``` file in a program such as Microsoft Excel to view scores for the entire batch. Open individual CSV files (named as below) to view data and debug information for individual targets.
 
-Data for each target is stored in the /data folder named as follows:
+Data for each target is stored in the `/data` folder named as follows:
 
-`data-[Name][Day][Month][Year][Target number].csv`
+```data-[Name][Day][Month][Year][Target number].csv```
 
 #### To set the date, name, and target number
 
@@ -129,12 +129,14 @@ If "Use info from file" is selected, the program will automatically update the d
 For this to work, you must name the target files as such:
 
 **NRA A-17:**
+
 <2 number day><3 letter shortened month><Year><left/right><target number>.jpeg
 
 For example:
 "03jan2021left1.jpeg" and "03jan2021right1.jpeg"
 
 **NRA/USAS-50:**
+
 <2 number day><3 letter shortened month><Year><Shooter's name><target number>.jpeg
 
 For example:
@@ -150,7 +152,32 @@ When using either option, **please make sure to disable "Use info from file" in 
 
 The name should identify the target easily. I prefer to use the shooter's name for this. It is important to make the name one word only (Sigmond or SigmondKukla for example) to avoid problems related to the system path of files that use this name.
 
-#### To show identified trends for a single shooter across a range of dates:
+**Orion Targets:**
+
+Orion targets also have a set of bubbles at the top right of the page that can be filled with the shooter's initials. If you fill in the initials before scanning the target, Target Analysis can set the name based on initials. See the below photo for example:
+
+![Bubbles example](https://github.com/PicoPlanetDev/Target-Analysis/blob/main/help/bubbles.jpg?raw=true)
+
+**To set up initials-to-name mapping:**
+1. Open Target Analysis and click File -> Settings
+2. Select the *Names* tab of the Settings menu
+3. Click the <kbd>Open Names File</kbd> button
+4. Under `[initials]`, add a key as such:
+```
+[initials]
+0 = SK
+```
+5. Then, under `[names]`, add a key as such:
+```
+[names]
+0 = Sigmond
+```
+6. Finally, under `[index]`, set the `index = 1` key to the number of names that have been defined. For example, if there is one name defined, set the index to 1. Note that the index does **not** line up exactly with the keys. Instead, index should be set to the `<highest key> + 1`. For example, if the highest key is `5 = SK` and `5 = Sigmond`, then set the index to **6**. This is because the keys start at zero, while the index starts at 1.
+7. Save and close the file.
+8. Then, under the *NRA/USAS-50* or the *NRA/USAS-50 as NRA A-17* tab, enable *Name from bubbles*
+9. *Name from bubbles* works for both individual targets *and* batch scanning. In the event that a name was supplied in the filename and also by bubbles, the name from the bubbles takes priority. If the name from the bubbles is not recognized, or an error occurs in the bubble comparison process, the name from the file will be used. If no name is provided in the filename, Target Analysis will revert to the default or last used name in this case.
+
+#### To display trends for a single shooter across a range of dates:
 1. Click File -> Show Trends.
 2. Select Load Folder or Load File, depending on what trend you would like to see:
     a. Load Folder allows you to open the data folder (or another folder with output files in it) to see which bull has the lowest score on average versus the highest score.
@@ -195,9 +222,8 @@ Please note that there was not a noticeable accuracy increase when using the 600
 ├───assets
 ├───data
 ├───help
-├───images
-│   └───output
-└───old
+└───images
+    └───output
 ```
 
 **assets** - Do not edit.
@@ -208,9 +234,7 @@ Please note that there was not a noticeable accuracy increase when using the 600
 
 **images** - Put targets that need to be scored here. You can set this as your default scanning directory so that the scanner automatically sends them here.
 
-**images/output** - Do not edit while Target Analysis is running, files inside are automatically overwritten every time a target is scored. Files in this folder may be viewed for debugging or scrutiny. Files in this folder may be copied to another folder to preserve them for future reference.
-
-**old** - Contains older versions of this software that have been superseded by the current version. I do not reccomend using them
+**images/output** - Do not edit while Target Analysis is running, files inside are automatically overwritten every time a target is scored. Files in this folder may be viewed for debugging or verification purposes. Files in this folder may be copied to another folder to preserve them for future reference, where they will not be overwritten by Target Analysis.
 
 ### Building to an EXE
 Using pyinstaller, an EXE file can be built for distribution. If you only intend to use Target Analysis, this is not necessary. See **Installation** for more details.
@@ -225,8 +249,30 @@ This step-by-step is designed for advanced user:
 
 ### Developer's note
 
-This is getting to be a pretty long readme, so I guess it's best to cut it short here.
-I really enjoyed developing Target Analysis (gotta think of a better name maybe) and hope that it can be of use to someone. If you have anything that you would like to see in the software, please let me know. Also, I would appreciate it if you sent me any bugs or issues that you have found. I would be happy to help sort them out.
+This is getting to be a pretty long README, thank you for sticking with it all the way down to here!
+I really enjoyed developing Target Analysis (still thinking about the name) and hope that it can be of use to someone. If you have anything that you would like to see in the software, please let me know and I will investigate ways to include it. Also, I would appreciate it if you sent me any bugs or issues that you have found. I would be happy to help sort them out.
 
 Thanks for using Target Analysis!
-Sigmond
+Sigmond Kukla
+
+### Copyright, License, and Contact Information
+```
+############################################################
+## Target Analysis                                        ##
+############################################################
+## Copyright (c) 2021 Sigmond Kukla, All Rights Reserved  ##
+############################################################
+## Author: Sigmond Kukla                                  ##
+## Copyright: Copyright 2021, Sigmond Kukla               ##
+## The Target Analysis system does not include a license. ##
+## This means that this work is under exclusive           ##
+## copyright by the developer (Sigmond Kukla) alone.      ##
+## Therefore, you are not permitted to copy, distribute,  ##
+## or modify this work and claim it is your own.          ##
+## Maintainer: Sigmond Kukla                              ##
+## Contact: picoplanetdev@gmail.com (business)            ##
+##          skukla61@mtlstudents.net (school)             ##
+##          +1 (412)-287-0463 (mobile phone)              ##
+## Status: Released, active development                   ##
+############################################################
+```

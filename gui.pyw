@@ -17,12 +17,12 @@
 ## Maintainer: Sigmond Kukla                              ##
 ## Contact: picoplanetdev@gmail.com (business)            ##
 ##          skukla61@mtlstudents.net (school)             ##
+##          +1 (412)-287-0463 (mobile phone)              ##
 ## Status: Released, active development                   ##
 ############################################################
 #endregion
 
 #region Import libraries
-from tkinter import font
 from tkinter.constants import BOTH, BOTTOM, DISABLED, HORIZONTAL, LEFT, NORMAL, NSEW, RIDGE, RIGHT, TOP, X
 from tkinter.font import BOLD
 import cv2
