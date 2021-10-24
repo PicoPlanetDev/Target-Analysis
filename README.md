@@ -43,14 +43,16 @@ Created by Sigmond Kukla for the Mt. Lebanon Rifle Team in 2021. Project started
 Measurements are from *NRA Smallbore Rifle Rules* January 2010 edition booklet.
 
 **NRA A-17 target:**
+```
 - Outer ring   - 46.150 millimeters radius
 - Five ring    - 37.670 millimeters radius
 - Six ring     - 29.210 millimeters radius
 - Seven ring   - 20.750 millimeters radius
 - Eight ring   - 12.270 millimeters radius
 - Nine ring    - 03.810 millimeters radius
-
+```
 **NRA/USAS-50 target:**
+```
 - outer (three) - 33.38 millimeters radius
 - four          - 28.50 millimeters radius
 - five          - 23.63 millimeters radius
@@ -59,7 +61,7 @@ Measurements are from *NRA Smallbore Rifle Rules* January 2010 edition booklet.
 - eight         - 09.00 millimeters radius
 - nine          - 04.12 millimeters radius
 - ten           - 00.76 millimeters radius
-
+```
 Inner scoring spindle on scoring gauge uses radius 2.8 millimeters (equivalent to ⌀5.6mm)
 Outer scoring spindle uses radius 4.5 millimeters (equivalent to ⌀9mm)
 
