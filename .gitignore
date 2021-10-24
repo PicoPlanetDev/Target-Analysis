@@ -158,6 +158,7 @@ data/*
 
 # exclude config files
 config.ini
+config-backup.ini
 
 # keep spec
 !gui.spec

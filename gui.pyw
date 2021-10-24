@@ -40,144 +40,144 @@ from configparser import ConfigParser
 
 # Loads an image for the left side of the target
 def load_image_left():
-    label.config(text="Loading left image...") # Update the main label
+    main_label.config(text="Loading left image...") # Update the main label
 
-    leftCanvas.delete("all") # Clear the left canvas in case it already has an image
+    left_canvas.delete("all") # Clear the left canvas in case it already has an image
 
-    imageFile = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
-    leftImage = cv2.imread(imageFile) # Load the image for OpenCV image
+    image_file = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
+    left_image = cv2.imread(image_file) # Load the image for OpenCV image
 
     # If the user wants to use information from the file name, do so
-    if useFileInfo.get() is True:
-        set_info_from_file(imageFile)
+    if use_file_info_var.get() is True:
+        set_info_from_file(image_file)
 
-    leftCanvas.grid(row = 0, column = 0) # Refresh the canvas
+    left_canvas.grid(row = 0, column = 0) # Refresh the canvas
     
-    global leftPreview # Images must be stored globally to be show on the canvas
-    leftPreview = ImageTk.PhotoImage(Image.open(imageFile).resize((230, 350), Image.ANTIALIAS)) # Store the image as a tkinter photo image and resize it
-    leftCanvas.create_image(0, 0, anchor="nw", image=leftPreview) # Place the image on the canvas
+    global left_preview # Images must be stored globally to be show on the canvas
+    left_preview = ImageTk.PhotoImage(Image.open(image_file).resize((230, 350), Image.ANTIALIAS)) # Store the image as a tkinter photo image and resize it
+    left_canvas.create_image(0, 0, anchor="nw", image=left_preview) # Place the image on the canvas
 
-    label.config(text="Right image loaded") # Update the main label
+    main_label.config(text="Right image loaded") # Update the main label
 
     root.minsize(550,540) # Increase the window size to accomodate the image
 
-    crop_left(leftImage) # Crop the image to prepare for analysis
+    crop_left(left_image) # Crop the image to prepare for analysis
 
 # Loads an image for the right side of the target
 def load_image_right():
-    label.config(text="Loading right image...") # Update the main label
+    main_label.config(text="Loading right image...") # Update the main label
 
-    rightCanvas.delete("all") # Clear the right canvas in case it already has an image
+    right_canvas.delete("all") # Clear the right canvas in case it already has an image
 
-    imageFile = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
-    rightImage = cv2.imread(imageFile) # Load the image for OpenCV image
+    image_file = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
+    right_image = cv2.imread(image_file) # Load the image for OpenCV image
 
     # If the user wants to use information from the file name, do so
-    if useFileInfo.get() is True:
-        set_info_from_file(imageFile)
+    if use_file_info_var.get() is True:
+        set_info_from_file(image_file)
 
-    rightCanvas.grid(row = 0, column = 1) # Refresh the canvas
+    right_canvas.grid(row = 0, column = 1) # Refresh the canvas
     
-    global rightPreview # Images must be stored globally to be show on the canvas
-    rightPreview = ImageTk.PhotoImage(Image.open(imageFile).resize((230, 350), Image.ANTIALIAS)) # Store the image as a tkinter photo image and resize it
-    rightCanvas.create_image(0, 0, anchor="nw", image=rightPreview) # Place the image on the canvas
+    global right_preview # Images must be stored globally to be show on the canvas
+    right_preview = ImageTk.PhotoImage(Image.open(image_file).resize((230, 350), Image.ANTIALIAS)) # Store the image as a tkinter photo image and resize it
+    right_canvas.create_image(0, 0, anchor="nw", image=right_preview) # Place the image on the canvas
 
-    label.config(text="Left image loaded") # Update the main label
+    main_label.config(text="Left image loaded") # Update the main label
 
     root.minsize(550,540) # Increase the window size to accomodate the image
 
-    crop_right(rightImage) # Crop the image to prepare for analysis
+    crop_right(right_image) # Crop the image to prepare for analysis
 
 # Loads an image taken by a smartphone camera that includes the entire target (CURRENTLY DISABLED)
 def load_image_single():
-    imageFile = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
-    singleImage = cv2.imread(imageFile) # Load the image for OpenCV image
+    image_file = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
+    single_image = cv2.imread(image_file) # Load the image for OpenCV image
 
     # If the user wants to use information from the file name, do so
-    if useFileInfo.get() is True:
-        set_info_from_file(imageFile)
+    if use_file_info_var.get() is True:
+        set_info_from_file(image_file)
 
-    label.config(text="Single image loaded") # Update the main label
+    main_label.config(text="Single image loaded") # Update the main label
 
-    crop_single(singleImage) # Crop the image to prepare for analysis
+    crop_single(single_image) # Crop the image to prepare for analysis
 
 # Loads an image for an Orion target
 def load_image_orion():
-    label.config(text="Loading image...") # Update the main label
+    main_label.config(text="Loading image...") # Update the main label
 
-    orionSingleCanvas.delete("all") # Clear the orion single canvas in case it already has an image
+    orion_single_canvas.delete("all") # Clear the orion single canvas in case it already has an image
 
-    imageFile = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
-    singleImage = cv2.imread(imageFile) # Load the image for OpenCV image
+    image_file = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
+    single_image = cv2.imread(image_file) # Load the image for OpenCV image
 
     # If the user wants to use information from the file name, do so
-    if useFileInfo.get() is True:
-        set_info_from_file(imageFile)
+    if use_file_info_var.get() is True:
+        set_info_from_file(image_file)
 
-    orionSingleCanvas.grid(row = 0, column = 1) # Refresh the canvas
+    orion_single_canvas.grid(row = 0, column = 1) # Refresh the canvas
     
-    global orionPreview # Images must be stored globally to be show on the canvas
-    orionPreview = ImageTk.PhotoImage(Image.open(imageFile).resize((230, 350), Image.ANTIALIAS)) # Store the image as a tkinter photo image and resize it
-    orionSingleCanvas.create_image(0, 0, anchor="nw", image=orionPreview) # Place the image on the canvas
+    global orion_preview # Images must be stored globally to be show on the canvas
+    orion_preview = ImageTk.PhotoImage(Image.open(image_file).resize((230, 350), Image.ANTIALIAS)) # Store the image as a tkinter photo image and resize it
+    orion_single_canvas.create_image(0, 0, anchor="nw", image=orion_preview) # Place the image on the canvas
 
-    label.config(text="Orion image loaded") # Update the main label
+    main_label.config(text="Orion image loaded") # Update the main label
 
     root.minsize(550,540) # Increase the window size to accomodate the image
 
-    crop_orion(singleImage) # Crop the image to prepare for analysis
+    crop_orion(single_image) # Crop the image to prepare for analysis
 
 # Loads an image for an Orion target
 def load_image_orion_nra():
-    label.config(text="Loading image...") # Update the main label
+    main_label.config(text="Loading image...") # Update the main label
 
-    orionSingleCanvasNRA.delete("all") # Clear the orion single canvas in case it already has an image
+    orion_single_canvas_nra.delete("all") # Clear the orion single canvas in case it already has an image
 
-    imageFile = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
-    singleImage = cv2.imread(imageFile) # Load the image for OpenCV image
+    image_file = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
+    single_image = cv2.imread(image_file) # Load the image for OpenCV image
 
     # If the user wants to use information from the file name, do so
-    if useFileInfo.get() is True:
-        set_info_from_file(imageFile)
+    if use_file_info_var.get() is True:
+        set_info_from_file(image_file)
 
-    orionSingleCanvasNRA.grid(row = 0, column = 1) # Refresh the canvas
+    orion_single_canvas_nra.grid(row = 0, column = 1) # Refresh the canvas
     
-    global orionPreview # Images must be stored globally to be show on the canvas
-    orionPreview = ImageTk.PhotoImage(Image.open(imageFile).resize((230, 350), Image.ANTIALIAS)) # Store the image as a tkinter photo image and resize it
-    orionSingleCanvasNRA.create_image(0, 0, anchor="nw", image=orionPreview) # Place the image on the canvas
+    global orion_nra_preview # Images must be stored globally to be show on the canvas
+    orion_nra_preview = ImageTk.PhotoImage(Image.open(image_file).resize((230, 350), Image.ANTIALIAS)) # Store the image as a tkinter photo image and resize it
+    orion_single_canvas_nra.create_image(0, 0, anchor="nw", image=orion_nra_preview) # Place the image on the canvas
 
-    label.config(text="Orion image loaded") # Update the main label
+    main_label.config(text="Orion image loaded") # Update the main label
 
     root.minsize(550,540) # Increase the window size to accomodate the image
 
-    crop_orion(singleImage) # Crop the image to prepare for analysis
+    crop_orion(single_image) # Crop the image to prepare for analysis
 
 # Somewhat derived from load_image_single (CURRENTLY DISABLED)
 def load_image_outdoor():
-    imageFile = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
-    singleImage = cv2.imread(imageFile) # Load the image for OpenCV image
+    image_file = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
+    single_image = cv2.imread(image_file) # Load the image for OpenCV image
 
     # If the user wants to use information from the file name, do so
-    if useFileInfo.get() is True:
-        set_info_from_file(imageFile)
+    if use_file_info_var.get() is True:
+        set_info_from_file(image_file)
 
-    label.config(text="Outdoor image loaded") # Update the main label
+    main_label.config(text="Outdoor image loaded") # Update the main label
 
     # Perform the cropping and analysis automatically
     check_output_dir()
 
-    dsize = (int(singleImage.shape[1] * 0.2), int(singleImage.shape[0] * 0.2))
-    resized = cv2.resize(singleImage, dsize)
+    dsize = (int(single_image.shape[1] * 0.2), int(single_image.shape[0] * 0.2))
+    resized = cv2.resize(single_image, dsize)
 
     cv2.imwrite("images/output/outdoorBull.jpg", resized)
 
-    global csvName
-    csvName = "data/data-" + nameVar.get() + dayVar.get() + monthVar.get() + yearVar.get() + targetNumVar.get() + ".csv"
+    global csv_name
+    csv_name = "data/data-" + name_var.get() + day_var.get() + month_var.get() + year_var.get() + target_num_var.get() + ".csv"
 
     analyze_outdoor_image("images/output/outdoorBull.jpg")
 
 # Crop image for an Orion target
 def crop_orion(image):
-    label.config(text="Cropping image...") # Update the main label
+    main_label.config(text="Cropping image...") # Update the main label
     check_output_dir() # Make sure the output directory exists
 
     # Height and width are set once and used for all bulls
@@ -246,7 +246,7 @@ def crop_orion(image):
     cv2.imwrite("images/output/lower-left.jpg", crop9)
     cv2.imwrite("images/output/bottom-left.jpg", crop10)
 
-    label.config(text="Cropped image") # Update the main label
+    main_label.config(text="Cropped image") # Update the main label
 
 # Runs perspective transform to the image and crops it to 10 output images (CURRENTLY DISABLED)
 def crop_single(image):
@@ -311,7 +311,7 @@ def crop_single(image):
 
     copy = image.copy()
 
-    label.config(text="Cropping single image...")
+    main_label.config(text="Cropping single image...")
 
     check_output_dir()
 
@@ -330,69 +330,69 @@ def crop_single(image):
     warped = four_point_transform(copy, points)
 
     dsize = 2982,3408
-    resizedImage = cv2.resize(warped, dsize, interpolation = cv2.INTER_AREA)
+    resized_image = cv2.resize(warped, dsize, interpolation = cv2.INTER_AREA)
 
-    cv2.imwrite("images/output/resized.jpg", resizedImage)
+    cv2.imwrite("images/output/resized.jpg", resized_image)
 
     y=250
     x=1215
     h=540
     w=540
-    crop1 = resizedImage[y:y+h, x:x+w]
+    crop1 = resized_image[y:y+h, x:x+w]
 
     y=250
     x=2215
     h=540
     w=540
-    crop2 = resizedImage[y:y+h, x:x+w]
+    crop2 = resized_image[y:y+h, x:x+w]
 
     y=1010
     x=2215
     h=540
     w=540
-    crop3 = resizedImage[y:y+h, x:x+w]
+    crop3 = resized_image[y:y+h, x:x+w]
 
     y=1785
     x=2215
     h=540
     w=540
-    crop4 = resizedImage[y:y+h, x:x+w]
+    crop4 = resized_image[y:y+h, x:x+w]
 
     y=2550
     x=2215
     h=540
     w=540
-    crop5 = resizedImage[y:y+h, x:x+w]
+    crop5 = resized_image[y:y+h, x:x+w]
 
     y=2550
     x=1210
     h=540
     w=540
-    crop6 = resizedImage[y:y+h, x:x+w]
+    crop6 = resized_image[y:y+h, x:x+w]
 
     y=2550
     x=205
     h=540
     w=540
-    crop7 = resizedImage[y:y+h, x:x+w]
+    crop7 = resized_image[y:y+h, x:x+w]
 
     y=1785
     x=205
     h=540
     w=540
-    crop8 = resizedImage[y:y+h, x:x+w]
+    crop8 = resized_image[y:y+h, x:x+w]
 
     y=1010
     x=205
     h=540
     w=540
-    crop9 = resizedImage[y:y+h, x:x+w]
+    crop9 = resized_image[y:y+h, x:x+w]
 
     y=250
     x=205
     h=540
     w=540
-    crop10 = resizedImage[y:y+h, x:x+w]
+    crop10 = resized_image[y:y+h, x:x+w]
 
     cv2.imwrite("images/output/top-mid.jpg", crop1)
     cv2.imwrite("images/output/top-right.jpg", crop2)
@@ -407,12 +407,12 @@ def crop_single(image):
 
 # Crop image for right side of the target and start analysis process
 def crop_right(image):
-    label.config(text="Cropping right image...") # Update main label
+    main_label.config(text="Cropping right image...") # Update main label
 
     check_output_dir() # Make sure that output directory exists
 
     #region Crop the image
-    # if dpiVar.get() == 2:
+    # if dpi_var.get() == 2:
     #     dsize = (2550, 3507)
     #     image = cv2.resize(image, dsize, interpolation = cv2.INTER_LINEAR)
 
@@ -461,11 +461,11 @@ def crop_right(image):
     cv2.imwrite("images/output/bottom-right.jpg", crop5)
     cv2.imwrite("images/output/bottom-mid.jpg", crop6)
 
-    label.config(text="Cropped right image") # Update the main label
+    main_label.config(text="Cropped right image") # Update the main label
 
 # Crop image for left side of the target and start analysis process
 def crop_left(image):
-    label.config(text="Cropping left image...") # Update main label
+    main_label.config(text="Cropping left image...") # Update main label
 
     check_output_dir() # Make sure that output directory exists
 
@@ -474,7 +474,7 @@ def crop_left(image):
     cv2.imwrite("images/output/vertical-flipped.jpg", verticalFlippedImage)
 
     #region Crop each image
-    # if dpiVar.get() == 2:
+    # if dpi_var.get() == 2:
     #     dsize = (2550, 3507)
     #     verticalFlippedImage = cv2.resize(verticalFlippedImage, dsize, interpolation = cv2.INTER_LINEAR)
 
@@ -509,25 +509,25 @@ def crop_left(image):
     cv2.imwrite("images/output/lower-left.jpg", crop4)
     cv2.imwrite("images/output/bottom-left.jpg", crop5)
 
-    label.config(text="Cropped image") # Update the main label
+    main_label.config(text="Cropped image") # Update the main label
 
 # Runs the analyze_image function for every image that has been cropped out
 def analyze_target(type):
-    label.config(text="Analyzing target...") # Update main label
+    main_label.config(text="Analyzing target...") # Update main label
 
     # Create and store a name for the target output file
-    global csvName
-    csvName = "data/data-" + nameVar.get() + dayVar.get() + monthVar.get() + yearVar.get() + targetNumVar.get() + ".csv"
+    global csv_name
+    csv_name = "data/data-" + name_var.get() + day_var.get() + month_var.get() + year_var.get() + target_num_var.get() + ".csv"
 
     # If the CSV file already exists, delete it
-    if os.path.exists(str(os.getcwd()) +"/" + csvName):
+    if os.path.exists(str(os.getcwd()) +"/" + csv_name):
         print("CSV already exists. Removing old version")
-        os.remove(os.getcwd() + "/" + csvName)
+        os.remove(os.getcwd() + "/" + csv_name)
     
     # Create the CSV file template
-    with open(csvName, 'x', newline="") as csvfile:
+    with open(csv_name, 'x', newline="") as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        filewriter.writerow(["Image", "Dropped", "X", "HoleX", "HoleY", "Distance", "HoleRatioX", "HoleRatioY"])
+        filewriter.writerow(["Image", "Dropped", "X", "hole_x", "hole_y", "Distance", "hole_ratio_x", "hole_ratio_y"])
         csvfile.close()
 
     # Analyze each cropped image
@@ -565,18 +565,18 @@ def analyze_target(type):
         analyze_orion_image_nra_scoring("images/output/upper-left.jpg")
         analyze_orion_image_nra_scoring("images/output/top-left.jpg")
     # Create variables to store the score and x count
-    global score, xCount
+    global score, x_count
     score = 100
-    xCount = 0
+    x_count = 0
 
     # Update the score and x count from the saved target CSV file
-    with open(csvName) as csv_file:
+    with open(csv_name) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         line_count = 0
         for row in csv_reader:
             if line_count != 0:
                 score -= int(row[1])
-                xCount += int(row[2])
+                x_count += int(row[2])
             line_count += 1
     
     # If a global data CSV doesn't exist, create it
@@ -586,146 +586,147 @@ def analyze_target(type):
     # Save the target's basic info to the global data CSV
     with open("data/data.csv", 'a', newline="") as csvfile:
                 filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-                filewriter.writerow([nameVar.get(), dayVar.get() + " " + monthVar.get() + " " + yearVar.get(), targetNumVar.get(), score, xCount])
+                filewriter.writerow([name_var.get(), day_var.get() + " " + month_var.get() + " " + year_var.get(), target_num_var.get(), score, x_count])
                 csvfile.close()
 
-    label.config(text="Done") # Update main label
+    main_label.config(text="Done") # Update main label
 
     # Enable the "Show Output" menu item
     # If any menu items have been added above this, make sure to recount them to get the correct index
     # Counting starts at zero.
     filemenu.entryconfigure(1, state=NORMAL)
     
-    if not isOpeningFolder:
-        if individualOutputTypeVar.get() == "tkinter":
+    if not is_opening_folder:
+        if individual_output_type_var.get() == "tkinter":
             # If the user uses the new analysis window, open it
             # There is no need to show the output here, instead, if it is needed,
             # it will be shown when the Finish button is pressed in the analysis window
             open_analysis_window()
-        elif showOutputWhenFinishedVar.get():
+        elif show_output_when_finished_var.get():
             show_output() # Otherwise, show the output now that analysis has finished
 
 # Shows the results of the program in a separate window and provides buttons for opening CSV files
 def show_output():
-    label.config(text="Showing output") # Update main label
+    main_label.config(text="Showing output") # Update main label
 
     #region Create window
-    showOutputWindow = tk.Toplevel(root)
-    showOutputWindow.minsize(525,750)
-    showOutputWindow.geometry("525x750")
-    showOutputWindow.tk.call('wm', 'iconphoto', showOutputWindow._w, tk.PhotoImage(file='assets/icon.png'))
-    showOutputWindow.title("Target Analysis")
+    show_output_window = tk.Toplevel(root)
+    show_output_window.minsize(525,750)
+    show_output_window.geometry("525x750")
+    show_output_window.tk.call('wm', 'iconphoto', show_output_window._w, tk.PhotoImage(file='assets/icon.png'))
+    show_output_window.title("Target Analysis")
     #endregion
 
     #region Create frames
     # Only buttons and labels go in the top frame
-    outputTopFrame = ttk.Frame(showOutputWindow)
-    outputTopFrame.pack(side=TOP, fill=X, expand=True, pady=10)
+    output_top_frame = ttk.Frame(show_output_window)
+    output_top_frame.pack(side=TOP, fill=X, expand=True, pady=10)
 
     # Target images are shown in the bottom frame
-    outputBottomFrame = ttk.Frame(showOutputWindow)
-    outputBottomFrame.pack(side=TOP, fill=X)
+    output_bottom_frame = ttk.Frame(show_output_window)
+    output_bottom_frame.pack(side=TOP, fill=X)
     #endregion
 
     #region Create buttons and info at the top
     # Create a button to open the target CSV file
-    openTargetCSVButton = ttk.Button(outputTopFrame, text="Open target CSV", command=lambda: open_file('"' + os.getcwd() + "/" + csvName + '"'))
-    openTargetCSVButton.grid(row=0, column=0)
-    outputTopFrame.grid_columnconfigure(0, weight=1)
+    open_target_csv_button = ttk.Button(output_top_frame, text="Open target CSV", command=lambda: open_file('"' + os.getcwd() + "/" + csv_name + '"'))
+    open_target_csv_button.grid(row=0, column=0)
+    output_top_frame.grid_columnconfigure(0, weight=1)
     
     # Create a label for the score
-    scoreLabel = ttk.Label(outputTopFrame, text=str(score) + "-" + str(xCount) + "X", font='bold')
-    scoreLabel.grid(row=0, column=1)
-    outputTopFrame.grid_columnconfigure(1, weight=1)
+    score_label = ttk.Label(output_top_frame, text=str(score) + "-" + str(x_count) + "X", font='bold')
+    score_label.grid(row=0, column=1)
+    output_top_frame.grid_columnconfigure(1, weight=1)
 
     # Create a button to open the global data CSV file
-    openDataCSVButton = ttk.Button(outputTopFrame, text="Open data CSV", command=lambda: open_file('"' + os.getcwd() + "/data/data.csv" + '"'))
-    openDataCSVButton.grid(row=0, column=2)
-    outputTopFrame.grid_columnconfigure(2, weight=1)
+    open_data_csv_button = ttk.Button(output_top_frame, text="Open data CSV", command=lambda: open_file('"' + os.getcwd() + "/data/data.csv" + '"'))
+    open_data_csv_button.grid(row=0, column=2)
+    output_top_frame.grid_columnconfigure(2, weight=1)
     #endregion
 
     #region Create canvases and images for each bull
-    topLeftCanvas = tk.Canvas(outputBottomFrame, width=170,height=170)
-    topLeftCanvas.grid(row = 0, column = 0)
+    top_left_canvas = tk.Canvas(output_bottom_frame, width=170,height=170)
+    top_left_canvas.grid(row = 0, column = 0)
 
-    global topLeftOutput
-    topLeftOutput = ImageTk.PhotoImage(Image.open("images/output/top-left.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
-    topLeftCanvas.create_image(0, 0, anchor="nw", image=topLeftOutput)
+    global top_left_output
+    top_left_output = ImageTk.PhotoImage(Image.open("images/output/top-left.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    top_left_canvas.create_image(0, 0, anchor="nw", image=top_left_output)
 
-    upperLeftCanvas = tk.Canvas(outputBottomFrame, width=170,height=170)
-    upperLeftCanvas.grid(row = 1, column = 0)
+    upper_left_canvas = tk.Canvas(output_bottom_frame, width=170,height=170)
+    upper_left_canvas.grid(row = 1, column = 0)
 
-    global upperLeftOutput
-    upperLeftOutput = ImageTk.PhotoImage(Image.open("images/output/upper-left.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
-    upperLeftCanvas.create_image(0, 0, anchor="nw", image=upperLeftOutput)
+    global upper_left_output
+    upper_left_output = ImageTk.PhotoImage(Image.open("images/output/upper-left.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    upper_left_canvas.create_image(0, 0, anchor="nw", image=upper_left_output)
 
-    lowerLeftCanvas = tk.Canvas(outputBottomFrame, width=170,height=170)
-    lowerLeftCanvas.grid(row = 2, column = 0)
+    lower_left_canvas = tk.Canvas(output_bottom_frame, width=170,height=170)
+    lower_left_canvas.grid(row = 2, column = 0)
 
-    global lowerLeftOutput
-    lowerLeftOutput = ImageTk.PhotoImage(Image.open("images/output/lower-left.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
-    lowerLeftCanvas.create_image(0, 0, anchor="nw", image=lowerLeftOutput)
+    global lower_left_output
+    lower_left_output = ImageTk.PhotoImage(Image.open("images/output/lower-left.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    lower_left_canvas.create_image(0, 0, anchor="nw", image=lower_left_output)
 
-    bottomLeftCanvas = tk.Canvas(outputBottomFrame, width=170,height=170)
-    bottomLeftCanvas.grid(row = 3, column = 0)
+    bottom_left_canvas = tk.Canvas(output_bottom_frame, width=170,height=170)
+    bottom_left_canvas.grid(row = 3, column = 0)
 
-    global bottomLeftOutput
-    bottomLeftOutput = ImageTk.PhotoImage(Image.open("images/output/bottom-left.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
-    bottomLeftCanvas.create_image(0, 0, anchor="nw", image=bottomLeftOutput)
+    global bottom_left_output
+    bottom_left_output = ImageTk.PhotoImage(Image.open("images/output/bottom-left.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    bottom_left_canvas.create_image(0, 0, anchor="nw", image=bottom_left_output)
 
-    topMidCanvas = tk.Canvas(outputBottomFrame, width=170,height=170)
-    topMidCanvas.grid(row = 0, column = 1)
+    top_mid_canvas = tk.Canvas(output_bottom_frame, width=170,height=170)
+    top_mid_canvas.grid(row = 0, column = 1)
 
-    global topMidOutput
-    topMidOutput = ImageTk.PhotoImage(Image.open("images/output/top-mid.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
-    topMidCanvas.create_image(0, 0, anchor="nw", image=topMidOutput)
+    global top_mid_output
+    top_mid_output = ImageTk.PhotoImage(Image.open("images/output/top-mid.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    top_mid_canvas.create_image(0, 0, anchor="nw", image=top_mid_output)
 
-    bottomMidCanvas = tk.Canvas(outputBottomFrame, width=170,height=170)
-    bottomMidCanvas.grid(row = 3, column = 1)
+    bottom_mid_canvas = tk.Canvas(output_bottom_frame, width=170,height=170)
+    bottom_mid_canvas.grid(row = 3, column = 1)
 
-    global bottomMidOutput
-    bottomMidOutput = ImageTk.PhotoImage(Image.open("images/output/bottom-mid.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
-    bottomMidCanvas.create_image(0, 0, anchor="nw", image=bottomMidOutput)
+    global bottom_mid_output
+    bottom_mid_output = ImageTk.PhotoImage(Image.open("images/output/bottom-mid.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    bottom_mid_canvas.create_image(0, 0, anchor="nw", image=bottom_mid_output)
 
-    topRightCanvas = tk.Canvas(outputBottomFrame, width=170,height=170)
-    topRightCanvas.grid(row = 0, column = 2)
+    top_right_canvas = tk.Canvas(output_bottom_frame, width=170,height=170)
+    top_right_canvas.grid(row = 0, column = 2)
 
-    global topRightOutput
-    topRightOutput = ImageTk.PhotoImage(Image.open("images/output/top-right.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
-    topRightCanvas.create_image(0, 0, anchor="nw", image=topRightOutput)
+    global top_right_output
+    top_right_output = ImageTk.PhotoImage(Image.open("images/output/top-right.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    top_right_canvas.create_image(0, 0, anchor="nw", image=top_right_output)
 
-    upperRightCanvas = tk.Canvas(outputBottomFrame, width=170,height=170)
-    upperRightCanvas.grid(row = 1, column = 2)
+    upper_right_canvas = tk.Canvas(output_bottom_frame, width=170,height=170)
+    upper_right_canvas.grid(row = 1, column = 2)
 
-    global upperRightOutput
-    upperRightOutput = ImageTk.PhotoImage(Image.open("images/output/upper-right.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
-    upperRightCanvas.create_image(0, 0, anchor="nw", image=upperRightOutput)
+    global upper_right_output
+    upper_right_output = ImageTk.PhotoImage(Image.open("images/output/upper-right.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    upper_right_canvas.create_image(0, 0, anchor="nw", image=upper_right_output)
 
-    lowerRightCanvas = tk.Canvas(outputBottomFrame, width=170,height=170)
-    lowerRightCanvas.grid(row = 2, column = 2)
+    lower_right_canvas = tk.Canvas(output_bottom_frame, width=170,height=170)
+    lower_right_canvas.grid(row = 2, column = 2)
 
-    global lowerRightOutput
-    lowerRightOutput = ImageTk.PhotoImage(Image.open("images/output/lower-right.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
-    lowerRightCanvas.create_image(0, 0, anchor="nw", image=lowerRightOutput)
+    global lower_right_output
+    lower_right_output = ImageTk.PhotoImage(Image.open("images/output/lower-right.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    lower_right_canvas.create_image(0, 0, anchor="nw", image=lower_right_output)
 
-    bottomRightCanvas = tk.Canvas(outputBottomFrame, width=170,height=170)
-    bottomRightCanvas.grid(row = 3, column = 2)
+    bottom_right_canvas = tk.Canvas(output_bottom_frame, width=170,height=170)
+    bottom_right_canvas.grid(row = 3, column = 2)
 
-    global bottomRightOutput
-    bottomRightOutput = ImageTk.PhotoImage(Image.open("images/output/bottom-right.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
-    bottomRightCanvas.create_image(0, 0, anchor="nw", image=bottomRightOutput)
+    global bottom_right_output
+    bottom_right_output = ImageTk.PhotoImage(Image.open("images/output/bottom-right.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    bottom_right_canvas.create_image(0, 0, anchor="nw", image=bottom_right_output)
     #endregion
 
 # Open the working folder in Explorer
 # TODO Make this work on any operating system
-def show_folder():
-    label.config(text="Opening folder... ONLY WORKS ON WINDOWS")
-    os.system("explorer " + '"' + os.getcwd() + '"') # Run a system command to open the folder using Explorer (Windows only)
-    label.config(text="Working directory opened in Explorer") # Update the main label
+def show_folder(path):
+    print("Opening folder: " + path)
+    main_label.config(text="Opening folder... ONLY WORKS ON WINDOWS")
+    os.system("explorer " + '"' + path + '"') # Run a system command to open the folder using Explorer (Windows only)
+    main_label.config(text="Working directory opened in Explorer") # Update the main label
 
 # Open documentation with associated viewer
 def open_file(file):
-    label.config(text="Opening file " + str(file)) # Update the main label
+    main_label.config(text="Opening file " + str(file)) # Update the main label
     os.system(file) # Run a system command to open the file using the default viewer (should work on any operating system)
 
 # Create CSV file set up for the global data csv
@@ -735,21 +736,21 @@ def create_csv():
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL) # Create a filewriter
         filewriter.writerow(['Name', 'Date', 'Target Number', 'Score','X']) # Write the header row
         csvfile.close() # Close the file
-    label.config(text="Created CSV data file") # Update the main label
+    main_label.config(text="Created CSV data file") # Update the main label
 
 # Opens and analyzes all files in a folder (more complex than Orion because it has to distinguish between left and right images)
 def open_folder():
-    global isOpeningFolder
-    isOpeningFolder = True # Set a flag to indicate that the folder is being opened
-    # Temporarily save the showOutputWhenFinishedVar to restore after the function is done
+    global is_opening_folder
+    is_opening_folder = True # Set a flag to indicate that the folder is being opened
+    # Temporarily save the show_output_when_finished_var to restore after the function is done
     # Then set it to false so that the output is not shown (because for large folders it could take a while)
-    showOutputWhenFinishedBackup = showOutputWhenFinishedVar.get()
-    showOutputWhenFinishedVar.set(False)
+    show_output_when_finished_backup = show_output_when_finished_var.get()
+    show_output_when_finished_var.set(False)
 
-    label.config(text="Analyzing folder. This could take a while.") # Update the main label
+    main_label.config(text="Analyzing folder. This could take a while.") # Update the main label
 
     folder = filedialog.askdirectory() # Get the folder to open
-    fileNum = 0 # Keep track of how many files have been opened
+    file_num = 0 # Keep track of how many files have been opened
     
     # os.listdir() returns a list of all files in the folder
     for file in os.listdir(folder):
@@ -757,36 +758,37 @@ def open_folder():
         if file.endswith(".jpeg") or file.endswith(".jpg"):
             path = folder + "/" + file # Get the path to the file
             set_info_from_file(file) # Set the info from the file (correct naming is important for this operation)
-            fileImage = cv2.imread(path) # Open the image
+            file_image = cv2.imread(path) # Open the image
             # Check if the image is a left or right image
             if "left" in file:
-                crop_left(fileImage)
+                crop_left(file_image)
             elif "right" in file:
-                crop_right(fileImage)
+                crop_right(file_image)
             
-            fileNum += 1 # Increment the file number
+            file_num += 1 # Increment the file number
 
             # For every two files opened, analyze the target
             # Again, it is imperative that the naming convention is correct
             # See the README for more information
-            if fileNum == 2:
+            if file_num == 2:
                 analyze_target("nra")
-                fileNum = 0 # Reset the file number and continue
-    label.config(text="Done. Open the /data folder to view results") # Update the main label
-    showOutputWhenFinishedVar.set(showOutputWhenFinishedBackup) # Revert the showOutputWhenFinishedVar to its original value
-    isOpeningFolder = False # Set a flag to indicate that the folder is being opened
+                file_num = 0 # Reset the file number and continue
+    main_label.config(text="Done. Open the /data folder to view results") # Update the main label
+    show_output_when_finished_var.set(show_output_when_finished_backup) # Revert the show_output_when_finished_var to its original value
+    is_opening_folder = False # Set a flag to indicate that the folder is being opened
+    show_folder(os.getcwd() + "\data") # Open the data folder in Explorer
 
 # Opens and analyzes all files in a folder
 def open_folder_orion():
-    global tabControl
-    global isOpeningFolder
-    isOpeningFolder = True # Keep track of whether or not the folder is being opened
-    # Temporarily save the showOutputWhenFinishedVar to restore after the function is done
+    global tab_control
+    global is_opening_folder
+    is_opening_folder = True # Keep track of whether or not the folder is being opened
+    # Temporarily save the show_output_when_finished_var to restore after the function is done
     # Then set it to false so that the output is not shown (because for large folders it could take a while)
-    showOutputWhenFinishedBackup = showOutputWhenFinishedVar.get()
-    showOutputWhenFinishedVar.set(False)
+    show_output_when_finished_backup = show_output_when_finished_var.get()
+    show_output_when_finished_var.set(False)
 
-    label.config(text="Opening folder") # Update the main label
+    main_label.config(text="Analyzing folder. This could take a while.") # Update the main label
 
     folder = filedialog.askdirectory() # Get the folder to open
     
@@ -796,26 +798,27 @@ def open_folder_orion():
         if file.endswith(".jpeg") or file.endswith(".jpg"):
             path = folder + "/" + file # Get the path to the file
             set_info_from_file(file) # Set the info from the file (correct naming is important for this operation)
-            fileImage = cv2.imread(path) # Open the image for OpenCV
-            crop_orion(fileImage) # Crop the image
-            if tabControl.index("current") == 1: # If the tab is the Orion tab
+            file_image = cv2.imread(path) # Open the image for OpenCV
+            crop_orion(file_image) # Crop the image
+            if tab_control.index("current") == 1: # If the tab is the Orion tab
                 analyze_target("orion") # Analyze the target
-            elif tabControl.index("current") == 2: # If the tab is the Orion as NRA tab
+            elif tab_control.index("current") == 2: # If the tab is the Orion as NRA tab
                 analyze_target("orion-nrascoring") # Analyze the target
     
-    showOutputWhenFinishedVar.set(showOutputWhenFinishedBackup) # Revert the showOutputWhenFinishedVar to its original value
-    isOpeningFolder = False # Keep track of whether or not the folder is being opened
+    show_output_when_finished_var.set(show_output_when_finished_backup) # Revert the show_output_when_finished_var to its original value
+    is_opening_folder = False # Keep track of whether or not the folder is being opened
+    show_folder(os.getcwd() + "\data") # Open the data folder in Explorer
 
 # Allows viewing of trends from existing data files
 def show_trends():
-    label.config(text="Showing trends window") # Update the main label
+    main_label.config(text="Showing trends window") # Update the main label
 
     #region Create window
-    trendsWindow = tk.Toplevel(root)
-    trendsWindow.minsize(250,100)
-    trendsWindow.geometry("250x100")
-    trendsWindow.tk.call('wm', 'iconphoto', trendsWindow._w, tk.PhotoImage(file='assets/icon.png'))
-    trendsWindow.title("Target Analysis")
+    trends_window = tk.Toplevel(root)
+    trends_window.minsize(250,100)
+    trends_window.geometry("250x100")
+    trends_window.tk.call('wm', 'iconphoto', trends_window._w, tk.PhotoImage(file='assets/icon.png'))
+    trends_window.title("Target Analysis")
     #endregion
 
     def showMostMissed():
@@ -838,14 +841,14 @@ def show_trends():
                     csv_file.close() # Close the file
 
         # Create a frame to display the data
-        frame = ttk.Frame(trendsWindow)
+        frame = ttk.Frame(trends_window)
         frame.pack(pady=5)
 
-        trendsWindow.geometry("250x300") # Resize the window to accomodate the data display
+        trends_window.geometry("250x300") # Resize the window to accomodate the data display
 
         # Create a label for a header
-        mostMissedLabel = ttk.Label(frame, text="Most missed is highest number")
-        mostMissedLabel.grid(row=0, column=0, columnspan=3)
+        most_missed_label = ttk.Label(frame, text="Most missed is highest number")
+        most_missed_label.grid(row=0, column=0, columnspan=3)
 
         #region Create a label for each bull
         label1 = ttk.Label(frame, text=str(bulls[0]), borderwidth=2, relief=RIDGE, padding=10)
@@ -880,15 +883,15 @@ def show_trends():
         #endregion
 
     def showTrendGraph():
-        dataCSV = filedialog.askopenfilename() # Get the CSV file to open (this can be a backup to accomodate for multiple shooters)
+        data_csv = filedialog.askopenfilename() # Get the CSV file to open (this can be a backup to accomodate for multiple shooters)
 
         # Create some arrays for relevant data
         dates = []
         scores = []
-        xCount = []
+        x_count = []
 
         # Open the CSV file
-        with open(dataCSV) as csv_file:
+        with open(data_csv) as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',') # Create a CSV reader
             line_count = 0 # Keep track of the line number
             for row in csv_reader:
@@ -896,27 +899,27 @@ def show_trends():
                 if line_count != 0:
                     dates.append(row[1]) # The dates are in the second column
                     scores.append(row[3]) # The scores are in the fourth column
-                    xCount.append(row[4]) # The xCount are in the fifth column
+                    x_count.append(row[4]) # The x_count are in the fifth column
                 line_count += 1 # Increment the line number
             csv_file.close() # Close the file
         
         # Zip the data together, with the dates first
         # Then sort the data using the date as the key
-        sortedZipped = sorted(zip(dates,scores,xCount), key=lambda date: datetime.datetime.strptime(date[0], "%d %B %Y"))
+        sorted_zipped = sorted(zip(dates,scores,x_count), key=lambda date: datetime.datetime.strptime(date[0], "%d %B %Y"))
 
         # Unpack the data back into separate lists
-        dates,scores,xCount = map(list,zip(*sortedZipped))
+        dates,scores,x_count = map(list,zip(*sorted_zipped))
 
-        # Convert the scores and xCount back
+        # Convert the scores and x_count back
         scores = list(map(int, scores))
-        xCount = list(map(int, xCount))
+        x_count = list(map(int, x_count))
 
         # Create some matplotlib plots to show data
         fig,axs = plt.subplots(2)
 
-        # Plot the scores and xCount on separate graphs
+        # Plot the scores and x_count on separate graphs
         axs[0].plot(dates,scores, marker='o', color = 'blue')
-        axs[1].plot(dates,xCount, marker='x', color = 'orange')
+        axs[1].plot(dates,x_count, marker='x', color = 'orange')
 
         # Create a label for each point for the scores graph
         for x,y in zip(dates,scores):
@@ -927,8 +930,8 @@ def show_trends():
                         xytext=(-15,0), # distance from text to points (x,y)
                         ha='center') # horizontal alignment can be left, right or center
 
-        # Create a label for each point for the xCount graph
-        for x,y in zip(dates,xCount):
+        # Create a label for each point for the x_count graph
+        for x,y in zip(dates,x_count):
             label = str(y) + "X"
             axs[1].annotate(label, # this is the text
                         (x,y), # this is the point to label
@@ -965,20 +968,20 @@ def show_trends():
         plt.show()
 
     # Create a button to load a folder of data (for one shooter) to show which bull has the highest value (thus the most missed)
-    loadFolderButton = ttk.Button(trendsWindow, text="Load Folder (for most missed)", command=showMostMissed)
-    loadFolderButton.pack(padx=10, pady=10)
+    load_folder_button = ttk.Button(trends_window, text="Load Folder (for most missed)", command=showMostMissed)
+    load_folder_button.pack(padx=10, pady=10)
 
     # Create a button to load a global data CSV (for one shooter) to show improvement over time
-    loadCSVButton = ttk.Button(trendsWindow, text="Load CSV (for graph)", command=showTrendGraph)
-    loadCSVButton.pack(padx=10, pady=0)
+    load_csv_button = ttk.Button(trends_window, text="Load CSV (for graph)", command=showTrendGraph)
+    load_csv_button.pack(padx=10, pady=0)
 
 # Sets file options by parsing a correctly-named target         
 def set_info_from_file(file):
     filename = os.path.basename(file) # Get the filename alone in case it is given a full path
 
-    dayVar.set(filename[0:2]) # Set the day
+    day_var.set(filename[0:2]) # Set the day
 
-    yearVar.set(filename[5:9]) # Set the year
+    year_var.set(filename[5:9]) # Set the year
 
     month = filename[2:5] # Get the month
 
@@ -1001,31 +1004,31 @@ def set_info_from_file(file):
     for short, full in months.items():
         month = month.replace(short, full)
 
-    monthVar.set(month) # Set the month
+    month_var.set(month) # Set the month
 
-    targetNumVar.set(filename[-6]) # Set the target number
+    target_num_var.set(filename[-6]) # Set the target number
 
     # The final section of the filename can be any length and it is "left" or "right" for NRA A-17 targets
     # However, Orion targets use only one scan so that space can hold the shooter's name
     # This is a kind of hacky way to determine if this is an Orion target
-    if tabControl.index("current") == 1 or tabControl.index("current") == 2:
-        nameVar.set(filename[9:-6])
+    if tab_control.index("current") == 1 or tab_control.index("current") == 2:
+        name_var.set(filename[9:-6])
 
     # Update the main label
-    label.config(text="Set date to: " + monthVar.get() + " " + dayVar.get() + " " + yearVar.get() + " with target number " + targetNumVar.get())
+    main_label.config(text="Set date to: " + month_var.get() + " " + day_var.get() + " " + year_var.get() + " with target number " + target_num_var.get())
 
 # Sets file options from today's date
 def set_info_from_today():
     today = datetime.datetime.now() # Get today's date
 
-    monthVar.set(today.strftime("%B")) # Set the month from the date
-    dayVar.set(today.strftime("%d")) # Set the day from the date
-    yearVar.set(today.strftime("%Y")) # Set the year from the date
+    month_var.set(today.strftime("%B")) # Set the month from the date
+    day_var.set(today.strftime("%d")) # Set the day from the date
+    year_var.set(today.strftime("%Y")) # Set the year from the date
 
-    targetNumVar.set("1") # Default the target number to 1
+    target_num_var.set("1") # Default the target number to 1
 
     # Update the main label
-    label.config(text="Set date to: " + monthVar.get() + " " + dayVar.get() + " " + yearVar.get() + " with target number " + targetNumVar.get())
+    main_label.config(text="Set date to: " + month_var.get() + " " + day_var.get() + " " + year_var.get() + " with target number " + target_num_var.get())
 
 # Delete all files in the data folder
 def clear_data():
@@ -1043,306 +1046,306 @@ def clear_data():
         if file.endswith(".jpg") or file.endswith(".jpeg"):
             os.remove(path + "/" + file)
 
-    label.config(text="/data and /images/output directories cleared") # Update the main label
+    main_label.config(text="/data and /images/output directories cleared") # Update the main label
 
 # Create a settings window
 def open_settings():
     # If the settings window is going to be closed, save the changes and destroy the window
-    def onCloseSettings():
+    def on_close_settings():
         update_config()
-        settingsWindow.destroy()
+        settings_window.destroy()
 
     # Update the settings using the config-backup.ini file, which should never be changed
-    def revertSettings():
+    def revert_settings():
         update_settings_from_config("config-backup.ini")
         update_config()
 
-    label.config(text="Showing settings window") # Update the main label
+    main_label.config(text="Showing settings window") # Update the main label
 
     #region Create settings window
-    settingsWindow = tk.Toplevel(root)
-    settingsWindow.title("Target Analysis")
-    settingsWindow.minsize(width=500, height=640)
-    settingsWindow.geometry("500x640")
-    settingsWindow.tk.call('wm', 'iconphoto', settingsWindow._w, tk.PhotoImage(file='assets/icon.png'))
+    settings_window = tk.Toplevel(root)
+    settings_window.title("Target Analysis")
+    settings_window.minsize(width=500, height=640)
+    settings_window.geometry("500x640")
+    settings_window.tk.call('wm', 'iconphoto', settings_window._w, tk.PhotoImage(file='assets/icon.png'))
     #endregion
 
     #region Create frames
     # Each global setting has its own frame
-    settingsTopFrame = ttk.Frame(settingsWindow)
-    settingsTopFrame.pack(side=TOP, expand=False, pady=5, fill=X)
+    settings_top_frame = ttk.Frame(settings_window)
+    settings_top_frame.pack(side=TOP, expand=False, pady=5, fill=X)
 
-    settingsGlobalLabelFrame = ttk.Frame(settingsWindow)
-    settingsGlobalLabelFrame.pack(side=TOP, fill=X)
+    settings_global_label_frame = ttk.Frame(settings_window)
+    settings_global_label_frame.pack(side=TOP, fill=X)
 
-    settingsDpiFrame = ttk.Frame(settingsWindow)
-    settingsDpiFrame.pack(side=TOP, fill=X, padx=5)
+    settings_dpi_frame = ttk.Frame(settings_window)
+    settings_dpi_frame.pack(side=TOP, fill=X, padx=5)
 
-    settingsShowOutputFrame = ttk.Frame(settingsWindow)
-    settingsShowOutputFrame.pack(side=TOP, fill=X, padx=5)
+    settings_show_output_frame = ttk.Frame(settings_window)
+    settings_show_output_frame.pack(side=TOP, fill=X, padx=5)
 
-    settingsIndivdualOutputFrame = ttk.Frame(settingsWindow)
-    settingsIndivdualOutputFrame.pack(side=TOP, fill=X, padx=5)
+    settings_indivdual_output_frame = ttk.Frame(settings_window)
+    settings_indivdual_output_frame.pack(side=TOP, fill=X, padx=5)
 
-    settingsDarkModeFrame = ttk.Frame(settingsWindow)
-    settingsDarkModeFrame.pack(side=TOP, fill=X, padx=5)
+    settings_dark_mode_frame = ttk.Frame(settings_window)
+    settings_dark_mode_frame.pack(side=TOP, fill=X, padx=5)
 
-    settingsGlobalSeparator = ttk.Separator(settingsWindow, orient=HORIZONTAL)
-    settingsGlobalSeparator.pack(side=TOP, fill=X, pady=5)
+    settings_global_separator = ttk.Separator(settings_window, orient=HORIZONTAL)
+    settings_global_separator.pack(side=TOP, fill=X, pady=5)
 
-    settingsBottomFrame = ttk.Frame(settingsWindow)
-    settingsBottomFrame.pack(side=TOP, fill=X)
+    settings_bottom_frame = ttk.Frame(settings_window)
+    settings_bottom_frame.pack(side=TOP, fill=X)
 
-    settingsButtonsFrame = ttk.Frame(settingsWindow)
-    settingsButtonsFrame.pack(side=BOTTOM, fill=X)
+    settings_buttons_frame = ttk.Frame(settings_window)
+    settings_buttons_frame.pack(side=BOTTOM, fill=X)
 
     # Notebook allows for a tabbed view
-    settingsTabControl = ttk.Notebook(settingsBottomFrame)
+    settings_tab_control = ttk.Notebook(settings_bottom_frame)
 
-    settingstab1NRAA17 = ttk.Frame(settingsTabControl)
-    settingstab2orion = ttk.Frame(settingsTabControl)
-    settingstab3orionDPI2 = ttk.Frame(settingsTabControl)
+    settingstab1nraa17 = ttk.Frame(settings_tab_control)
+    settingstab2orion = ttk.Frame(settings_tab_control)
+    settingstab3orionDPI2 = ttk.Frame(settings_tab_control)
 
-    settingsTabControl.add(settingstab1NRAA17, text ='NRA A-17')
-    settingsTabControl.add(settingstab2orion, text ='NRA/USAS-50 Orion 300dpi')
-    settingsTabControl.add(settingstab3orionDPI2, text ='NRA/USAS-50 Orion 600dpi')
+    settings_tab_control.add(settingstab1nraa17, text ='NRA A-17')
+    settings_tab_control.add(settingstab2orion, text ='NRA/USAS-50 Orion 300dpi')
+    settings_tab_control.add(settingstab3orionDPI2, text ='NRA/USAS-50 Orion 600dpi')
 
-    settingsTabControl.pack(side=TOP, fill=X, padx=10, pady=5)
+    settings_tab_control.pack(side=TOP, fill=X, padx=10, pady=5)
 
-    saveSeparator = ttk.Separator(settingsButtonsFrame, orient=HORIZONTAL)
-    saveSeparator.pack(side=TOP, fill=X)
+    save_separator = ttk.Separator(settings_buttons_frame, orient=HORIZONTAL)
+    save_separator.pack(side=TOP, fill=X)
 
-    revertButton = ttk.Button(settingsButtonsFrame, text="Revert settings to default", command=revertSettings)
-    revertButton.pack(side=LEFT, pady=5, padx=5)
+    revert_button = ttk.Button(settings_buttons_frame, text="Revert settings to default", command=revert_settings)
+    revert_button.pack(side=LEFT, pady=5, padx=5)
 
-    saveButton = ttk.Button(settingsButtonsFrame, text="Save Settings", command=update_config)
-    saveButton.pack(side=RIGHT, pady=5, padx=5)
+    save_button = ttk.Button(settings_buttons_frame, text="Save Settings", command=update_config)
+    save_button.pack(side=RIGHT, pady=5, padx=5)
     #endregion
 
     #region Create top label
     # Header label
-    settingsLabel1 = ttk.Label(settingsTopFrame, text="Settings", font='bold')
-    settingsLabel1.pack(side=TOP)
+    settings_label1 = ttk.Label(settings_top_frame, text="Settings", font='bold')
+    settings_label1.pack(side=TOP)
     # Warning label
-    settingsLabel2 = ttk.Label(settingsTopFrame, text="⚠️ Change these only if the software does not work properly ⚠️")
-    settingsLabel2.pack(side=TOP)
+    settings_label2 = ttk.Label(settings_top_frame, text="⚠️ Change these only if the software does not work properly ⚠️")
+    settings_label2.pack(side=TOP)
     # Separator
-    labelSeparator = ttk.Separator(settingsTopFrame, orient=HORIZONTAL)
-    labelSeparator.pack(side=TOP, fill=X, pady=(5, 0))
+    label_separator = ttk.Separator(settings_top_frame, orient=HORIZONTAL)
+    label_separator.pack(side=TOP, fill=X, pady=(5, 0))
     #endregion
 
     #region Create top widgets
     # Global settings label
-    settingsLabel1 = ttk.Label(settingsGlobalLabelFrame, text="Global settings", font = 'bold')
-    settingsLabel1.pack()
+    settings_label1 = ttk.Label(settings_global_label_frame, text="Global settings", font = 'bold')
+    settings_label1.pack()
 
     # 300dpi / 600dpi selection buttons
-    dpiButton300 = ttk.Radiobutton(settingsDpiFrame, text="300 dpi scanner", variable=dpiVar, value=1)
-    dpiButton300.grid(row=1, column=0)
-    dpiButton600 = ttk.Radiobutton(settingsDpiFrame, text="600 dpi scanner", variable=dpiVar, value=2)
-    dpiButton600.grid(row=1, column=1)
+    dpi_button300 = ttk.Radiobutton(settings_dpi_frame, text="300 dpi scanner", variable=dpi_var, value=1)
+    dpi_button300.grid(row=1, column=0)
+    dpi_button600 = ttk.Radiobutton(settings_dpi_frame, text="600 dpi scanner", variable=dpi_var, value=2)
+    dpi_button600.grid(row=1, column=1)
 
     # Show output when finished switch
-    global showOutputWhenFinishedVar
-    showOutputWhenFinishedCheckButtonSettings = ttk.Checkbutton(settingsShowOutputFrame, text='Show output when finished', style='Switch.TCheckbutton', variable=showOutputWhenFinishedVar, onvalue=True, offvalue=False)
-    showOutputWhenFinishedCheckButtonSettings.grid(column=0, row=0)
+    global show_output_when_finished_var
+    show_output_when_finished_check_button_settings = ttk.Checkbutton(settings_show_output_frame, text='Show output when finished', style='Switch.TCheckbutton', variable=show_output_when_finished_var, onvalue=True, offvalue=False)
+    show_output_when_finished_check_button_settings.grid(column=0, row=0)
 
     # Use new analysis display switch (tkinter version)
-    global individualOutputTypeVar
-    individualOutputTypeCheckButtonSettings = ttk.Checkbutton(settingsIndivdualOutputFrame, text='Use new analysis display', style='Switch.TCheckbutton', variable=individualOutputTypeVar, onvalue="tkinter", offvalue="legacy")
-    individualOutputTypeCheckButtonSettings.grid(column=0, row=0)
+    global individual_output_type_var
+    individual_output_type_check_button_settings = ttk.Checkbutton(settings_indivdual_output_frame, text='Use new analysis display', style='Switch.TCheckbutton', variable=individual_output_type_var, onvalue="tkinter", offvalue="legacy")
+    individual_output_type_check_button_settings.grid(column=0, row=0)
 
     # Dark mode switch
     # TODO: Figure out why dark mode makes labels more padded
-    global darkModeVar
-    darkModeCheckbutton = ttk.Checkbutton(settingsDarkModeFrame, text='Use dark theme', style='Switch.TCheckbutton', variable=darkModeVar, onvalue=True, offvalue=False, command=update_dark_mode)
-    darkModeCheckbutton.grid(column=0, row=0)
+    global dark_mode_var
+    dark_mode_checkbutton = ttk.Checkbutton(settings_dark_mode_frame, text='Use dark theme', style='Switch.TCheckbutton', variable=dark_mode_var, onvalue=True, offvalue=False, command=update_dark_mode)
+    dark_mode_checkbutton.grid(column=0, row=0)
     #endregion
 
     #region Create NRA A-17 widgets
     # Create a header label
-    settingsLabel2 = ttk.Label(settingstab1NRAA17, text="NRA A-17 settings" , font='bold')
-    settingsLabel2.grid(row=0, column=0, columnspan=2)
+    settings_label2 = ttk.Label(settingstab1nraa17, text="NRA A-17 settings" , font='bold')
+    settings_label2.grid(row=0, column=0, columnspan=2)
 
     # The settings should be self explanatory
     # But if you aren't sure, check the **Tuning Overview** in README.md
-    nraKernalSizeLabel = ttk.Label(settingstab1NRAA17, text="NRA A-17 Kernel Size")
-    nraKernalSizeLabel.grid(row=1, column=0)
-    nraKernalSizeEntry = ttk.Entry(settingstab1NRAA17, textvariable=nraKernalSize)
-    nraKernalSizeEntry.grid(row=1, column=1)
+    nra_kernal_size_label = ttk.Label(settingstab1nraa17, text="NRA A-17 Kernel Size")
+    nra_kernal_size_label.grid(row=1, column=0)
+    nra_kernal_size_entry = ttk.Entry(settingstab1nraa17, textvariable=nra_kernal_size)
+    nra_kernal_size_entry.grid(row=1, column=1)
 
-    nraParam1Label = ttk.Label(settingstab1NRAA17, text="NRA A-17 Param 1")
-    nraParam1Label.grid(row=2, column=0)
-    nraParam1Entry = ttk.Entry(settingstab1NRAA17, textvariable=nraParam1)
-    nraParam1Entry.grid(row=2, column=1)
+    nra_param1_label = ttk.Label(settingstab1nraa17, text="NRA A-17 Param 1")
+    nra_param1_label.grid(row=2, column=0)
+    nra_param1_entry = ttk.Entry(settingstab1nraa17, textvariable=nra_param1)
+    nra_param1_entry.grid(row=2, column=1)
 
-    nraParam2Label = ttk.Label(settingstab1NRAA17, text="NRA A-17 Param 2")
-    nraParam2Label.grid(row=3, column=0)
-    nraParam2Entry = ttk.Entry(settingstab1NRAA17, textvariable=nraParam2)
-    nraParam2Entry.grid(row=3, column=1)
+    nra_param2_label = ttk.Label(settingstab1nraa17, text="NRA A-17 Param 2")
+    nra_param2_label.grid(row=3, column=0)
+    nra_param2_entry = ttk.Entry(settingstab1nraa17, textvariable=nra_param2)
+    nra_param2_entry.grid(row=3, column=1)
 
-    nraMinRadiusLabel = ttk.Label(settingstab1NRAA17, text="NRA A-17 Min Circle Radius")
-    nraMinRadiusLabel.grid(row=4, column=0)
-    nraMinRadiusEntry = ttk.Entry(settingstab1NRAA17, textvariable=nraMinRadius)
-    nraMinRadiusEntry.grid(row=4, column=1)
+    nra_min_radius_label = ttk.Label(settingstab1nraa17, text="NRA A-17 Min Circle Radius")
+    nra_min_radius_label.grid(row=4, column=0)
+    nra_min_radius_entry = ttk.Entry(settingstab1nraa17, textvariable=nra_min_radius)
+    nra_min_radius_entry.grid(row=4, column=1)
 
-    nraThreshMinLabel = ttk.Label(settingstab1NRAA17, text="NRA A-17 Thresh Min")
-    nraThreshMinLabel.grid(row=5, column=0)
-    nraThreshMinEntry = ttk.Entry(settingstab1NRAA17, textvariable=nraThreshMin)
-    nraThreshMinEntry.grid(row=5, column=1)
+    nra_thresh_min_label = ttk.Label(settingstab1nraa17, text="NRA A-17 Thresh Min")
+    nra_thresh_min_label.grid(row=5, column=0)
+    nra_thresh_min_entry = ttk.Entry(settingstab1nraa17, textvariable=nra_thresh_min)
+    nra_thresh_min_entry.grid(row=5, column=1)
 
-    nraThreshMaxLabel = ttk.Label(settingstab1NRAA17, text="NRA A-17 Thresh Max")
-    nraThreshMaxLabel.grid(row=6, column=0)
-    nraThreshMaxEntry = ttk.Entry(settingstab1NRAA17, textvariable=nraThreshMax)
-    nraThreshMaxEntry.grid(row=6, column=1)
+    nra_thresh_max_label = ttk.Label(settingstab1nraa17, text="NRA A-17 Thresh Max")
+    nra_thresh_max_label.grid(row=6, column=0)
+    nra_thresh_max_entry = ttk.Entry(settingstab1nraa17, textvariable=nra_thresh_max)
+    nra_thresh_max_entry.grid(row=6, column=1)
 
-    nraMorphologyOpeningKernelSizeLabel = ttk.Label(settingstab1NRAA17, text="NRA A-17 Morph Kernal Size")
-    nraMorphologyOpeningKernelSizeLabel.grid(row=7, column=0)
-    nraMorphologyOpeningKernelSizeEntry = ttk.Entry(settingstab1NRAA17, textvariable=nraMorphologyOpeningKernelSize)
-    nraMorphologyOpeningKernelSizeEntry.grid(row=7, column=1)
+    nra_morphology_opening_kernel_size_label = ttk.Label(settingstab1nraa17, text="NRA A-17 Morph Kernal Size")
+    nra_morphology_opening_kernel_size_label.grid(row=7, column=0)
+    nra_morphology_opening_kernel_size_entry = ttk.Entry(settingstab1nraa17, textvariable=nra_morphology_opening_kernel_size)
+    nra_morphology_opening_kernel_size_entry.grid(row=7, column=1)
 
-    nraMinContourAreaLabel = ttk.Label(settingstab1NRAA17, text="NRA A-17 Min cnt area")
-    nraMinContourAreaLabel.grid(row=8, column=0)
-    nraMinContourAreaEntry = ttk.Entry(settingstab1NRAA17, textvariable=nraMinContourArea)
-    nraMinContourAreaEntry.grid(row=8, column=1)
+    nra_min_contour_area_label = ttk.Label(settingstab1nraa17, text="NRA A-17 Min cnt area")
+    nra_min_contour_area_label.grid(row=8, column=0)
+    nra_min_contour_area_entry = ttk.Entry(settingstab1nraa17, textvariable=nra_min_contour_area)
+    nra_min_contour_area_entry.grid(row=8, column=1)
 
-    nraMaxContourAreaLabel = ttk.Label(settingstab1NRAA17, text="NRA A-17 Max cnt area")
-    nraMaxContourAreaLabel.grid(row=9, column=0)
-    nraMaxContourAreaEntry = ttk.Entry(settingstab1NRAA17, textvariable=nraMaxContourArea)
-    nraMaxContourAreaEntry.grid(row=9, column=1)
+    nra_max_contour_area_label = ttk.Label(settingstab1nraa17, text="NRA A-17 Max cnt area")
+    nra_max_contour_area_label.grid(row=9, column=0)
+    nra_max_contour_area_entry = ttk.Entry(settingstab1nraa17, textvariable=nra_max_contour_area)
+    nra_max_contour_area_entry.grid(row=9, column=1)
 
-    nramaxHoleRadiusLabel = ttk.Label(settingstab1NRAA17, text="NRA A-17 Max hole radius")
-    nramaxHoleRadiusLabel.grid(row=10, column=0)
-    nramaxHoleRadiusEntry = ttk.Entry(settingstab1NRAA17, textvariable=nramaxHoleRadius)
-    nramaxHoleRadiusEntry.grid(row=10, column=1)
+    nramax_hole_radius_label = ttk.Label(settingstab1nraa17, text="NRA A-17 Max hole radius")
+    nramax_hole_radius_label.grid(row=10, column=0)
+    nramax_hole_radius_entry = ttk.Entry(settingstab1nraa17, textvariable=nramax_hole_radius)
+    nramax_hole_radius_entry.grid(row=10, column=1)
     #endregion
 
     #region Create Orion widgets
     # Create a header label
-    settingsLabel1 = ttk.Label(settingstab2orion, text="Orion settings (300dpi)" , font='bold')
-    settingsLabel1.grid(row=0, column=0, columnspan=2)
+    settings_label1 = ttk.Label(settingstab2orion, text="Orion settings (300dpi)" , font='bold')
+    settings_label1.grid(row=0, column=0, columnspan=2)
 
     # Create a header label for the Orion 600dpi settigs
-    settingsLabelOrion600 = ttk.Label(settingstab3orionDPI2, text="Orion settings (600dpi)" , font='bold')
-    settingsLabelOrion600.grid(row=0, column=0, columnspan=2)
+    settings_label_orion600 = ttk.Label(settingstab3orionDPI2, text="Orion settings (600dpi)" , font='bold')
+    settings_label_orion600.grid(row=0, column=0, columnspan=2)
 
     # The settings should be self explanatory
     # But if you aren't sure, check the **Tuning Overview** in README.md
     # Settings below include both 300dpi (dpi1) and 600dpi (dpi2) settings
     # They are simply sorted into either settingstab2orion (dpi1) or settingstab3orionDPI2 (dpi2)
 
-    orionKernelSizeDpi1Label = ttk.Label(settingstab2orion, text="Orion Kernel Size dpi 1")
-    orionKernelSizeDpi1Label.grid(row=1, column=0)
-    orionKernelSizeDpi1Entry = ttk.Entry(settingstab2orion, textvariable=orionKernelSizeDpi1)
-    orionKernelSizeDpi1Entry.grid(row=1, column=1)
+    orion_kernel_size_dpi1_label = ttk.Label(settingstab2orion, text="Orion Kernel Size dpi 1")
+    orion_kernel_size_dpi1_label.grid(row=1, column=0)
+    orion_kernel_size_dpi1_entry = ttk.Entry(settingstab2orion, textvariable=orion_kernel_size_dpi1)
+    orion_kernel_size_dpi1_entry.grid(row=1, column=1)
 
-    orionKernelSizeDpi2Label = ttk.Label(settingstab3orionDPI2, text="Orion Kernel Size dpi 2")
-    orionKernelSizeDpi2Label.grid(row=2, column=0)
-    orionKernelSizeDpi2Entry = ttk.Entry(settingstab3orionDPI2, textvariable=orionKernelSizeDpi2)
-    orionKernelSizeDpi2Entry.grid(row=2, column=1)
+    orion_kernel_size_dpi2_label = ttk.Label(settingstab3orionDPI2, text="Orion Kernel Size dpi 2")
+    orion_kernel_size_dpi2_label.grid(row=2, column=0)
+    orion_kernel_size_dpi2_entry = ttk.Entry(settingstab3orionDPI2, textvariable=orion_kernel_size_dpi2)
+    orion_kernel_size_dpi2_entry.grid(row=2, column=1)
 
-    orionParam1Dpi1Label = ttk.Label(settingstab2orion, text="Orion Param1 dpi 1")
-    orionParam1Dpi1Label.grid(row=3, column=0)
-    orionParam1Dpi1Entry = ttk.Entry(settingstab2orion, textvariable=orionParam1Dpi1)
-    orionParam1Dpi1Entry.grid(row=3, column=1)
+    orion_param1_dpi1_label = ttk.Label(settingstab2orion, text="Orion Param1 dpi 1")
+    orion_param1_dpi1_label.grid(row=3, column=0)
+    orion_param1_dpi1_entry = ttk.Entry(settingstab2orion, textvariable=orion_param1_dpi1)
+    orion_param1_dpi1_entry.grid(row=3, column=1)
 
-    orionParam2Dpi1Label = ttk.Label(settingstab2orion, text="Orion Param2 dpi 1")
-    orionParam2Dpi1Label.grid(row=4, column=0)
-    orionParam2Dpi1Entry = ttk.Entry(settingstab2orion, textvariable=orionParam2Dpi1)
-    orionParam2Dpi1Entry.grid(row=4, column=1)
+    orion_param2_dpi1_label = ttk.Label(settingstab2orion, text="Orion Param2 dpi 1")
+    orion_param2_dpi1_label.grid(row=4, column=0)
+    orion_param2_dpi1_entry = ttk.Entry(settingstab2orion, textvariable=orion_param2_dpi1)
+    orion_param2_dpi1_entry.grid(row=4, column=1)
 
-    orionParam1Dpi2Label = ttk.Label(settingstab3orionDPI2, text="Orion Param1 dpi 2")
-    orionParam1Dpi2Label.grid(row=5, column=0)
-    orionParam1Dpi2Entry = ttk.Entry(settingstab3orionDPI2, textvariable=orionParam1Dpi2)
-    orionParam1Dpi2Entry.grid(row=5, column=1)
+    orion_param1_dpi2_label = ttk.Label(settingstab3orionDPI2, text="Orion Param1 dpi 2")
+    orion_param1_dpi2_label.grid(row=5, column=0)
+    orion_param1_dpi2_entry = ttk.Entry(settingstab3orionDPI2, textvariable=orion_param1_dpi2)
+    orion_param1_dpi2_entry.grid(row=5, column=1)
 
-    orionParam2Dpi2Label = ttk.Label(settingstab3orionDPI2, text="Orion Param2 dpi 2")
-    orionParam2Dpi2Label.grid(row=6, column=0)
-    orionParam2Dpi2Entry = ttk.Entry(settingstab3orionDPI2, textvariable=orionParam2Dpi2)
-    orionParam2Dpi2Entry.grid(row=6, column=1)
+    orion_param2_dpi2_label = ttk.Label(settingstab3orionDPI2, text="Orion Param2 dpi 2")
+    orion_param2_dpi2_label.grid(row=6, column=0)
+    orion_param2_dpi2_entry = ttk.Entry(settingstab3orionDPI2, textvariable=orion_param2_dpi2)
+    orion_param2_dpi2_entry.grid(row=6, column=1)
 
-    orionMinRadiusDpi1Label = ttk.Label(settingstab2orion, text="Orion MinRadius dpi 1")
-    orionMinRadiusDpi1Label.grid(row=7, column=0)
-    orionMinRadiusDpi1Entry = ttk.Entry(settingstab2orion, textvariable=orionMinRadiusDpi1)
-    orionMinRadiusDpi1Entry.grid(row=7, column=1)
+    orion_min_radius_dpi1_label = ttk.Label(settingstab2orion, text="Orion MinRadius dpi 1")
+    orion_min_radius_dpi1_label.grid(row=7, column=0)
+    orion_min_radius_dpi1_entry = ttk.Entry(settingstab2orion, textvariable=orion_min_radius_dpi1)
+    orion_min_radius_dpi1_entry.grid(row=7, column=1)
 
-    orionMinRadiusDpi2Label = ttk.Label(settingstab3orionDPI2, text="Orion MinRadius dpi 2")
-    orionMinRadiusDpi2Label.grid(row=8, column=0)
-    orionMinRadiusDpi2Entry = ttk.Entry(settingstab3orionDPI2, textvariable=orionMinRadiusDpi2)
-    orionMinRadiusDpi2Entry.grid(row=8, column=1)
+    orion_min_radius_dpi2_label = ttk.Label(settingstab3orionDPI2, text="Orion MinRadius dpi 2")
+    orion_min_radius_dpi2_label.grid(row=8, column=0)
+    orion_min_radius_dpi2_entry = ttk.Entry(settingstab3orionDPI2, textvariable=orion_min_radius_dpi2)
+    orion_min_radius_dpi2_entry.grid(row=8, column=1)
 
-    orionThreshMinLabel = ttk.Label(settingstab2orion, text="Orion thresh min")
-    orionThreshMinLabel.grid(row=9, column=0)
-    orionThreshMinEntry = ttk.Entry(settingstab2orion, textvariable=orionThreshMin)
-    orionThreshMinEntry.grid(row=9, column=1)
+    orion_thresh_min_label = ttk.Label(settingstab2orion, text="Orion thresh min")
+    orion_thresh_min_label.grid(row=9, column=0)
+    orion_thresh_min_entry = ttk.Entry(settingstab2orion, textvariable=orion_thresh_min)
+    orion_thresh_min_entry.grid(row=9, column=1)
 
-    orionThreshMaxLabel = ttk.Label(settingstab2orion, text="Orion thresh max")
-    orionThreshMaxLabel.grid(row=10, column=0)
-    orionThreshMaxEntry = ttk.Entry(settingstab2orion, textvariable=orionThreshMax)
-    orionThreshMaxEntry.grid(row=10, column=1)
+    orion_thresh_max_label = ttk.Label(settingstab2orion, text="Orion thresh max")
+    orion_thresh_max_label.grid(row=10, column=0)
+    orion_thresh_max_entry = ttk.Entry(settingstab2orion, textvariable=orion_thresh_max)
+    orion_thresh_max_entry.grid(row=10, column=1)
 
-    orionThreshMinLabel = ttk.Label(settingstab3orionDPI2, text="Orion thresh min")
-    orionThreshMinLabel.grid(row=9, column=0)
-    orionThreshMinEntry = ttk.Entry(settingstab3orionDPI2, textvariable=orionThreshMin)
-    orionThreshMinEntry.grid(row=9, column=1)
+    orion_thresh_min_label_dpi2 = ttk.Label(settingstab3orionDPI2, text="Orion thresh min")
+    orion_thresh_min_label_dpi2.grid(row=9, column=0)
+    orion_thresh_min_entry_dpi2 = ttk.Entry(settingstab3orionDPI2, textvariable=orion_thresh_min)
+    orion_thresh_min_entry_dpi2.grid(row=9, column=1)
 
-    orionThreshMaxLabel = ttk.Label(settingstab3orionDPI2, text="Orion thresh max")
-    orionThreshMaxLabel.grid(row=10, column=0)
-    orionThreshMaxEntry = ttk.Entry(settingstab3orionDPI2, textvariable=orionThreshMax)
-    orionThreshMaxEntry.grid(row=10, column=1)
+    orion_thresh_max_label_dpi2 = ttk.Label(settingstab3orionDPI2, text="Orion thresh max")
+    orion_thresh_max_label_dpi2.grid(row=10, column=0)
+    orion_thresh_max_entry_dpi2 = ttk.Entry(settingstab3orionDPI2, textvariable=orion_thresh_max)
+    orion_thresh_max_entry_dpi2.grid(row=10, column=1)
 
-    orionMinContourAreaDpi1Label = ttk.Label(settingstab2orion, text="Orion min cnt area dpi 1")
-    orionMinContourAreaDpi1Label.grid(row=11, column=0)
-    orionMinContourAreaDpi1Entry = ttk.Entry(settingstab2orion, textvariable=orionMinContourAreaDpi1)
-    orionMinContourAreaDpi1Entry.grid(row=11, column=1)
+    orion_min_contour_area_dpi1_label = ttk.Label(settingstab2orion, text="Orion min cnt area dpi 1")
+    orion_min_contour_area_dpi1_label.grid(row=11, column=0)
+    orion_min_contour_area_dpi1_entry = ttk.Entry(settingstab2orion, textvariable=orion_min_contour_area_dpi1)
+    orion_min_contour_area_dpi1_entry.grid(row=11, column=1)
 
-    orionMaxContourAreaDpi1Label = ttk.Label(settingstab2orion, text="Orion max cnt area dpi 1")
-    orionMaxContourAreaDpi1Label.grid(row=12, column=0)
-    orionMaxContourAreaDpi1Entry = ttk.Entry(settingstab2orion, textvariable=orionMaxContourAreaDpi1)
-    orionMaxContourAreaDpi1Entry.grid(row=12, column=1)
+    orion_max_contour_area_dpi1_label = ttk.Label(settingstab2orion, text="Orion max cnt area dpi 1")
+    orion_max_contour_area_dpi1_label.grid(row=12, column=0)
+    orion_max_contour_area_dpi1_entry = ttk.Entry(settingstab2orion, textvariable=orion_max_contour_area_dpi1)
+    orion_max_contour_area_dpi1_entry.grid(row=12, column=1)
 
-    orionMinContourAreaDpi2Label = ttk.Label(settingstab3orionDPI2, text="Orion min cnt area dpi 2")
-    orionMinContourAreaDpi2Label.grid(row=13, column=0)
-    orionMinContourAreaDpi2Entry = ttk.Entry(settingstab3orionDPI2, textvariable=orionMinContourAreaDpi2)
-    orionMinContourAreaDpi2Entry.grid(row=13, column=1)
+    orion_min_contour_area_dpi2_label = ttk.Label(settingstab3orionDPI2, text="Orion min cnt area dpi 2")
+    orion_min_contour_area_dpi2_label.grid(row=13, column=0)
+    orion_min_contour_area_dpi2_entry = ttk.Entry(settingstab3orionDPI2, textvariable=orion_min_contour_area_dpi2)
+    orion_min_contour_area_dpi2_entry.grid(row=13, column=1)
 
-    orionMaxContourAreaDpi2Label = ttk.Label(settingstab3orionDPI2, text="Orion max cnt area dpi 2")
-    orionMaxContourAreaDpi2Label.grid(row=14, column=0)
-    orionMaxContourAreaDpi2Entry = ttk.Entry(settingstab3orionDPI2, textvariable=orionMaxContourAreaDpi2)
-    orionMaxContourAreaDpi2Entry.grid(row=14, column=1)
+    orion_max_contour_area_dpi2_label = ttk.Label(settingstab3orionDPI2, text="Orion max cnt area dpi 2")
+    orion_max_contour_area_dpi2_label.grid(row=14, column=0)
+    orion_max_contour_area_dpi2_entry = ttk.Entry(settingstab3orionDPI2, textvariable=orion_max_contour_area_dpi2)
+    orion_max_contour_area_dpi2_entry.grid(row=14, column=1)
 
-    orionmaxHoleRadiusDpi1Label = ttk.Label(settingstab2orion, text="Orion min hole rad dpi 1")
-    orionmaxHoleRadiusDpi1Label.grid(row=15, column=0)
-    orionmaxHoleRadiusDpi1Entry = ttk.Entry(settingstab2orion, textvariable=orionmaxHoleRadiusDpi1)
-    orionmaxHoleRadiusDpi1Entry.grid(row=15, column=1)
+    orionmax_hole_radius_dpi1_label = ttk.Label(settingstab2orion, text="Orion min hole rad dpi 1")
+    orionmax_hole_radius_dpi1_label.grid(row=15, column=0)
+    orionmax_hole_radius_dpi1_entry = ttk.Entry(settingstab2orion, textvariable=orionmax_hole_radius_dpi1)
+    orionmax_hole_radius_dpi1_entry.grid(row=15, column=1)
 
-    orionmaxHoleRadiusDpi2Label = ttk.Label(settingstab3orionDPI2, text="Orion min hole rad dpi 2")
-    orionmaxHoleRadiusDpi2Label.grid(row=16, column=0)
-    orionmaxHoleRadiusDpi2Entry = ttk.Entry(settingstab3orionDPI2, textvariable=orionmaxHoleRadiusDpi2)
-    orionmaxHoleRadiusDpi2Entry.grid(row=16, column=1)
+    orionmax_hole_radius_dpi2_label = ttk.Label(settingstab3orionDPI2, text="Orion min hole rad dpi 2")
+    orionmax_hole_radius_dpi2_label.grid(row=16, column=0)
+    orionmax_hole_radius_dpi2_entry = ttk.Entry(settingstab3orionDPI2, textvariable=orionmax_hole_radius_dpi2)
+    orionmax_hole_radius_dpi2_entry.grid(row=16, column=1)
     #endregion
 
-    settingsWindow.protocol("WM_DELETE_WINDOW", onCloseSettings) # If the settings window is closing, run the onCloseSettings function
+    settings_window.protocol("WM_DELETE_WINDOW", on_close_settings) # If the settings window is closing, run the on_close_settings function
 
 # Show analysis output for each image
 def open_analysis_window():
     # Load all of the images that have been saved from analysis
-    def loadImages():
+    def load_images():
         # Create a list of images
-        global outputImages
-        global outputImageNames
-        outputImages = []
-        outputImageNames = []
+        global output_images
+        global output_image_names
+        output_images = []
+        output_image_names = []
         # os.listdir returns a list of the files in the directory
         for file in os.listdir("images/output"):
             # Output images are saved as such: <original image name>-output.png
             if file.endswith("output.jpg"):
-                outputImages.append(ImageTk.PhotoImage(Image.open("images/output/" + file).resize((600, 600), Image.ANTIALIAS))) # Load the image as a tkinter photo image and add it to the list
-                outputImageNames.append(file) # Add the image name to the list
+                output_images.append(ImageTk.PhotoImage(Image.open("images/output/" + file).resize((600, 600), Image.ANTIALIAS))) # Load the image as a tkinter photo image and add it to the list
+                output_image_names.append(file) # Add the image name to the list
         
         # Prepare image names lists for use by ordering them in a clockwise fashion, starting with the top middle target image.
         # Define the correct order for the list
-        clockwiseOrder = {"top-mid.jpg-output.jpg" : 0, 
+        clockwise_order = {"top-mid.jpg-output.jpg" : 0, 
                             "top-right.jpg-output.jpg" : 1, 
                             "upper-right.jpg-output.jpg" : 2, 
                             "lower-right.jpg-output.jpg" : 3, 
@@ -1353,112 +1356,112 @@ def open_analysis_window():
                             "upper-left.jpg-output.jpg" : 8, 
                             "top-left.jpg-output.jpg" : 9}
         # Sort the images and image names list by the image names according to the clockwise order
-        sortedZipped = sorted(zip(outputImages, outputImageNames), key=lambda d: clockwiseOrder[d[1]])
+        sorted_zipped = sorted(zip(output_images, output_image_names), key=lambda d: clockwise_order[d[1]])
         # Unzip the sorted list into images and image names
-        outputImages = [x for x, y in sortedZipped]
-        outputImageNames = [y for x, y in sortedZipped]
+        output_images = [x for x, y in sorted_zipped]
+        output_image_names = [y for x, y in sorted_zipped]
         # Create friendly names for use in the GUI by removing the file extension and "-output" from the image name,
         # replacing the hyphens with spaces and capitalizing the first letter of each word.
-        global outputFriendlyNames
-        outputFriendlyNames = [(y.split(".jpg-output.jpg")[0]).replace("-", " ").capitalize() for x, y in sortedZipped]
+        global output_friendly_names
+        output_friendly_names = [(y.split(".jpg-output.jpg")[0]).replace("-", " ").capitalize() for x, y in sorted_zipped]
 
     # Delete everything on the analysis canvas
-    def clearCanvas():
-        analysisCanvas.delete("all")
+    def clear_canvas():
+        analysis_canvas.delete("all")
 
-    # Shows the indexth image in the outputImages list
-    def showImage(index):
-        analysisCanvas.create_image(0, 0, anchor="nw", image=outputImages[index]) # Create the image on the canvas
-        analysisTopLabel.config(text=outputFriendlyNames[index]) # Update the top label with the friendly name of the image
+    # Shows the indexth image in the output_images list
+    def show_image(index):
+        analysis_canvas.create_image(0, 0, anchor="nw", image=output_images[index]) # Create the image on the canvas
+        analysis_top_label.config(text=output_friendly_names[index]) # Update the top label with the friendly name of the image
 
-    # Advance to the next image in the outputImages list if allowed
-    def onNextButtonPressed():
-        global imageIndex
-        if imageIndex < len(outputImages) - 1:
-            imageIndex += 1
-            clearCanvas()
-            showImage(imageIndex)
-        updateButtons()
+    # Advance to the next image in the output_images list if allowed
+    def on_next_button_pressed():
+        global image_index
+        if image_index < len(output_images) - 1:
+            image_index += 1
+            clear_canvas()
+            show_image(image_index)
+        update_buttons()
 
-    # Move back to the previous image in the outputImages list if allowed
-    def onBackButtonPressed():
-        global imageIndex
-        if imageIndex > 0:
-            imageIndex -= 1
-            clearCanvas()
-            showImage(imageIndex)
-        updateButtons()
+    # Move back to the previous image in the output_images list if allowed
+    def on_back_button_pressed():
+        global image_index
+        if image_index > 0:
+            image_index -= 1
+            clear_canvas()
+            show_image(image_index)
+        update_buttons()
 
     # Close the analysis window and show the output window if enabled
-    def onFinishButtonPressed():
-        analysisWindow.destroy()
-        if showOutputWhenFinishedVar.get():
+    def on_finish_button_pressed():
+        analysis_window.destroy()
+        if show_output_when_finished_var.get():
             show_output()
 
     # Update the buttons to show the correct state based on the current image index
-    def updateButtons():
-        if imageIndex == 0:
-            analysisBackButton.config(state=DISABLED) # Disable the back button if the first image is showing
+    def update_buttons():
+        if image_index == 0:
+            analysis_back_button.config(state=DISABLED) # Disable the back button if the first image is showing
         else:
-            analysisBackButton.config(state=NORMAL) # Enable the back button if the first image is not showing
+            analysis_back_button.config(state=NORMAL) # Enable the back button if the first image is not showing
 
-        if imageIndex == len(outputImages)-1:
-            analysisNextButton.config(text="Finish", style="Accent.TButton", command=onFinishButtonPressed) # If the last image is showing, change the next button to say "Finish" and make it an accent button (blue) for emphasis
+        if image_index == len(output_images)-1:
+            analysis_next_button.config(text="Finish", style="Accent.TButton", command=on_finish_button_pressed) # If the last image is showing, change the next button to say "Finish" and make it an accent button (blue) for emphasis
         else:
-            analysisNextButton.config(state=NORMAL, text="Next", style="Button.TButton") # If the last image is not showing, change the next button to say "Next" and make it a normal button
+            analysis_next_button.config(state=NORMAL, text="Next", style="Button.TButton") # If the last image is not showing, change the next button to say "Next" and make it a normal button
 
     #region Create the analysis window
-    analysisWindow = tk.Toplevel(root)
-    analysisWindow.title("Target Analysis")
-    analysisWindow.minsize(width=600, height=690)
-    analysisWindow.geometry("600x690")
-    analysisWindow.tk.call('wm', 'iconphoto', analysisWindow._w, tk.PhotoImage(file='assets/icon.png'))
+    analysis_window = tk.Toplevel(root)
+    analysis_window.title("Target Analysis")
+    analysis_window.minsize(width=600, height=690)
+    analysis_window.geometry("600x690")
+    analysis_window.tk.call('wm', 'iconphoto', analysis_window._w, tk.PhotoImage(file='assets/icon.png'))
     #endregion
 
     #region Create frames
     # Top frame shows the image name
-    analysisTopFrame = ttk.Frame(analysisWindow)
-    analysisTopFrame.pack(side=TOP, fill=X)
+    analysis_top_frame = ttk.Frame(analysis_window)
+    analysis_top_frame.pack(side=TOP, fill=X)
 
     # Images frame holds the canvas with the images
-    analysisImagesFrame = ttk.Frame(analysisWindow)
-    analysisImagesFrame.pack(side=TOP, fill=X)
+    analysis_images_frame = ttk.Frame(analysis_window)
+    analysis_images_frame.pack(side=TOP, fill=X)
 
     # Bottom frame holds the buttons
-    analysisBottomFrame = ttk.Frame(analysisWindow)
-    analysisBottomFrame.pack(side=BOTTOM, fill=X)
+    analysis_bottom_frame = ttk.Frame(analysis_window)
+    analysis_bottom_frame.pack(side=BOTTOM, fill=X)
     #endregion
 
     #region Create top label
-    analysisTopLabel = ttk.Label(analysisTopFrame, text="Analysis", font="bold")
-    analysisTopLabel.pack(pady=10)
+    analysis_top_label = ttk.Label(analysis_top_frame, text="Analysis", font="bold")
+    analysis_top_label.pack(pady=10)
     #endregion
 
     #region Create canvas
-    analysisCanvas = tk.Canvas(analysisImagesFrame, width=600, height=600)
-    analysisCanvas.pack()
+    analysis_canvas = tk.Canvas(analysis_images_frame, width=600, height=600)
+    analysis_canvas.pack()
     #endregion
 
     #region Create buttons
-    analysisNextButton = ttk.Button(analysisBottomFrame, text="Next", command=onNextButtonPressed)#, style="Accent.TButton")
-    analysisNextButton.pack(side=RIGHT, padx=5, pady=5)
+    analysis_next_button = ttk.Button(analysis_bottom_frame, text="Next", command=on_next_button_pressed)#, style="Accent.TButton")
+    analysis_next_button.pack(side=RIGHT, padx=5, pady=5)
 
-    analysisBackButton = ttk.Button(analysisBottomFrame, text="Back", command=onBackButtonPressed)#, style="Accent.TButton")
-    analysisBackButton.pack(side=LEFT, padx=5, pady=5)
+    analysis_back_button = ttk.Button(analysis_bottom_frame, text="Back", command=on_back_button_pressed)#, style="Accent.TButton")
+    analysis_back_button.pack(side=LEFT, padx=5, pady=5)
     #endregion
 
     #Show first image
-    global imageIndex
-    imageIndex = 0
-    loadImages()
-    clearCanvas()
-    showImage(imageIndex)
-    updateButtons()
+    global image_index
+    image_index = 0
+    load_images()
+    clear_canvas()
+    show_image(image_index)
+    update_buttons()
 
-# Enables/Disables dark theme UI based on darkMode boolean variable state
+# Enables/Disables dark theme UI based on dark_mode boolean variable state
 def update_dark_mode():
     # If dark mode is enabled, set the theme to dark
-    if darkModeVar.get() == True:
+    if dark_mode_var.get() == True:
         root.tk.call("set_theme", "dark") # Set the theme to dark
     else:
         root.tk.call("set_theme", "light") # Set the theme to light
@@ -1471,44 +1474,44 @@ def update_settings_from_config(file):
     config.read(file) # Read the given config file
     
     # Set variables to the values in the config file
-    dpiVar.set(config.getint("settings", "dpi"))
-    darkModeVar.set(config.getboolean("settings", "darkMode"))
-    showOutputWhenFinishedVar.set(config.getboolean("settings", "showOutputWhenFinished"))
-    individualOutputTypeVar.set(config.get('settings', 'individualOutputType'))
-    useFileInfo.set(config.getboolean("settings", "useFileInfo"))
+    dpi_var.set(config.getint("settings", "dpi"))
+    dark_mode_var.set(config.getboolean("settings", "dark_mode"))
+    show_output_when_finished_var.set(config.getboolean("settings", "show_output_when_finished"))
+    individual_output_type_var.set(config.get('settings', 'individual_output_type'))
+    use_file_info_var.set(config.getboolean("settings", "use_file_info"))
     update_dark_mode() # Apply the dark mode setting
 
     # Continue setting variables for the Orion targets
-    orionKernelSizeDpi1.set(config.getint("orion", "orionKernelSizeDpi1"))
-    orionKernelSizeDpi2.set(config.getint("orion", "orionKernelSizeDpi2"))
-    orionParam1Dpi1.set(config.getfloat("orion", "orionParam1Dpi1"))
-    orionParam2Dpi1.set(config.getint("orion", "orionParam2Dpi1"))
-    orionMinRadiusDpi1.set(config.getint("orion", "orionMinRadiusDpi1"))
-    orionParam1Dpi2.set(config.getint("orion", "orionParam1Dpi2"))
-    orionParam2Dpi2.set(config.getint("orion", "orionParam2Dpi2"))
-    orionMinRadiusDpi2.set(config.getint("orion", "orionMinRadiusDpi2"))
-    orionThreshMin.set(config.getint("orion", "orionThreshMin"))
-    orionThreshMax.set(config.getint("orion", "orionThreshMax"))
-    orionMorphologyOpeningKernelSizeDpi1.set(config.getint("orion", "orionMorphologyOpeningKernelSizeDpi1"))
-    orionMorphologyOpeningKernelSizeDpi2.set(config.getint("orion", "orionMorphologyOpeningKernelSizeDpi2"))
-    orionMinContourAreaDpi1.set(config.getint("orion", "orionMinContourAreaDpi1"))
-    orionMinContourAreaDpi2.set(config.getint("orion", "orionMinContourAreaDpi2"))
-    orionMaxContourAreaDpi1.set(config.getint("orion", "orionMaxContourAreaDpi1"))
-    orionMaxContourAreaDpi2.set(config.getint("orion", "orionMaxContourAreaDpi2"))
-    orionmaxHoleRadiusDpi1.set(config.getint("orion", "orionmaxHoleRadiusDpi1"))
-    orionmaxHoleRadiusDpi2.set(config.getint("orion", "orionmaxHoleRadiusDpi2"))
+    orion_kernel_size_dpi1.set(config.getint("orion", "orion_kernel_size_dpi1"))
+    orion_kernel_size_dpi2.set(config.getint("orion", "orion_kernel_size_dpi2"))
+    orion_param1_dpi1.set(config.getfloat("orion", "orion_param1_dpi1"))
+    orion_param2_dpi1.set(config.getint("orion", "orion_param2_dpi1"))
+    orion_min_radius_dpi1.set(config.getint("orion", "orion_min_radius_dpi1"))
+    orion_param1_dpi2.set(config.getint("orion", "orion_param1_dpi2"))
+    orion_param2_dpi2.set(config.getint("orion", "orion_param2_dpi2"))
+    orion_min_radius_dpi2.set(config.getint("orion", "orion_min_radius_dpi2"))
+    orion_thresh_min.set(config.getint("orion", "orion_thresh_min"))
+    orion_thresh_max.set(config.getint("orion", "orion_thresh_max"))
+    orion_morphology_opening_kernel_size_dpi1.set(config.getint("orion", "orion_morphology_opening_kernel_size_dpi1"))
+    orion_morphology_opening_kernel_size_dpi2.set(config.getint("orion", "orion_morphology_opening_kernel_size_dpi2"))
+    orion_min_contour_area_dpi1.set(config.getint("orion", "orion_min_contour_area_dpi1"))
+    orion_min_contour_area_dpi2.set(config.getint("orion", "orion_min_contour_area_dpi2"))
+    orion_max_contour_area_dpi1.set(config.getint("orion", "orion_max_contour_area_dpi1"))
+    orion_max_contour_area_dpi2.set(config.getint("orion", "orion_max_contour_area_dpi2"))
+    orionmax_hole_radius_dpi1.set(config.getint("orion", "orionmax_hole_radius_dpi1"))
+    orionmax_hole_radius_dpi2.set(config.getint("orion", "orionmax_hole_radius_dpi2"))
 
     # Continue setting variables for the NRA A-17
-    nraKernalSize.set(config.getint("nra", "nraKernalSize"))
-    nraParam1.set(config.getfloat("nra", "nraParam1"))
-    nraParam2.set(config.getint("nra", "nraParam2"))
-    nraMinRadius.set(config.getint("nra", "nraMinRadius"))
-    nraThreshMin.set(config.getint("nra", "nraThreshMin"))
-    nraThreshMax.set(config.getint("nra", "nraThreshMax"))
-    nraMorphologyOpeningKernelSize.set(config.getint("nra", "nraMorphologyOpeningKernelSize"))
-    nraMinContourArea.set(config.getint("nra", "nraMinContourArea"))
-    nraMaxContourArea.set(config.getint("nra", "nraMaxContourArea"))
-    nramaxHoleRadius.set(config.getint("nra", "nramaxHoleRadius"))
+    nra_kernal_size.set(config.getint("nra", "nra_kernal_size"))
+    nra_param1.set(config.getfloat("nra", "nra_param1"))
+    nra_param2.set(config.getint("nra", "nra_param2"))
+    nra_min_radius.set(config.getint("nra", "nra_min_radius"))
+    nra_thresh_min.set(config.getint("nra", "nra_thresh_min"))
+    nra_thresh_max.set(config.getint("nra", "nra_thresh_max"))
+    nra_morphology_opening_kernel_size.set(config.getint("nra", "nra_morphology_opening_kernel_size"))
+    nra_min_contour_area.set(config.getint("nra", "nra_min_contour_area"))
+    nra_max_contour_area.set(config.getint("nra", "nra_max_contour_area"))
+    nramax_hole_radius.set(config.getint("nra", "nramax_hole_radius"))
 
 # Save settings to config file
 def create_default_config(file):
@@ -1520,47 +1523,47 @@ def create_default_config(file):
     config.add_section('settings') # Add the settings section to the config file
 
     # Add the settings to the config file
-    config.set('settings', 'dpi', str(dpiVar.get()))
-    config.set('settings', 'darkMode', str(darkModeVar.get()))
-    config.set('settings', 'show_outputWhenFinished', str(showOutputWhenFinishedVar.get()))
-    config.set('settings', 'individualOutputType', str(individualOutputTypeVar.get()))
-    config.set('settings', 'useFileInfo', str(useFileInfo.get()))
+    config.set('settings', 'dpi', str(dpi_var.get()))
+    config.set('settings', 'dark_mode', str(dark_mode_var.get()))
+    config.set('settings', 'show_output_when_finished', str(show_output_when_finished_var.get()))
+    config.set('settings', 'individual_output_type', str(individual_output_type_var.get()))
+    config.set('settings', 'use_file_info', str(use_file_info_var.get()))
 
     # Add the orion section to the config file
     config.add_section('orion')
     # Settings for the orion targets
-    config.set('orion', 'orionKernelSizeDpi1', str(orionKernelSizeDpi1.get()))
-    config.set('orion', 'orionKernelSizeDpi2', str(orionKernelSizeDpi2.get()))
-    config.set('orion', 'orionParam1Dpi1', str(orionParam1Dpi1.get()))
-    config.set('orion', 'orionParam2Dpi1', str(orionParam2Dpi1.get()))
-    config.set('orion', 'orionMinRadiusDpi1', str(orionMinRadiusDpi1.get()))
-    config.set('orion', 'orionParam1Dpi2', str(orionParam1Dpi2.get()))
-    config.set('orion', 'orionParam2Dpi2', str(orionParam2Dpi2.get()))
-    config.set('orion', 'orionMinRadiusDpi2', str(orionMinRadiusDpi2.get()))
-    config.set('orion', 'orionThreshMin', str(orionThreshMin.get()))
-    config.set('orion', 'orionThreshMax', str(orionThreshMax.get()))
-    config.set('orion', 'orionMorphologyOpeningKernelSizeDpi1', str(orionMorphologyOpeningKernelSizeDpi1.get()))
-    config.set('orion', 'orionMorphologyOpeningKernelSizeDpi2', str(orionMorphologyOpeningKernelSizeDpi2.get()))
-    config.set('orion', 'orionMinContourAreaDpi1', str(orionMinContourAreaDpi1.get()))
-    config.set('orion', 'orionMinContourAreaDpi2', str(orionMinContourAreaDpi2.get()))
-    config.set('orion', 'orionMaxContourAreaDpi1', str(orionMaxContourAreaDpi1.get()))
-    config.set('orion', 'orionMaxContourAreaDpi2', str(orionMaxContourAreaDpi2.get()))
-    config.set('orion', 'orionmaxHoleRadiusDpi1', str(orionmaxHoleRadiusDpi1.get()))
-    config.set('orion', 'orionmaxHoleRadiusDpi2', str(orionmaxHoleRadiusDpi2.get()))
+    config.set('orion', 'orion_kernel_size_dpi1', str(orion_kernel_size_dpi1.get()))
+    config.set('orion', 'orion_kernel_size_dpi2', str(orion_kernel_size_dpi2.get()))
+    config.set('orion', 'orion_param1_dpi1', str(orion_param1_dpi1.get()))
+    config.set('orion', 'orion_param2_dpi1', str(orion_param2_dpi1.get()))
+    config.set('orion', 'orion_min_radius_dpi1', str(orion_min_radius_dpi1.get()))
+    config.set('orion', 'orion_param1_dpi2', str(orion_param1_dpi2.get()))
+    config.set('orion', 'orion_param2_dpi2', str(orion_param2_dpi2.get()))
+    config.set('orion', 'orion_min_radius_dpi2', str(orion_min_radius_dpi2.get()))
+    config.set('orion', 'orion_thresh_min', str(orion_thresh_min.get()))
+    config.set('orion', 'orion_thresh_max', str(orion_thresh_max.get()))
+    config.set('orion', 'orion_morphology_opening_kernel_size_dpi1', str(orion_morphology_opening_kernel_size_dpi1.get()))
+    config.set('orion', 'orion_morphology_opening_kernel_size_dpi2', str(orion_morphology_opening_kernel_size_dpi2.get()))
+    config.set('orion', 'orion_min_contour_area_dpi1', str(orion_min_contour_area_dpi1.get()))
+    config.set('orion', 'orion_min_contour_area_dpi2', str(orion_min_contour_area_dpi2.get()))
+    config.set('orion', 'orion_max_contour_area_dpi1', str(orion_max_contour_area_dpi1.get()))
+    config.set('orion', 'orion_max_contour_area_dpi2', str(orion_max_contour_area_dpi2.get()))
+    config.set('orion', 'orionmax_hole_radius_dpi1', str(orionmax_hole_radius_dpi1.get()))
+    config.set('orion', 'orionmax_hole_radius_dpi2', str(orionmax_hole_radius_dpi2.get()))
 
     # Add the NRA A-17 section to the config file
     config.add_section('nra')
     # Settings for the NRA A-17 targets
-    config.set('nra', 'nraKernalSize', str(nraKernalSize.get()))
-    config.set('nra', 'nraParam1', str(nraParam1.get()))
-    config.set('nra', 'nraParam2', str(nraParam2.get()))
-    config.set('nra', 'nraMinRadius', str(nraMinRadius.get()))
-    config.set('nra', 'nraThreshMin', str(nraThreshMin.get()))
-    config.set('nra', 'nraThreshMax', str(nraThreshMax.get()))
-    config.set('nra', 'nraMorphologyOpeningKernelSize', str(nraMorphologyOpeningKernelSize.get()))
-    config.set('nra', 'nraMinContourArea', str(nraMinContourArea.get()))
-    config.set('nra', 'nraMaxContourArea', str(nraMaxContourArea.get()))
-    config.set('nra', 'nramaxHoleRadius', str(nramaxHoleRadius.get()))
+    config.set('nra', 'nra_kernal_size', str(nra_kernal_size.get()))
+    config.set('nra', 'nra_param1', str(nra_param1.get()))
+    config.set('nra', 'nra_param2', str(nra_param2.get()))
+    config.set('nra', 'nra_min_radius', str(nra_min_radius.get()))
+    config.set('nra', 'nra_thresh_min', str(nra_thresh_min.get()))
+    config.set('nra', 'nra_thresh_max', str(nra_thresh_max.get()))
+    config.set('nra', 'nra_morphology_opening_kernel_size', str(nra_morphology_opening_kernel_size.get()))
+    config.set('nra', 'nra_min_contour_area', str(nra_min_contour_area.get()))
+    config.set('nra', 'nra_max_contour_area', str(nra_max_contour_area.get()))
+    config.set('nra', 'nramax_hole_radius', str(nramax_hole_radius.get()))
 
     # Write the changes to the config file
     with open(file, 'w') as f:
@@ -1573,41 +1576,41 @@ def update_config():
     config.read('config.ini') # Read the config file
 
     # Update the settings in the config file
-    config.set('settings', 'dpi', str(dpiVar.get()))
-    config.set('settings', 'darkMode', str(darkModeVar.get()))
-    config.set('settings', 'showOutputWhenFinished', str(showOutputWhenFinishedVar.get()))
-    config.set('settings', 'individualOutputType', str(individualOutputTypeVar.get()))
-    config.set('settings', 'useFileInfo', str(useFileInfo.get()))
+    config.set('settings', 'dpi', str(dpi_var.get()))
+    config.set('settings', 'dark_mode', str(dark_mode_var.get()))
+    config.set('settings', 'show_output_when_finished', str(show_output_when_finished_var.get()))
+    config.set('settings', 'individual_output_type', str(individual_output_type_var.get()))
+    config.set('settings', 'use_file_info', str(use_file_info_var.get()))
     # Continue updating the settings for the Orion section
-    config.set('orion', 'orionKernelSizeDpi1', str(orionKernelSizeDpi1.get()))
-    config.set('orion', 'orionKernelSizeDpi2', str(orionKernelSizeDpi2.get()))
-    config.set('orion', 'orionParam1Dpi1', str(orionParam1Dpi1.get()))
-    config.set('orion', 'orionParam2Dpi1', str(orionParam2Dpi1.get()))
-    config.set('orion', 'orionMinRadiusDpi1', str(orionMinRadiusDpi1.get()))
-    config.set('orion', 'orionParam1Dpi2', str(orionParam1Dpi2.get()))
-    config.set('orion', 'orionParam2Dpi2', str(orionParam2Dpi2.get()))
-    config.set('orion', 'orionMinRadiusDpi2', str(orionMinRadiusDpi2.get()))
-    config.set('orion', 'orionThreshMin', str(orionThreshMin.get()))
-    config.set('orion', 'orionThreshMax', str(orionThreshMax.get()))
-    config.set('orion', 'orionMorphologyOpeningKernelSizeDpi1', str(orionMorphologyOpeningKernelSizeDpi1.get()))
-    config.set('orion', 'orionMorphologyOpeningKernelSizeDpi2', str(orionMorphologyOpeningKernelSizeDpi2.get()))
-    config.set('orion', 'orionMinContourAreaDpi1', str(orionMinContourAreaDpi1.get()))
-    config.set('orion', 'orionMinContourAreaDpi2', str(orionMinContourAreaDpi2.get()))
-    config.set('orion', 'orionMaxContourAreaDpi1', str(orionMaxContourAreaDpi1.get()))
-    config.set('orion', 'orionMaxContourAreaDpi2', str(orionMaxContourAreaDpi2.get()))
-    config.set('orion', 'orionmaxHoleRadiusDpi1', str(orionmaxHoleRadiusDpi1.get()))
-    config.set('orion', 'orionmaxHoleRadiusDpi2', str(orionmaxHoleRadiusDpi2.get()))
+    config.set('orion', 'orion_kernel_size_dpi1', str(orion_kernel_size_dpi1.get()))
+    config.set('orion', 'orion_kernel_size_dpi2', str(orion_kernel_size_dpi2.get()))
+    config.set('orion', 'orion_param1_dpi1', str(orion_param1_dpi1.get()))
+    config.set('orion', 'orion_param2_dpi1', str(orion_param2_dpi1.get()))
+    config.set('orion', 'orion_min_radius_dpi1', str(orion_min_radius_dpi1.get()))
+    config.set('orion', 'orion_param1_dpi2', str(orion_param1_dpi2.get()))
+    config.set('orion', 'orion_param2_dpi2', str(orion_param2_dpi2.get()))
+    config.set('orion', 'orion_min_radius_dpi2', str(orion_min_radius_dpi2.get()))
+    config.set('orion', 'orion_thresh_min', str(orion_thresh_min.get()))
+    config.set('orion', 'orion_thresh_max', str(orion_thresh_max.get()))
+    config.set('orion', 'orion_morphology_opening_kernel_size_dpi1', str(orion_morphology_opening_kernel_size_dpi1.get()))
+    config.set('orion', 'orion_morphology_opening_kernel_size_dpi2', str(orion_morphology_opening_kernel_size_dpi2.get()))
+    config.set('orion', 'orion_min_contour_area_dpi1', str(orion_min_contour_area_dpi1.get()))
+    config.set('orion', 'orion_min_contour_area_dpi2', str(orion_min_contour_area_dpi2.get()))
+    config.set('orion', 'orion_max_contour_area_dpi1', str(orion_max_contour_area_dpi1.get()))
+    config.set('orion', 'orion_max_contour_area_dpi2', str(orion_max_contour_area_dpi2.get()))
+    config.set('orion', 'orionmax_hole_radius_dpi1', str(orionmax_hole_radius_dpi1.get()))
+    config.set('orion', 'orionmax_hole_radius_dpi2', str(orionmax_hole_radius_dpi2.get()))
     # Continue updating the settings for the NRA A-17 section
-    config.set('nra', 'nraKernalSize', str(nraKernalSize.get()))
-    config.set('nra', 'nraParam1', str(nraParam1.get()))
-    config.set('nra', 'nraParam2', str(nraParam2.get()))
-    config.set('nra', 'nraMinRadius', str(nraMinRadius.get()))
-    config.set('nra', 'nraThreshMin', str(nraThreshMin.get()))
-    config.set('nra', 'nraThreshMax', str(nraThreshMax.get()))
-    config.set('nra', 'nraMorphologyOpeningKernelSize', str(nraMorphologyOpeningKernelSize.get()))
-    config.set('nra', 'nraMinContourArea', str(nraMinContourArea.get()))
-    config.set('nra', 'nraMaxContourArea', str(nraMaxContourArea.get()))
-    config.set('nra', 'nramaxHoleRadius', str(nramaxHoleRadius.get()))
+    config.set('nra', 'nra_kernal_size', str(nra_kernal_size.get()))
+    config.set('nra', 'nra_param1', str(nra_param1.get()))
+    config.set('nra', 'nra_param2', str(nra_param2.get()))
+    config.set('nra', 'nra_min_radius', str(nra_min_radius.get()))
+    config.set('nra', 'nra_thresh_min', str(nra_thresh_min.get()))
+    config.set('nra', 'nra_thresh_max', str(nra_thresh_max.get()))
+    config.set('nra', 'nra_morphology_opening_kernel_size', str(nra_morphology_opening_kernel_size.get()))
+    config.set('nra', 'nra_min_contour_area', str(nra_min_contour_area.get()))
+    config.set('nra', 'nra_max_contour_area', str(nra_max_contour_area.get()))
+    config.set('nra', 'nramax_hole_radius', str(nramax_hole_radius.get()))
 
     # Write the changes to the config file
     with open('config.ini', 'w') as f:
@@ -1624,7 +1627,7 @@ def check_output_dir():
 # Analyze an outdoor bull (CURRENTLY DISABLED) (ALSO NOT DOCUMENTED)
 def analyze_outdoor_image(image):
     # Basic implementation of the distance formula
-    def ComputeDistance(x1, y1, x2, y2):
+    def compute_distance(x1, y1, x2, y2):
         return math.sqrt(((x2 - x1) ** 2)+((y2 - y1) ** 2))
 
     #region multipliers are from NRA A-23 target in inches
@@ -1634,14 +1637,14 @@ def analyze_outdoor_image(image):
     eight = 2.89/outer
     nine = 1.89/outer
     ten = 0.89/outer
-    xRing = 0.39/outer
+    x_ring = 0.39/outer
 
-    spindleRadius = 0.11 # These are still in mm oof
-    outerSpindleRadius = 0.177 # I might need to fix this
+    spindle_radius = 0.11 # These are still in mm oof
+    outer_spindle_radius = 0.177 # I might need to fix this
     #endregion
 
-    droppedPoints = 0
-    xCount = 0
+    dropped_points = 0
+    x_count = 0
 
     img = cv2.imread(image)
     output = img.copy()
@@ -1671,35 +1674,35 @@ def analyze_outdoor_image(image):
 
             # Draw a small circle (of radius 1) to show the center.
             cv2.circle(output, (a, b), 1, (0, 0, 255), 3)
-            pixelOuter = r
+            pixel_outer = r
 
             # Perform a calculation to determine if the system detected the wrong ring, and if so, correct the error
             height, width, channels = img.shape
             # These need to be recalculated for the outdoor targets
             # if r/width < 0.4 and r/width > 0.35:
-            #     pixelOuter = outer/37.670 * r
+            #     pixel_outer = outer/37.670 * r
             
             # if r/width < 0.35:
-            #     pixelOuter = outer/29.210 * r
+            #     pixel_outer = outer/29.210 * r
 
-            pixelSix = pixelOuter*six
-            pixelSeven = pixelOuter*seven
-            pixelEight = pixelOuter*eight
-            pixelNine = pixelOuter*nine
-            pixelTen = pixelOuter*ten
-            pixelX = pixelOuter*xRing
+            pixel_six = pixel_outer*six
+            pixel_seven = pixel_outer*seven
+            pixel_eight = pixel_outer*eight
+            pixel_nine = pixel_outer*nine
+            pixel_ten = pixel_outer*ten
+            pixel_x = pixel_outer*x_ring
 
-            spindleRadius = spindleRadius*(pixelOuter/outer)
-            #print(spindleRadius)
-            outerSpindleRadius = outerSpindleRadius*(pixelOuter/outer)
+            spindle_radius = spindle_radius*(pixel_outer/outer)
+            #print(spindle_radius)
+            outer_spindle_radius = outer_spindle_radius*(pixel_outer/outer)
 
-            cv2.circle(output, (a, b), int(pixelOuter), (0, 255, 0), 2)
-            cv2.circle(output, (a, b), int(pixelSix), (0, 255, 0), 2)
-            cv2.circle(output, (a, b), int(pixelSeven), (0, 255, 0), 2)
-            cv2.circle(output, (a, b), int(pixelEight), (0, 255, 0), 2)
-            cv2.circle(output, (a, b), int(pixelNine), (0, 255, 0), 2)
-            cv2.circle(output, (a, b), int(pixelTen), (0, 255, 0), 2)
-            cv2.circle(output, (a, b), int(pixelX), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_outer), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_six), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_seven), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_eight), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_nine), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_ten), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_x), (0, 255, 0), 2)
 
             # Draw a small circle to show the center.
             cv2.circle(output, (a, b), 1, (0, 0, 255), 3)
@@ -1729,58 +1732,58 @@ def analyze_outdoor_image(image):
 
             # Create an enclosing circle that can represent the bullet hole
 
-            (holeX,holeY),holeRadius = cv2.minEnclosingCircle(contour)
-            holeCenter = (int(holeX),int(holeY))
-            holeRadius = int(holeRadius)
-            #print("HoleRadius: " + str(holeRadius))
-            if holeRadius < 40:
-                #cv2.circle(output,holeCenter,holeRadius,(0,255,0),2) # Enclosing circle
-                cv2.circle(output, holeCenter, 1, (0, 0, 255), 3) # Dot at the center
+            (hole_x,hole_y),hole_radius = cv2.minEnclosingCircle(contour)
+            hole_center = (int(hole_x),int(hole_y))
+            hole_radius = int(hole_radius)
+            #print("hole_radius: " + str(hole_radius))
+            if hole_radius < 40:
+                #cv2.circle(output,hole_center,hole_radius,(0,255,0),2) # Enclosing circle
+                cv2.circle(output, hole_center, 1, (0, 0, 255), 3) # Dot at the center
 
                 # Draw the spindle
-                cv2.circle(output,holeCenter,int(spindleRadius),(0,255,255),2)
-                #cv2.circle(output,holeCenter,int(outerSpindleRadius),(0,255,255),2)
+                cv2.circle(output,hole_center,int(spindle_radius),(0,255,255),2)
+                #cv2.circle(output,hole_center,int(outer_spindle_radius),(0,255,255),2)
 
-                distance = ComputeDistance(holeX, holeY, a, b)
+                distance = compute_distance(hole_x, hole_y, a, b)
 
                 # Currently only scores target to a 4
-                if distance-spindleRadius < pixelX:
+                if distance-spindle_radius < pixel_x:
                     print("X")
-                    cv2.putText(output, "X", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                    xCount += 1
+                    cv2.putText(output, "X", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    x_count += 1
 
-                if distance+spindleRadius < pixelTen and distance-spindleRadius > pixelX:
+                if distance+spindle_radius < pixel_ten and distance-spindle_radius > pixel_x:
                     print("0")
-                    cv2.putText(output, "0", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    cv2.putText(output, "0", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
 
-                if distance-spindleRadius > pixelTen and distance+spindleRadius < pixelNine:
+                if distance-spindle_radius > pixel_ten and distance+spindle_radius < pixel_nine:
                     print("1")
-                    cv2.putText(output, "1", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                    droppedPoints += 1
+                    cv2.putText(output, "1", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    dropped_points += 1
 
-                if distance-spindleRadius > pixelNine and distance+spindleRadius < pixelEight:
+                if distance-spindle_radius > pixel_nine and distance+spindle_radius < pixel_eight:
                     print("2")
-                    cv2.putText(output, "2", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                    droppedPoints += 2
+                    cv2.putText(output, "2", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    dropped_points += 2
 
-                if distance-spindleRadius > pixelEight and distance+spindleRadius < pixelSeven:
+                if distance-spindle_radius > pixel_eight and distance+spindle_radius < pixel_seven:
                     print("3")
-                    cv2.putText(output, "3", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                    droppedPoints += 3
+                    cv2.putText(output, "3", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    dropped_points += 3
 
-                if distance-spindleRadius > pixelSeven and distance+spindleRadius < pixelSix:
+                if distance-spindle_radius > pixel_seven and distance+spindle_radius < pixel_six:
                     print("4")
-                    cv2.putText(output, "4", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                    droppedPoints += 4
+                    cv2.putText(output, "4", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    dropped_points += 4
 
-                holeRatioX = (holeX-a) / pixelOuter
-                holeRatioY = (holeY-a) / pixelOuter
+                hole_ratio_x = (hole_x-a) / pixel_outer
+                hole_ratio_y = (hole_y-a) / pixel_outer
 
-                global csvName
+                global csv_name
 
-                with open(csvName, 'a', newline="") as csvfile:
+                with open(csv_name, 'a', newline="") as csvfile:
                     filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-                    filewriter.writerow([image, droppedPoints, xCount, holeX, holeY, distance, holeRatioX, holeRatioY])
+                    filewriter.writerow([image, dropped_points, x_count, hole_x, hole_y, distance, hole_ratio_x, hole_ratio_y])
                     csvfile.close()
     #endregion
 
@@ -1791,7 +1794,7 @@ def analyze_outdoor_image(image):
 # Derived from improved.py
 def analyze_image(image):
     # Basic implementation of the distance formula
-    def ComputeDistance(x1, y1, x2, y2):
+    def compute_distance(x1, y1, x2, y2):
         return math.sqrt(((x2 - x1) ** 2)+((y2 - y1) ** 2))
 
     #region multipliers are from NRA A-17 target in millimeters
@@ -1802,13 +1805,13 @@ def analyze_image(image):
     eight = 12.270/outer
     nine = 3.810/outer
 
-    spindleRadius = 2.83
-    outerSpindleRadius = 4.5
+    spindle_radius = 2.83
+    outer_spindle_radius = 4.5
     #endregion
 
     # Hold local dropped points and x count variables
-    droppedPoints = 0
-    xCount = 0
+    dropped_points = 0
+    x_count = 0
 
     img = cv2.imread(image) # Read in the image for OpenCV
     output = img.copy() # Create a copy of the image to draw on
@@ -1818,14 +1821,14 @@ def analyze_image(image):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     
     # Blur using 3 * 3 kernel
-    gray_blurred = cv2.blur(gray, (nraKernalSize.get(), nraKernalSize.get()))
+    gray_blurred = cv2.blur(gray, (nra_kernal_size.get(), nra_kernal_size.get()))
     #cv2.imshow("gray_blurred", gray_blurred)
 
     #threshold_image=cv2.inRange(gray_blurred, 100, 255)
     #cv2.imshow("threshold_image", threshold_image)
     
     # Apply Hough transform on the blurred image.
-    detected_circles = cv2.HoughCircles(gray_blurred, cv2.HOUGH_GRADIENT, nraParam1.get(), nraParam2.get(), minRadius = nraMinRadius.get())
+    detected_circles = cv2.HoughCircles(gray_blurred, cv2.HOUGH_GRADIENT, nra_param1.get(), nra_param2.get(), minRadius = nra_min_radius.get())
     
     # Draw circles that are detected
     if detected_circles is not None:
@@ -1839,31 +1842,31 @@ def analyze_image(image):
             # Draw a small circle (of radius 1) to show the center.
             cv2.circle(output, (a, b), 1, (0, 0, 255), 3)
 
-            pixelOuter = r
+            pixel_outer = r
 
             # Perform a calculation to determine if the system detected the wrong ring, and if so, correct the error
             height, width, channels = img.shape
             if r/width < 0.4 and r/width > 0.35:
-                pixelOuter = outer/37.670 * r
+                pixel_outer = outer/37.670 * r
             
             if r/width < 0.35:
-                pixelOuter = outer/29.210 * r
+                pixel_outer = outer/29.210 * r
 
-            pixelFive = pixelOuter*five
-            pixelSix = pixelOuter*six
-            pixelSeven = pixelOuter*seven
-            pixelEight = pixelOuter*eight
-            pixelNine = pixelOuter*nine
+            pixel_five = pixel_outer*five
+            pixel_six = pixel_outer*six
+            pixel_seven = pixel_outer*seven
+            pixel_eight = pixel_outer*eight
+            pixel_nine = pixel_outer*nine
 
-            spindleRadius = spindleRadius*(pixelOuter/outer)
-            outerSpindleRadius = outerSpindleRadius*(pixelOuter/outer)
+            spindle_radius = spindle_radius*(pixel_outer/outer)
+            outer_spindle_radius = outer_spindle_radius*(pixel_outer/outer)
 
-            cv2.circle(output, (a, b), int(pixelOuter), (0, 255, 0), 2)
-            cv2.circle(output, (a, b), int(pixelFive), (0, 255, 0), 2)
-            cv2.circle(output, (a, b), int(pixelSix), (0, 255, 0), 2)
-            cv2.circle(output, (a, b), int(pixelSeven), (0, 255, 0), 2)
-            cv2.circle(output, (a, b), int(pixelEight), (0, 255, 0), 2)
-            cv2.circle(output, (a, b), int(pixelNine), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_outer), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_five), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_six), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_seven), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_eight), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_nine), (0, 255, 0), 2)
 
             # Draw a small circle to show the center.
             cv2.circle(output, (a, b), 1, (0, 0, 255), 3)
@@ -1871,11 +1874,11 @@ def analyze_image(image):
 
     #region Identify the hole in the target
     # Make the image binary using a threshold
-    img_thresholded = cv2.inRange(img, (nraThreshMin.get(), nraThreshMin.get(), nraThreshMin.get()), (nraThreshMax.get(), nraThreshMax.get(), nraThreshMax.get()))
+    img_thresholded = cv2.inRange(img, (nra_thresh_min.get(), nra_thresh_min.get(), nra_thresh_min.get()), (nra_thresh_max.get(), nra_thresh_max.get(), nra_thresh_max.get()))
     #cv2.imshow('Image Thresholded', img_thresholded)
 
     # Remove noise from the binary image using the opening operation
-    kernel = np.ones((nraMorphologyOpeningKernelSize.get(),nraMorphologyOpeningKernelSize.get()),np.uint8)
+    kernel = np.ones((nra_morphology_opening_kernel_size.get(),nra_morphology_opening_kernel_size.get()),np.uint8)
     opening = cv2.morphologyEx(img_thresholded, cv2.MORPH_OPEN, kernel)
     #cv2.imshow('opening',opening)
 
@@ -1887,69 +1890,69 @@ def analyze_image(image):
         area = cv2.contourArea(contour)
         #print(area)
         # Check if area is between max and min values for a bullet hole. Area is usually about 1000
-        if area<nraMaxContourArea.get() and area>nraMinContourArea.get():
+        if area<nra_max_contour_area.get() and area>nra_min_contour_area.get():
 
             # Draw the detected contour for debugging
             cv2.drawContours(output,[contour],0,(255,0,0),2)
 
             # Create an enclosing circle that can represent the bullet hole
 
-            (holeX,holeY),holeRadius = cv2.minEnclosingCircle(contour)
-            holeCenter = (int(holeX),int(holeY))
-            holeRadius = int(holeRadius)
-            #print(holeRadius)
-            if holeRadius < nramaxHoleRadius.get():
-                #cv2.circle(output,holeCenter,holeRadius,(0,255,0),2) # Enclosing circle
-                cv2.circle(output, holeCenter, 1, (0, 0, 255), 3) # Dot at the center
+            (hole_x,hole_y),hole_radius = cv2.minEnclosingCircle(contour)
+            hole_center = (int(hole_x),int(hole_y))
+            hole_radius = int(hole_radius)
+            #print(hole_radius)
+            if hole_radius < nramax_hole_radius.get():
+                #cv2.circle(output,hole_center,hole_radius,(0,255,0),2) # Enclosing circle
+                cv2.circle(output, hole_center, 1, (0, 0, 255), 3) # Dot at the center
 
                 # Draw the spindle
-                cv2.circle(output,holeCenter,int(spindleRadius),(0,255,255),2)
-                #cv2.circle(output,holeCenter,int(outerSpindleRadius),(0,255,255),2)
+                cv2.circle(output,hole_center,int(spindle_radius),(0,255,255),2)
+                #cv2.circle(output,hole_center,int(outer_spindle_radius),(0,255,255),2)
 
-                distance = ComputeDistance(holeX, holeY, a, b)
+                distance = compute_distance(hole_x, hole_y, a, b)
 
                 # Currently only scores target to a 4
-                if distance-spindleRadius < pixelNine:
+                if distance-spindle_radius < pixel_nine:
                     print("X")
-                    cv2.putText(output, "X", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                    xCount += 1
+                    cv2.putText(output, "X", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    x_count += 1
 
-                if distance+spindleRadius < pixelEight and distance-spindleRadius > pixelNine:
+                if distance+spindle_radius < pixel_eight and distance-spindle_radius > pixel_nine:
                     print("0")
-                    cv2.putText(output, "0", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    cv2.putText(output, "0", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
 
-                if distance+spindleRadius > pixelEight and distance+spindleRadius < pixelSeven:
+                if distance+spindle_radius > pixel_eight and distance+spindle_radius < pixel_seven:
                     print("1")
-                    cv2.putText(output, "1", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                    droppedPoints += 1
+                    cv2.putText(output, "1", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    dropped_points += 1
 
-                if distance+spindleRadius > pixelSeven and distance+spindleRadius < pixelSix:
+                if distance+spindle_radius > pixel_seven and distance+spindle_radius < pixel_six:
                     print("2")
-                    cv2.putText(output, "2", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                    droppedPoints += 2
+                    cv2.putText(output, "2", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    dropped_points += 2
 
-                if distance+spindleRadius > pixelSix and distance+spindleRadius < pixelFive:
+                if distance+spindle_radius > pixel_six and distance+spindle_radius < pixel_five:
                     print("3")
-                    cv2.putText(output, "3", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                    droppedPoints += 3
+                    cv2.putText(output, "3", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    dropped_points += 3
 
-                if distance+spindleRadius > pixelFive and distance+spindleRadius < pixelOuter:
+                if distance+spindle_radius > pixel_five and distance+spindle_radius < pixel_outer:
                     print("4")
-                    cv2.putText(output, "4", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                    droppedPoints += 4
+                    cv2.putText(output, "4", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    dropped_points += 4
 
-                holeRatioX = (holeX-a) / pixelOuter
-                holeRatioY = (holeY-a) / pixelOuter
+                hole_ratio_x = (hole_x-a) / pixel_outer
+                hole_ratio_y = (hole_y-a) / pixel_outer
 
-                global csvName
+                global csv_name
 
-                with open(csvName, 'a', newline="") as csvfile:
+                with open(csv_name, 'a', newline="") as csvfile:
                     filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-                    filewriter.writerow([image, droppedPoints, xCount, holeX, holeY, distance, holeRatioX, holeRatioY])
+                    filewriter.writerow([image, dropped_points, x_count, hole_x, hole_y, distance, hole_ratio_x, hole_ratio_y])
                     csvfile.close()
     #endregion
 
-    if individualOutputTypeVar.get() == "legacy":
+    if individual_output_type_var.get() == "legacy":
         cv2.imshow("output", output) # Optional but make sure to use waitkey below if enabled, or else only image will show up.
         cv2.waitKey(0)
     cv2.imwrite(image + "-output.jpg", output) # Save the output image
@@ -1957,7 +1960,7 @@ def analyze_image(image):
 # Derived from analyze_image
 def analyze_orion_image(image):
     # Basic implementation of the distance formula
-    def ComputeDistance(x1, y1, x2, y2):
+    def compute_distance(x1, y1, x2, y2):
         return math.sqrt(((x2 - x1) ** 2)+((y2 - y1) ** 2))
 
     #region multipliers are from NRA/USAS-50 target in millimeters
@@ -1979,13 +1982,13 @@ def analyze_orion_image(image):
     # nine = 4.37/outer
     # ten = 1.01/outer
 
-    innerSpindleRadius = 2.83
-    outerSpindleRadius = 4.49
+    inner_spindle_radius = 2.83
+    outer_spindle_radius = 4.49
     #endregion
 
     # Hold local dropped points and x count variables
-    droppedPoints = 0
-    xCount = 0
+    dropped_points = 0
+    x_count = 0
 
     img = cv2.imread(image) # Read in the image for OpenCV
     output = img.copy() # Create a copy of the image to draw on
@@ -1994,14 +1997,14 @@ def analyze_orion_image(image):
     # Convert the image to grayscale
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     
-    if dpiVar.get() == 1:
-        # Blur using 3 * 3 kernel
-        gray_blurred = cv2.blur(gray, (orionKernelSizeDpi1.get(), orionKernelSizeDpi1.get()))
+    if dpi_var.get() == 1:
+        # Blur using specified kernel
+        gray_blurred = cv2.blur(gray, (orion_kernel_size_dpi1.get(), orion_kernel_size_dpi1.get()))
         
 
-    if dpiVar.get() == 2:
-        # Blur using 3 * 3 kernel
-        gray_blurred = cv2.blur(gray, (orionKernelSizeDpi2.get(), orionKernelSizeDpi2.get()))
+    if dpi_var.get() == 2:
+        # Blur using specified kernel
+        gray_blurred = cv2.blur(gray, (orion_kernel_size_dpi2.get(), orion_kernel_size_dpi2.get()))
 
     #cv2.imshow("gray_blurred", gray_blurred)
 
@@ -2010,11 +2013,11 @@ def analyze_orion_image(image):
     #cv2.imshow("threshold_image", threshold_image)
     
     # Apply Hough transform on the blurred image.
-    if dpiVar.get() == 1:
-        detected_circles = cv2.HoughCircles(gray_blurred, cv2.HOUGH_GRADIENT, orionParam1Dpi1.get(), orionParam2Dpi1.get(), minRadius = orionMinRadiusDpi1.get())
+    if dpi_var.get() == 1:
+        detected_circles = cv2.HoughCircles(gray_blurred, cv2.HOUGH_GRADIENT, orion_param1_dpi1.get(), orion_param2_dpi1.get(), minRadius = orion_min_radius_dpi1.get())
 
-    if dpiVar.get() == 2:
-        detected_circles = cv2.HoughCircles(gray_blurred, cv2.HOUGH_GRADIENT, orionParam1Dpi2.get(), orionParam2Dpi2.get(), minRadius = orionMinRadiusDpi2.get())
+    if dpi_var.get() == 2:
+        detected_circles = cv2.HoughCircles(gray_blurred, cv2.HOUGH_GRADIENT, orion_param1_dpi2.get(), orion_param2_dpi2.get(), minRadius = orion_min_radius_dpi2.get())
     
     # Draw circles that are detected
     if detected_circles is not None:
@@ -2028,37 +2031,37 @@ def analyze_orion_image(image):
             # Draw a small circle (of radius 1) to show the center.
             cv2.circle(output, (a, b), 1, (0, 0, 255), 3)
 
-            pixelOuter = r
+            pixel_outer = r
 
             # Perform a calculation to determine if the system detected the wrong ring, and if so, correct the error
             height, width, channels = img.shape
 
             #print(str(r/width))
             if r/width < 0.37 and r/width > 0.32:
-                pixelOuter = outer/23.63 * r
+                pixel_outer = outer/23.63 * r
                 #print("Fixing radius proportions")
             if r/width < 0.43 and r/width > 0.39:
-                pixelOuter = outer/28.75 * r
+                pixel_outer = outer/28.75 * r
 
-            pixelFour = pixelOuter*four
-            pixelFive = pixelOuter*five
-            pixelSix = pixelOuter*six
-            pixelSeven = pixelOuter*seven
-            pixelEight = pixelOuter*eight
-            pixelNine = pixelOuter*nine
-            pixelTen = pixelOuter*ten
+            pixel_four = pixel_outer*four
+            pixel_five = pixel_outer*five
+            pixel_six = pixel_outer*six
+            pixel_seven = pixel_outer*seven
+            pixel_eight = pixel_outer*eight
+            pixel_nine = pixel_outer*nine
+            pixel_ten = pixel_outer*ten
 
-            outerSpindleRadius = outerSpindleRadius*(pixelOuter/outer)
-            innerSpindleRadius = innerSpindleRadius*(pixelOuter/outer)
+            outer_spindle_radius = outer_spindle_radius*(pixel_outer/outer)
+            inner_spindle_radius = inner_spindle_radius*(pixel_outer/outer)
 
-            cv2.circle(output, (a, b), int(pixelOuter), (0, 255, 0), 2)
-            cv2.circle(output, (a, b), int(pixelFour), (0, 255, 0), 2)
-            cv2.circle(output, (a, b), int(pixelFive), (0, 255, 0), 2)
-            cv2.circle(output, (a, b), int(pixelSix), (0, 255, 0), 2)
-            cv2.circle(output, (a, b), int(pixelSeven), (0, 255, 0), 2)
-            cv2.circle(output, (a, b), int(pixelEight), (0, 255, 0), 2)
-            cv2.circle(output, (a, b), int(pixelNine), (0, 255, 0), 2)
-            cv2.circle(output, (a, b), int(pixelTen), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_outer), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_four), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_five), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_six), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_seven), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_eight), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_nine), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_ten), (0, 255, 0), 2)
 
             # Draw a small circle to show the center.
             cv2.circle(output, (a, b), 1, (0, 0, 255), 3)
@@ -2066,15 +2069,15 @@ def analyze_orion_image(image):
 
     #region Identify the hole in the target
     
-    img_thresholded = cv2.inRange(img, (orionThreshMin.get(), orionThreshMin.get(), orionThreshMin.get()), (orionThreshMax.get(), orionThreshMax.get(), orionThreshMax.get())) # Make the image binary using a threshold
+    img_thresholded = cv2.inRange(img, (orion_thresh_min.get(), orion_thresh_min.get(), orion_thresh_min.get()), (orion_thresh_max.get(), orion_thresh_max.get(), orion_thresh_max.get())) # Make the image binary using a threshold
     #cv2.imshow('Image Thresholded', img_thresholded)
 
     # Remove noise from the binary image using the opening operation
-    if dpiVar.get() == 1:
-        kernel = np.ones((orionMorphologyOpeningKernelSizeDpi1.get(),orionMorphologyOpeningKernelSizeDpi1.get()),np.uint8)
+    if dpi_var.get() == 1:
+        kernel = np.ones((orion_morphology_opening_kernel_size_dpi1.get(),orion_morphology_opening_kernel_size_dpi1.get()),np.uint8)
     
-    if dpiVar.get() == 2:
-        kernel = np.ones((orionMorphologyOpeningKernelSizeDpi2.get(),orionMorphologyOpeningKernelSizeDpi2.get()),np.uint8)
+    if dpi_var.get() == 2:
+        kernel = np.ones((orion_morphology_opening_kernel_size_dpi2.get(),orion_morphology_opening_kernel_size_dpi2.get()),np.uint8)
     
     opening = cv2.morphologyEx(img_thresholded, cv2.MORPH_OPEN, kernel)
     #cv2.imshow('opening',opening)
@@ -2090,97 +2093,97 @@ def analyze_orion_image(image):
         #cv2.drawContours(output,[contour],0,(255,0,0),2)
         # Check if area is between max and min values for a bullet hole. Area is usually about 1000
 
-        if dpiVar.get() == 1:
-            minArea = orionMinContourAreaDpi1.get()
-            maxArea = orionMaxContourAreaDpi1.get()
-        if dpiVar.get() == 2:
-            minArea = orionMinContourAreaDpi2.get()
-            maxArea = orionMaxContourAreaDpi2.get()
+        if dpi_var.get() == 1:
+            min_area = orion_min_contour_area_dpi1.get()
+            max_area = orion_max_contour_area_dpi1.get()
+        if dpi_var.get() == 2:
+            min_area = orion_min_contour_area_dpi2.get()
+            max_area = orion_max_contour_area_dpi2.get()
 
-        if area<maxArea and area>minArea:
+        if area<=max_area and area>=min_area:
             # Draw the detected contour for debugging
             #cv2.drawContours(output,[contour],0,(255,0,0),2)
 
             # Create an enclosing circle that can represent the bullet hole
-            (holeX,holeY),holeRadius = cv2.minEnclosingCircle(contour)
-            holeCenter = (int(holeX),int(holeY))
-            holeRadius = int(holeRadius)
-            #print("Hole radius: " + str(holeRadius))
-            #cv2.circle(output, holeCenter, holeRadius, (255,0,0), 2)
+            (hole_x,hole_y),hole_radius = cv2.minEnclosingCircle(contour)
+            hole_center = (int(hole_x),int(hole_y))
+            hole_radius = int(hole_radius)
+            #print("Hole radius: " + str(hole_radius))
+            #cv2.circle(output, hole_center, hole_radius, (255,0,0), 2)
             # compute the center of the contour (different way than enclosing circle) (I don't even understand how it works)
             # M = cv2.moments(contour)
             # cX = int(M["m10"] / M["m00"])
             # cY = int(M["m01"] / M["m00"])
             
-            # holeX = cX
-            # holeY = cY
+            # hole_x = cX
+            # hole_y = cY
 
-            holeCenter = (int(holeX),int(holeY))
+            hole_center = (int(hole_x),int(hole_y))
 
-            if dpiVar.get() == 1:
-                maxHoleRadius = orionmaxHoleRadiusDpi1.get()
-            if dpiVar.get() == 2:
-                maxHoleRadius = orionmaxHoleRadiusDpi2.get()
+            if dpi_var.get() == 1:
+                max_hole_radius = orionmax_hole_radius_dpi1.get()
+            if dpi_var.get() == 2:
+                max_hole_radius = orionmax_hole_radius_dpi2.get()
             
-            if holeRadius < maxHoleRadius:
-                #cv2.circle(output,holeCenter,holeRadius,(0,255,0),2) # Enclosing circle
-                cv2.circle(output, holeCenter, 1, (0, 0, 255), 3) # Dot at the center
+            if hole_radius < max_hole_radius:
+                #cv2.circle(output,hole_center,hole_radius,(0,255,0),2) # Enclosing circle
+                cv2.circle(output, hole_center, 1, (0, 0, 255), 3) # Dot at the center
 
                 # Draw the spindle
-                cv2.circle(output,holeCenter,int(outerSpindleRadius),(0,255,255),2)
-                #cv2.circle(output,holeCenter,int(innerSpindleRadius),(255,255,0),2)
+                cv2.circle(output,hole_center,int(outer_spindle_radius),(0,255,255),2)
+                #cv2.circle(output,hole_center,int(inner_spindle_radius),(255,255,0),2)
 
-                distance = ComputeDistance(holeX, holeY, a, b)
+                distance = compute_distance(hole_x, hole_y, a, b)
                 #print("Distance: " + str(distance))
-                #print("Inner Spindle: " + str(innerSpindleRadius))
-                # print("D-O: " + str(distance-outerSpindleRadius))
-                # print("D+O: " + str(distance+outerSpindleRadius))
-                #print("pixelTen: " + str(pixelTen))
-                # print("pixelNine: " + str(pixelNine))
-                # print("pixelEight: " + str(pixelEight))
-                # print("pixelSeven: " + str(pixelSeven))
-                #print("holeRadius: " + str(holeRadius))
+                #print("Inner Spindle: " + str(inner_spindle_radius))
+                # print("D-O: " + str(distance-outer_spindle_radius))
+                # print("D+O: " + str(distance+outer_spindle_radius))
+                #print("pixel_ten: " + str(pixel_ten))
+                # print("pixel_nine: " + str(pixel_nine))
+                # print("pixel_eight: " + str(pixel_eight))
+                # print("pixel_seven: " + str(pixel_seven))
+                #print("hole_radius: " + str(hole_radius))
 
-                if distance-outerSpindleRadius <= pixelTen or distance+outerSpindleRadius <= pixelEight:
+                if distance-outer_spindle_radius <= pixel_ten or distance+outer_spindle_radius <= pixel_eight:
                     print("X")
-                    cv2.putText(output, "X", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                    xCount += 1
+                    cv2.putText(output, "X", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    x_count += 1
                 else:
-                    if distance+outerSpindleRadius <= pixelSeven:
+                    if distance+outer_spindle_radius <= pixel_seven:
                         print("0")
-                        cv2.putText(output, "0", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                        cv2.putText(output, "0", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
                     else:
-                        if distance+outerSpindleRadius <= pixelSix:
+                        if distance+outer_spindle_radius <= pixel_six:
                             print("1")
-                            cv2.putText(output, "1", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                            droppedPoints += 1
+                            cv2.putText(output, "1", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                            dropped_points += 1
                         else:
-                            if distance+outerSpindleRadius <= pixelFive:
+                            if distance+outer_spindle_radius <= pixel_five:
                                 print("2")
-                                cv2.putText(output, "2", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                                droppedPoints += 2
+                                cv2.putText(output, "2", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                                dropped_points += 2
                             else:
-                                if distance+outerSpindleRadius <= pixelFour:
+                                if distance+outer_spindle_radius <= pixel_four:
                                     print("3")
-                                    cv2.putText(output, "3", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                                    droppedPoints += 3
+                                    cv2.putText(output, "3", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                                    dropped_points += 3
                                 else:
                                     print("Score more than 4 or low confidence: CHECK MANUALLY")
-                                    label.config(text="Bull " + str(image) + " low confidence")
+                                    main_label.config(text="Bull " + str(image) + " low confidence")
                                     
 
-                holeRatioX = (holeX-a) / pixelOuter
-                holeRatioY = (holeY-a) / pixelOuter
+                hole_ratio_x = (hole_x-a) / pixel_outer
+                hole_ratio_y = (hole_y-a) / pixel_outer
 
-                global csvName
+                global csv_name
 
-                with open(csvName, 'a', newline="") as csvfile:
+                with open(csv_name, 'a', newline="") as csvfile:
                     filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-                    filewriter.writerow([image, droppedPoints, xCount, holeX, holeY, distance, holeRatioX, holeRatioY])
+                    filewriter.writerow([image, dropped_points, x_count, hole_x, hole_y, distance, hole_ratio_x, hole_ratio_y])
                     csvfile.close()
     #endregion
 
-    if individualOutputTypeVar.get() == "legacy":
+    if individual_output_type_var.get() == "legacy":
         cv2.imshow("output", output) # Optional but make sure to use waitkey below if enabled, or else only image will show up.
         cv2.waitKey(0)
     cv2.imwrite(image + "-output.jpg", output) # Save the output image
@@ -2188,7 +2191,7 @@ def analyze_orion_image(image):
 # Derived from analyze_orion_image and analyze_image
 def analyze_orion_image_nra_scoring(image):
     # Basic implementation of the distance formula
-    def ComputeDistance(x1, y1, x2, y2):
+    def compute_distance(x1, y1, x2, y2):
         return math.sqrt(((x2 - x1) ** 2)+((y2 - y1) ** 2))
 
     #region multipliers are from NRA A-17 target in millimeters
@@ -2200,13 +2203,13 @@ def analyze_orion_image_nra_scoring(image):
     eight = 12.270/outer
     nine = 3.810/outer
 
-    spindleRadius = 2.83
-    outerSpindleRadius = 4.5
+    spindle_radius = 2.83
+    outer_spindle_radius = 4.5
     #endregion
 
     # Hold local dropped points and x count variables
-    droppedPoints = 0
-    xCount = 0
+    dropped_points = 0
+    x_count = 0
 
     img = cv2.imread(image) # Read in the image for OpenCV
     output = img.copy() # Create a copy of the image to draw on
@@ -2215,14 +2218,14 @@ def analyze_orion_image_nra_scoring(image):
     # Convert the image to grayscale
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     
-    if dpiVar.get() == 1:
+    if dpi_var.get() == 1:
         # Blur using 3 * 3 kernel
-        gray_blurred = cv2.blur(gray, (orionKernelSizeDpi1.get(), orionKernelSizeDpi1.get()))
+        gray_blurred = cv2.blur(gray, (orion_kernel_size_dpi1.get(), orion_kernel_size_dpi1.get()))
         
 
-    if dpiVar.get() == 2:
+    if dpi_var.get() == 2:
         # Blur using 3 * 3 kernel
-        gray_blurred = cv2.blur(gray, (orionKernelSizeDpi2.get(), orionKernelSizeDpi2.get()))
+        gray_blurred = cv2.blur(gray, (orion_kernel_size_dpi2.get(), orion_kernel_size_dpi2.get()))
 
     #cv2.imshow("gray_blurred", gray_blurred)
 
@@ -2231,11 +2234,11 @@ def analyze_orion_image_nra_scoring(image):
     #cv2.imshow("threshold_image", threshold_image)
     
     # Apply Hough transform on the blurred image.
-    if dpiVar.get() == 1:
-        detected_circles = cv2.HoughCircles(gray_blurred, cv2.HOUGH_GRADIENT, orionParam1Dpi1.get(), orionParam2Dpi1.get(), minRadius = orionMinRadiusDpi1.get())
+    if dpi_var.get() == 1:
+        detected_circles = cv2.HoughCircles(gray_blurred, cv2.HOUGH_GRADIENT, orion_param1_dpi1.get(), orion_param2_dpi1.get(), minRadius = orion_min_radius_dpi1.get())
 
-    if dpiVar.get() == 2:
-        detected_circles = cv2.HoughCircles(gray_blurred, cv2.HOUGH_GRADIENT, orionParam1Dpi2.get(), orionParam2Dpi2.get(), minRadius = orionMinRadiusDpi2.get())
+    if dpi_var.get() == 2:
+        detected_circles = cv2.HoughCircles(gray_blurred, cv2.HOUGH_GRADIENT, orion_param1_dpi2.get(), orion_param2_dpi2.get(), minRadius = orion_min_radius_dpi2.get())
     
     # Draw circles that are detected
     if detected_circles is not None:
@@ -2249,35 +2252,35 @@ def analyze_orion_image_nra_scoring(image):
             # Draw a small circle (of radius 1) to show the center.
             cv2.circle(output, (a, b), 1, (0, 0, 255), 3)
 
-            pixelOuter = r * 1.382564409826243
+            pixel_outer = r * 1.382564409826243
 
             # Perform a calculation to determine if the system detected the wrong ring, and if so, correct the error
             height, width, channels = img.shape
 
             #print(str(r/width))
             if r/width < 0.37 and r/width > 0.32:
-                pixelOuter = outer/23.63 * r
+                pixel_outer = outer/23.63 * r
                 #print("Fixing radius proportions")
             if r/width < 0.43 and r/width > 0.39:
-                pixelOuter = outer/28.75 * r
+                pixel_outer = outer/28.75 * r
 
-            pixelFive = pixelOuter*five
-            pixelSix = pixelOuter*six
-            pixelSeven = pixelOuter*seven
-            pixelEight = pixelOuter*eight
-            pixelNine = pixelOuter*nine
+            pixel_five = pixel_outer*five
+            pixel_six = pixel_outer*six
+            pixel_seven = pixel_outer*seven
+            pixel_eight = pixel_outer*eight
+            pixel_nine = pixel_outer*nine
 
-            spindleRadius = spindleRadius*(pixelOuter/outer)
-            outerSpindleRadius = outerSpindleRadius*(pixelOuter/outer)
+            spindle_radius = spindle_radius*(pixel_outer/outer)
+            outer_spindle_radius = outer_spindle_radius*(pixel_outer/outer)
 
-            cv2.circle(output, (a, b), int(pixelOuter), (0, 255, 0), 2)
-            #cv2.circle(output, (a, b), int(pixelFour), (0, 255, 0), 2)
-            cv2.circle(output, (a, b), int(pixelFive), (0, 255, 0), 2)
-            cv2.circle(output, (a, b), int(pixelSix), (0, 255, 0), 2)
-            cv2.circle(output, (a, b), int(pixelSeven), (0, 255, 0), 2)
-            cv2.circle(output, (a, b), int(pixelEight), (0, 255, 0), 2)
-            cv2.circle(output, (a, b), int(pixelNine), (0, 255, 0), 2)
-            #cv2.circle(output, (a, b), int(pixelTen), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_outer), (0, 255, 0), 2)
+            #cv2.circle(output, (a, b), int(pixel_four), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_five), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_six), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_seven), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_eight), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_nine), (0, 255, 0), 2)
+            #cv2.circle(output, (a, b), int(pixel_ten), (0, 255, 0), 2)
 
             # Draw a small circle to show the center.
             cv2.circle(output, (a, b), 1, (0, 0, 255), 3)
@@ -2285,15 +2288,15 @@ def analyze_orion_image_nra_scoring(image):
 
     #region Identify the hole in the target
     
-    img_thresholded = cv2.inRange(img, (orionThreshMin.get(), orionThreshMin.get(), orionThreshMin.get()), (orionThreshMax.get(), orionThreshMax.get(), orionThreshMax.get())) # Make the image binary using a threshold
+    img_thresholded = cv2.inRange(img, (orion_thresh_min.get(), orion_thresh_min.get(), orion_thresh_min.get()), (orion_thresh_max.get(), orion_thresh_max.get(), orion_thresh_max.get())) # Make the image binary using a threshold
     #cv2.imshow('Image Thresholded', img_thresholded)
 
     # Remove noise from the binary image using the opening operation
-    if dpiVar.get() == 1:
-        kernel = np.ones((orionMorphologyOpeningKernelSizeDpi1.get(),orionMorphologyOpeningKernelSizeDpi1.get()),np.uint8)
+    if dpi_var.get() == 1:
+        kernel = np.ones((orion_morphology_opening_kernel_size_dpi1.get(),orion_morphology_opening_kernel_size_dpi1.get()),np.uint8)
     
-    if dpiVar.get() == 2:
-        kernel = np.ones((orionMorphologyOpeningKernelSizeDpi2.get(),orionMorphologyOpeningKernelSizeDpi2.get()),np.uint8)
+    if dpi_var.get() == 2:
+        kernel = np.ones((orion_morphology_opening_kernel_size_dpi2.get(),orion_morphology_opening_kernel_size_dpi2.get()),np.uint8)
     
     opening = cv2.morphologyEx(img_thresholded, cv2.MORPH_OPEN, kernel)
     #cv2.imshow('opening',opening)
@@ -2309,90 +2312,90 @@ def analyze_orion_image_nra_scoring(image):
         #cv2.drawContours(output,[contour],0,(255,0,0),2)
         # Check if area is between max and min values for a bullet hole. Area is usually about 1000
 
-        if dpiVar.get() == 1:
-            minArea = orionMinContourAreaDpi1.get()
-            maxArea = orionMaxContourAreaDpi1.get()
-        if dpiVar.get() == 2:
-            minArea = orionMinContourAreaDpi2.get()
-            maxArea = orionMaxContourAreaDpi2.get()
+        if dpi_var.get() == 1:
+            min_area = orion_min_contour_area_dpi1.get()
+            max_area = orion_max_contour_area_dpi1.get()
+        if dpi_var.get() == 2:
+            min_area = orion_min_contour_area_dpi2.get()
+            max_area = orion_max_contour_area_dpi2.get()
 
-        if area<maxArea and area>minArea:
+        if area<=max_area and area>=min_area:
             # Draw the detected contour for debugging
             #cv2.drawContours(output,[contour],0,(255,0,0),2)
 
             # Create an enclosing circle that can represent the bullet hole
-            (holeX,holeY),holeRadius = cv2.minEnclosingCircle(contour)
-            holeCenter = (int(holeX),int(holeY))
-            holeRadius = int(holeRadius)
-            #print("Hole radius: " + str(holeRadius))
-            #cv2.circle(output, holeCenter, holeRadius, (255,0,0), 2)
+            (hole_x,hole_y),hole_radius = cv2.minEnclosingCircle(contour)
+            hole_center = (int(hole_x),int(hole_y))
+            hole_radius = int(hole_radius)
+            #print("Hole radius: " + str(hole_radius))
+            #cv2.circle(output, hole_center, hole_radius, (255,0,0), 2)
             # compute the center of the contour (different way than enclosing circle) (I don't even understand how it works)
             # M = cv2.moments(contour)
             # cX = int(M["m10"] / M["m00"])
             # cY = int(M["m01"] / M["m00"])
             
-            # holeX = cX
-            # holeY = cY
+            # hole_x = cX
+            # hole_y = cY
 
-            holeCenter = (int(holeX),int(holeY))
+            hole_center = (int(hole_x),int(hole_y))
 
-            if dpiVar.get() == 1:
-                maxHoleRadius = orionmaxHoleRadiusDpi1.get()
-            if dpiVar.get() == 2:
-                maxHoleRadius = orionmaxHoleRadiusDpi2.get()
+            if dpi_var.get() == 1:
+                max_hole_radius = orionmax_hole_radius_dpi1.get()
+            if dpi_var.get() == 2:
+                max_hole_radius = orionmax_hole_radius_dpi2.get()
             
-            if holeRadius < maxHoleRadius:
-                #cv2.circle(output,holeCenter,holeRadius,(0,255,0),2) # Enclosing circle
-                cv2.circle(output, holeCenter, 1, (0, 0, 255), 3) # Dot at the center
+            if hole_radius < max_hole_radius:
+                #cv2.circle(output,hole_center,hole_radius,(0,255,0),2) # Enclosing circle
+                cv2.circle(output, hole_center, 1, (0, 0, 255), 3) # Dot at the center
 
                 # Draw the spindle
-                cv2.circle(output,holeCenter,int(outerSpindleRadius),(0,255,255),2)
-                #cv2.circle(output,holeCenter,int(innerSpindleRadius),(255,255,0),2)
+                cv2.circle(output,hole_center,int(outer_spindle_radius),(0,255,255),2)
+                #cv2.circle(output,hole_center,int(inner_spindle_radius),(255,255,0),2)
 
-                distance = ComputeDistance(holeX, holeY, a, b)
+                distance = compute_distance(hole_x, hole_y, a, b)
 
-                if distance-spindleRadius < pixelNine:
+                if distance-spindle_radius < pixel_nine:
                     print("X")
-                    cv2.putText(output, "X", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                    xCount += 1
+                    cv2.putText(output, "X", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    x_count += 1
 
-                if distance+spindleRadius < pixelEight and distance-spindleRadius > pixelNine:
+                if distance+spindle_radius < pixel_eight and distance-spindle_radius > pixel_nine:
                     print("0")
-                    cv2.putText(output, "0", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    cv2.putText(output, "0", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
 
-                if distance+spindleRadius > pixelEight and distance+spindleRadius < pixelSeven:
+                if distance+spindle_radius > pixel_eight and distance+spindle_radius < pixel_seven:
                     print("1")
-                    cv2.putText(output, "1", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                    droppedPoints += 1
+                    cv2.putText(output, "1", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    dropped_points += 1
 
-                if distance+spindleRadius > pixelSeven and distance+spindleRadius < pixelSix:
+                if distance+spindle_radius > pixel_seven and distance+spindle_radius < pixel_six:
                     print("2")
-                    cv2.putText(output, "2", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                    droppedPoints += 2
+                    cv2.putText(output, "2", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    dropped_points += 2
 
-                if distance+spindleRadius > pixelSix and distance+spindleRadius < pixelFive:
+                if distance+spindle_radius > pixel_six and distance+spindle_radius < pixel_five:
                     print("3")
-                    cv2.putText(output, "3", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                    droppedPoints += 3
+                    cv2.putText(output, "3", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    dropped_points += 3
 
-                if distance+spindleRadius > pixelFive and distance+spindleRadius < pixelOuter:
+                if distance+spindle_radius > pixel_five and distance+spindle_radius < pixel_outer:
                     print("4")
-                    cv2.putText(output, "4", (int(holeX-50),int(holeY)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                    droppedPoints += 4
+                    cv2.putText(output, "4", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    dropped_points += 4
                                     
 
-                holeRatioX = (holeX-a) / pixelOuter
-                holeRatioY = (holeY-a) / pixelOuter
+                hole_ratio_x = (hole_x-a) / pixel_outer
+                hole_ratio_y = (hole_y-a) / pixel_outer
 
-                global csvName
+                global csv_name
 
-                with open(csvName, 'a', newline="") as csvfile:
+                with open(csv_name, 'a', newline="") as csvfile:
                     filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-                    filewriter.writerow([image, droppedPoints, xCount, holeX, holeY, distance, holeRatioX, holeRatioY])
+                    filewriter.writerow([image, dropped_points, x_count, hole_x, hole_y, distance, hole_ratio_x, hole_ratio_y])
                     csvfile.close()
     #endregion
 
-    if individualOutputTypeVar.get() == "legacy":
+    if individual_output_type_var.get() == "legacy":
         cv2.imshow("output", output) # Optional but make sure to use waitkey below if enabled, or else only image will show up.
         cv2.waitKey(0)
     cv2.imwrite(image + "-output.jpg", output) # Save the output image
@@ -2411,45 +2414,45 @@ root.title("Target Analysis")
 
 #region Global variables
 # DPI is consistent across all targets that would be scanned. Therefore, it only needs to be set once for all of them.
-dpiVar = tk.IntVar(root, 1)
-darkModeVar = tk.BooleanVar(root, False)
-showOutputWhenFinishedVar = tk.BooleanVar(root, True)
-individualOutputTypeVar = tk.StringVar(root, "tkinter")
-useFileInfo = tk.BooleanVar(root, True)
-isOpeningFolder = False
+dpi_var = tk.IntVar(root, 1)
+dark_mode_var = tk.BooleanVar(root, False)
+show_output_when_finished_var = tk.BooleanVar(root, True)
+individual_output_type_var = tk.StringVar(root, "tkinter")
+use_file_info_var = tk.BooleanVar(root, True)
+is_opening_folder = False
 
 #region While many similar parameters exist for non-Orion targets, each has been tuned for its use case and therefore are unique to Orion scanning.
-orionKernelSizeDpi1 = tk.IntVar(root, 2)
-orionKernelSizeDpi2 = tk.IntVar(root, 5)
-orionParam1Dpi1 = tk.DoubleVar(root, 1.4)
-orionParam2Dpi1 = tk.IntVar(root, 200)
-orionMinRadiusDpi1 = tk.IntVar(root, 130)
-orionParam1Dpi2 = tk.IntVar(root, 2)
-orionParam2Dpi2 = tk.IntVar(root, 600)
-orionMinRadiusDpi2 = tk.IntVar(root, 260)
-orionThreshMin = tk.IntVar(root, 100)
-orionThreshMax = tk.IntVar(root, 255)
-orionMorphologyOpeningKernelSizeDpi1 = tk.IntVar(root, 2)
-orionMorphologyOpeningKernelSizeDpi2 = tk.IntVar(root, 2)
-orionMinContourAreaDpi1 = tk.IntVar(root, 200)
-orionMaxContourAreaDpi1 = tk.IntVar(root, 5000)
-orionMinContourAreaDpi2 = tk.IntVar(root, 5000)
-orionMaxContourAreaDpi2 = tk.IntVar(root, 12000)
-orionmaxHoleRadiusDpi1 = tk.IntVar(root, 40)
-orionmaxHoleRadiusDpi2 = tk.IntVar(root, 90)
+orion_kernel_size_dpi1 = tk.IntVar(root, 2)
+orion_kernel_size_dpi2 = tk.IntVar(root, 5)
+orion_param1_dpi1 = tk.DoubleVar(root, 1.4)
+orion_param2_dpi1 = tk.IntVar(root, 200)
+orion_min_radius_dpi1 = tk.IntVar(root, 130)
+orion_param1_dpi2 = tk.IntVar(root, 2)
+orion_param2_dpi2 = tk.IntVar(root, 600)
+orion_min_radius_dpi2 = tk.IntVar(root, 260)
+orion_thresh_min = tk.IntVar(root, 100)
+orion_thresh_max = tk.IntVar(root, 255)
+orion_morphology_opening_kernel_size_dpi1 = tk.IntVar(root, 2)
+orion_morphology_opening_kernel_size_dpi2 = tk.IntVar(root, 2)
+orion_min_contour_area_dpi1 = tk.IntVar(root, 200)
+orion_max_contour_area_dpi1 = tk.IntVar(root, 5000)
+orion_min_contour_area_dpi2 = tk.IntVar(root, 5000)
+orion_max_contour_area_dpi2 = tk.IntVar(root, 12000)
+orionmax_hole_radius_dpi1 = tk.IntVar(root, 40)
+orionmax_hole_radius_dpi2 = tk.IntVar(root, 90)
 #endregion
 
 #region Fine tuning settings for non-Orion targets
-nraKernalSize = tk.IntVar(root, 3)
-nraParam1 = tk.DoubleVar(root, 1.4)
-nraParam2 = tk.IntVar(root, 200)
-nraMinRadius = tk.IntVar(root, 130)
-nraThreshMin = tk.IntVar(root, 100)
-nraThreshMax = tk.IntVar(root, 255)
-nraMorphologyOpeningKernelSize = tk.IntVar(root, 10)
-nraMinContourArea = tk.IntVar(root, 200)
-nraMaxContourArea = tk.IntVar(root, 1500)
-nramaxHoleRadius = tk.IntVar(root, 40)
+nra_kernal_size = tk.IntVar(root, 3)
+nra_param1 = tk.DoubleVar(root, 1.4)
+nra_param2 = tk.IntVar(root, 200)
+nra_min_radius = tk.IntVar(root, 130)
+nra_thresh_min = tk.IntVar(root, 100)
+nra_thresh_max = tk.IntVar(root, 255)
+nra_morphology_opening_kernel_size = tk.IntVar(root, 10)
+nra_min_contour_area = tk.IntVar(root, 200)
+nra_max_contour_area = tk.IntVar(root, 1500)
+nramax_hole_radius = tk.IntVar(root, 40)
 #endregion
 
 # Check for a config file. If it exists, load the values from it. Otherwise, create a config file frome the defaults.
@@ -2466,7 +2469,7 @@ if not os.path.isfile("config-backup.ini"):
     create_default_config("config-backup.ini")
 #endregion
 
-#region Menubar with File and Help menus
+#region menubar with File and Help menus
 menubar = tk.Menu(root)
 
 filemenu = tk.Menu(menubar, tearoff=0)
@@ -2475,7 +2478,7 @@ filemenu = tk.Menu(menubar, tearoff=0)
 #filemenu.add_command(label="Load single image", command=load_image_single)
 #filemenu.add_command(label="Analyze target", command=analyze_target)
 #filemenu.add_command(label="Open Folder", command=open_folder)
-filemenu.add_command(label="Show in Explorer", command=show_folder)
+filemenu.add_command(label="Show in Explorer", command=lambda: show_folder(os.getcwd()))
 filemenu.add_command(label="Show Output", command=show_output, state=DISABLED)
 filemenu.add_command(label="Show Trends", command=show_trends)
 #filemenu.add_command(label="(Experimental) Load Outdoor", command=load_image_outdoor)
@@ -2498,149 +2501,149 @@ root.config(menu=menubar)
 #endregion
 
 #region Set up frames
-# Topframe holds the main label
-topFrame = ttk.Frame(root)
-topFrame.pack(fill=X)
+# top_frame holds the main label
+top_frame = ttk.Frame(root)
+top_frame.pack(fill=X)
 
 # Options frame has the settings for name, date, etc
-optionsFrame = ttk.Frame(root)
-optionsFrame.pack(side=tk.TOP, padx=7.5, pady=7.5)
+options_frame = ttk.Frame(root)
+options_frame.pack(side=tk.TOP, padx=7.5, pady=7.5)
 
 # Notebook allows for a tabbed view of the different target types
-tabControl = ttk.Notebook(root)
+tab_control = ttk.Notebook(root)
 
-tab1indoor = ttk.Frame(tabControl)
-tab2orion = ttk.Frame(tabControl)
-tab3orionnra = ttk.Frame(tabControl)
+tab0_indoor = ttk.Frame(tab_control)
+tab1_orion = ttk.Frame(tab_control)
+tab3_orionnra = ttk.Frame(tab_control)
 
-tabControl.add(tab1indoor, text ='NRA A-17')
-tabControl.add(tab2orion, text ='NRA/USAS-50')
-tabControl.add(tab3orionnra, text ='NRA/USAS-50 as NRA A-17')
+tab_control.add(tab0_indoor, text ='NRA A-17')
+tab_control.add(tab1_orion, text ='NRA/USAS-50')
+tab_control.add(tab3_orionnra, text ='NRA/USAS-50 as NRA A-17')
 
-tabControl.pack(side=tk.TOP, fill=BOTH, padx=10, pady=10)
+tab_control.pack(side=tk.TOP, fill=BOTH, padx=10, pady=10)
 
 # Buttons frames are a child of the tabs
-buttonsFrame = ttk.Frame(tab1indoor)
-buttonsFrame.pack(side=tk.TOP)
+buttons_frame = ttk.Frame(tab0_indoor)
+buttons_frame.pack(side=tk.TOP)
 
-bottomFrame = ttk.Frame(tab1indoor)
-bottomFrame.pack(side=tk.TOP)
+bottom_frame = ttk.Frame(tab0_indoor)
+bottom_frame.pack(side=tk.TOP)
 
-orionButtonsFrame = ttk.Frame(tab2orion)
-orionButtonsFrame.pack(side=tk.TOP)
+orion_buttons_frame = ttk.Frame(tab1_orion)
+orion_buttons_frame.pack(side=tk.TOP)
 
-orionBottomFrame = ttk.Frame(tab2orion)
-orionBottomFrame.pack(side=tk.TOP)
+orion_bottom_frame = ttk.Frame(tab1_orion)
+orion_bottom_frame.pack(side=tk.TOP)
 
-orionAsNraFrame = ttk.Frame(tab3orionnra)
-orionAsNraFrame.pack(side=tk.TOP)
+orion_as_nra_frame = ttk.Frame(tab3_orionnra)
+orion_as_nra_frame.pack(side=tk.TOP)
 
-orionAsNraBottomFrame = ttk.Frame(tab3orionnra)
-orionAsNraBottomFrame.pack(side=tk.TOP)
+orion_as_nra_bottom_frame = ttk.Frame(tab3_orionnra)
+orion_as_nra_bottom_frame.pack(side=tk.TOP)
 #endregion
 
-#region Label at top of the frame alerts the user to the program's actions uses topFrame
-label = ttk.Label(topFrame, text="Load an image to get started")
-label.pack(side=tk.TOP, padx=10, pady=5)
+#region Label at top of the frame alerts the user to the program's actions uses top_frame
+main_label = ttk.Label(top_frame, text="Load an image to get started")
+main_label.pack(side=tk.TOP, padx=10, pady=5)
 
 # Add a separator line
-labelSeparator = ttk.Separator(topFrame, orient=HORIZONTAL)
-labelSeparator.pack(side=TOP, fill=X)
+label_separator = ttk.Separator(top_frame, orient=HORIZONTAL)
+label_separator.pack(side=TOP, fill=X)
 #endregion
 
-#region Options area uses optionsFrame
+#region Options area uses options_frame
 # Month entry
-monthVar = tk.StringVar()
-monthVar.set("Month")
-monthEntry = ttk.Entry(optionsFrame, textvariable=monthVar, width=10)
-monthEntry.grid(column = 0, row = 0, sticky=NSEW, padx=2.5, pady=5)
+month_var = tk.StringVar()
+month_var.set("Month")
+month_entry = ttk.Entry(options_frame, textvariable=month_var, width=10)
+month_entry.grid(column = 0, row = 0, sticky=NSEW, padx=2.5, pady=5)
 
 # Day entry
-dayVar = tk.StringVar()
-dayVar.set("Day")
-dateEntry = ttk.Entry(optionsFrame, textvariable=dayVar, width=5)
-dateEntry.grid(column = 1, row = 0, sticky=NSEW, padx=2.5, pady=5)
+day_var = tk.StringVar()
+day_var.set("Day")
+date_entry = ttk.Entry(options_frame, textvariable=day_var, width=5)
+date_entry.grid(column = 1, row = 0, sticky=NSEW, padx=2.5, pady=5)
 
 # Year entry
-yearVar = tk.StringVar()
-yearVar.set("Year")
-yearEntry = ttk.Entry(optionsFrame, textvariable=yearVar, width=5)
-yearEntry.grid(column = 2, row = 0, sticky=NSEW, padx=2.5, pady=5)
+year_var = tk.StringVar()
+year_var.set("Year")
+year_entry = ttk.Entry(options_frame, textvariable=year_var, width=5)
+year_entry.grid(column = 2, row = 0, sticky=NSEW, padx=2.5, pady=5)
 
 # Target number entry
-targetNumVar = tk.StringVar()
-targetNumVar.set("Num")
-targetNumEntry = ttk.Entry(optionsFrame, textvariable=targetNumVar, width=5)
-targetNumEntry.grid(column = 3, row = 0, sticky=NSEW, padx=2.5, pady=5)
+target_num_var = tk.StringVar()
+target_num_var.set("Num")
+target_num_entry = ttk.Entry(options_frame, textvariable=target_num_var, width=5)
+target_num_entry.grid(column = 3, row = 0, sticky=NSEW, padx=2.5, pady=5)
 
 # Name entry
-nameVar = tk.StringVar()
-nameVar.set("Name")
-nameEntry = ttk.Entry(optionsFrame, textvariable=nameVar, width=30)
-nameEntry.grid(column = 0, row = 1, columnspan = 4, sticky=NSEW, padx=2.5)
+name_var = tk.StringVar()
+name_var.set("Name")
+name_entry = ttk.Entry(options_frame, textvariable=name_var, width=30)
+name_entry.grid(column = 0, row = 1, columnspan = 4, sticky=NSEW, padx=2.5)
 
 # Today button and use file info switch are placed to the right of the name and date
 # Use today's date button
-todayButton = ttk.Button(optionsFrame, text="Use Today", command=set_info_from_today)
-todayButton.grid(column=4, row=0, rowspan=2, padx=2.5)
+today_button = ttk.Button(options_frame, text="Use Today", command=set_info_from_today)
+today_button.grid(column=4, row=0, rowspan=2, padx=2.5)
 
 # Use info from file switch
-useFileInfoCheckbutton = ttk.Checkbutton(optionsFrame, text='Use info from file', style='Switch.TCheckbutton', variable=useFileInfo, onvalue=True, offvalue=False, command=update_config)
-useFileInfoCheckbutton.grid(column=5, row=0, rowspan=2, padx=5)
+use_file_info_checkbutton = ttk.Checkbutton(options_frame, text='Use info from file', style='Switch.TCheckbutton', variable=use_file_info_var, onvalue=True, offvalue=False, command=update_config)
+use_file_info_checkbutton.grid(column=5, row=0, rowspan=2, padx=5)
 #endregion
 
 #region Buttons for NRA A-17 target loading and analysis
-leftImageButton = ttk.Button(buttonsFrame, text = "Select left image", command = load_image_left)
-leftImageButton.grid(row=0, column=0, padx=5, pady=5)
+left_image_button = ttk.Button(buttons_frame, text = "Select left image", command = load_image_left)
+left_image_button.grid(row=0, column=0, padx=5, pady=5)
 
-analyze_targetButton = ttk.Button(buttonsFrame, text = "Analyze target", command = lambda: analyze_target("nra"))
-analyze_targetButton.grid(row=0, column=1, padx=5, pady=5)
+analyze_target_button = ttk.Button(buttons_frame, text = "Analyze target", command = lambda: analyze_target("nra"))
+analyze_target_button.grid(row=0, column=1, padx=5, pady=5)
 
-rightImageButton = ttk.Button(buttonsFrame, text = "Select right image", command = load_image_right)
-rightImageButton.grid(row=0, column=2, padx=5, pady=5)
+right_image_button = ttk.Button(buttons_frame, text = "Select right image", command = load_image_right)
+right_image_button.grid(row=0, column=2, padx=5, pady=5)
 
-rightImageButton = ttk.Button(buttonsFrame, text = "Open folder", command = open_folder)
-rightImageButton.grid(row=0, column=3, padx=5, pady=5)
+open_folder_nra_button = ttk.Button(buttons_frame, text = "Open folder", command = open_folder)
+open_folder_nra_button.grid(row=0, column=3, padx=5, pady=5)
 #endregion
 
 #region Buttons for Orion NRA/USAS-50 target loading and analysis
-loadImageButton = ttk.Button(orionButtonsFrame, text = "Select image", command = load_image_orion)
-loadImageButton.grid(row=0, column=0, padx=5, pady=5)
+load_image_button = ttk.Button(orion_buttons_frame, text = "Select image", command = load_image_orion)
+load_image_button.grid(row=0, column=0, padx=5, pady=5)
 
-analyzeOrionTargetButton = ttk.Button(orionButtonsFrame, text = "Analyze target", command = lambda: analyze_target("orion"))
-analyzeOrionTargetButton.grid(row=0, column=1, padx=5, pady=5)
+analyze_orion_target_button = ttk.Button(orion_buttons_frame, text = "Analyze target", command = lambda: analyze_target("orion"))
+analyze_orion_target_button.grid(row=0, column=1, padx=5, pady=5)
 
-openFolderOrionTargetButton = ttk.Button(orionButtonsFrame, text = "Open folder", command = open_folder_orion)
-openFolderOrionTargetButton.grid(row=0, column=2, padx=5, pady=5)
+open_folder_orion_target_button = ttk.Button(orion_buttons_frame, text = "Open folder", command = open_folder_orion)
+open_folder_orion_target_button.grid(row=0, column=2, padx=5, pady=5)
 #endregion
 
 #region Buttons for Orion NRA/USAS-50 scored as NRA A-17 target loading and analysis
-loadImageButtonOrionNRA = ttk.Button(orionAsNraFrame, text = "Select image", command = load_image_orion_nra)
-loadImageButtonOrionNRA.grid(row=0, column=0, padx=5, pady=5)
+load_image_button_orion_nra = ttk.Button(orion_as_nra_frame, text = "Select image", command = load_image_orion_nra)
+load_image_button_orion_nra.grid(row=0, column=0, padx=5, pady=5)
 
-analyzeOrionTargetButtonNRA = ttk.Button(orionAsNraFrame, text = "Analyze with Orion scoring", command = lambda: analyze_target("orion-nrascoring"))
-analyzeOrionTargetButtonNRA.grid(row=0, column=1, padx=5, pady=5)
+analyze_orion_target_button_nra = ttk.Button(orion_as_nra_frame, text = "Analyze with Orion scoring", command = lambda: analyze_target("orion-nrascoring"))
+analyze_orion_target_button_nra.grid(row=0, column=1, padx=5, pady=5)
 
-openFolderOrionTargetButtonNRA = ttk.Button(orionAsNraFrame, text = "Open folder", command = open_folder_orion)
-openFolderOrionTargetButtonNRA.grid(row=0, column=2, padx=5, pady=5)
+open_folder_orion_target_button_nra = ttk.Button(orion_as_nra_frame, text = "Open folder", command = open_folder_orion)
+open_folder_orion_target_button_nra.grid(row=0, column=2, padx=5, pady=5)
 #endregion
 
 #region Add canvases for NRA A-17 target preview
-leftCanvas = tk.Canvas(bottomFrame, width=230,height=300)
-leftCanvas.grid(row = 0, column = 0, padx=5, pady=5)
+left_canvas = tk.Canvas(bottom_frame, width=230,height=300)
+left_canvas.grid(row = 0, column = 0, padx=5, pady=5)
 
-rightCanvas = tk.Canvas(bottomFrame, width=230,height=300)
-rightCanvas.grid(row = 0, column = 1, padx=5, pady=5)
+right_canvas = tk.Canvas(bottom_frame, width=230,height=300)
+right_canvas.grid(row = 0, column = 1, padx=5, pady=5)
 #endregion
 
 #region Add a single canvas for Orion NRA/USAS-50 target preview
-orionSingleCanvas = tk.Canvas(orionBottomFrame, width=230,height=300)
-orionSingleCanvas.grid(row = 0, column = 0)
+orion_single_canvas = tk.Canvas(orion_bottom_frame, width=230,height=300)
+orion_single_canvas.grid(row = 0, column = 0)
 #endregion
 
 #region Add a single canvas for Orion NRA/USAS-50 scored as NRA A-17 target preview
-orionSingleCanvasNRA = tk.Canvas(orionAsNraBottomFrame, width=230,height=300)
-orionSingleCanvasNRA.grid(row = 0, column = 0)
+orion_single_canvas_nra = tk.Canvas(orion_as_nra_bottom_frame, width=230,height=300)
+orion_single_canvas_nra.grid(row = 0, column = 0)
 #endregion
 
 tk.mainloop()
