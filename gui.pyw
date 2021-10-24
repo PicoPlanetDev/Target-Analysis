@@ -984,6 +984,8 @@ def show_trends():
 # Sets file options by parsing a correctly-named target         
 def set_info_from_file(file):
     filename = os.path.basename(file) # Get the filename alone in case it is given a full path
+    
+    filename_without_extension = os.path.splitext(filename)[0] # get the filename without the extension
 
     day_var.set(filename[0:2]) # Set the day
 
@@ -1012,7 +1014,7 @@ def set_info_from_file(file):
 
     month_var.set(month) # Set the month
 
-    target_num_var.set(filename[-6]) # Set the target number
+    target_num_var.set(filename_without_extension[-1]) # Set the target number
 
     # The final section of the filename can be any length and it is "left" or "right" for NRA A-17 targets
     # However, Orion targets use only one scan so that space can hold the shooter's name
@@ -1207,7 +1209,8 @@ def set_name_from_bubbles(image):
         return name
 
     name = initals_to_name(letters)
-    name_var.set(name)
+
+    if name != None: name_var.set(name)
 
 # Creates a default names config file
 def create_names_config():
