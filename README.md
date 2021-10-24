@@ -44,12 +44,12 @@ Measurements are from *NRA Smallbore Rifle Rules* January 2010 edition booklet.
 
 **NRA A-17 target:**
 ```
-- Outer ring   - 46.150 millimeters radius
-- Five ring    - 37.670 millimeters radius
-- Six ring     - 29.210 millimeters radius
-- Seven ring   - 20.750 millimeters radius
-- Eight ring   - 12.270 millimeters radius
-- Nine ring    - 03.810 millimeters radius
+- Outer ring    - 46.150 millimeters radius
+- Five ring     - 37.670 millimeters radius
+- Six ring      - 29.210 millimeters radius
+- Seven ring    - 20.750 millimeters radius
+- Eight ring    - 12.270 millimeters radius
+- Nine ring     - 03.810 millimeters radius
 ```
 **NRA/USAS-50 target:**
 ```
@@ -66,7 +66,7 @@ Inner scoring spindle on scoring gauge uses radius 2.8 millimeters (equivalent t
 Outer scoring spindle uses radius 4.5 millimeters (equivalent to ⌀9mm)
 
 All of these millimeter values are converted to pixel values through calibration to the detected outer ring of the target.
-The target analysis system uses Hough Circles to identify a large circle in the scanned image. If the ratio of the detected ring to the image size is incorrect, the circle will be multiplied to adjust it accordingly.
+The target analysis system uses OpenCV Hough Circles to identify a large circle in the scanned image. If the ratio of the detected ring to the image size is incorrect, the circle will be multiplied to adjust it accordingly.
 
 ### Requirements
 
