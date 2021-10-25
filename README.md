@@ -3,78 +3,42 @@
 A target analysis system offering insights into accuracy
 
 Currently, the target analysis Python script allows you to automatically:
-- Score a target (NRA A-17 or NRA/USAS-50)
-- Batch scoring
+- Score a target
+  - NRA A-17
+  - NRA/USAS-50 Orion
+  - NRA/USAS-50 Orion scored as NRA A-17
+- Automatic naming
+  - From filename
+  - Using today's date
+  - Using initals bubbled in on NRA/USAS-50 Orion target
+  - Or, custom name and date
+- Batch scoring of all targets in folder
 - Save data to Excel-ready CSV files
 - Show most and least missed bulls
 - Show single shooter trends across a range of dates
+
+## Creator
+
+Created by Sigmond Kukla for the Mt. Lebanon Rifle Team in 2021. Project started in May 2021, currently in active development.
 
 ## License
 Please see [LICENSE.md](https://github.com/PicoPlanetDev/Target-Analysis/blob/main/LICENSE.md) for license information. This work is published under exclusive copyright to the developer.
 
 ## Comparison to hand scoring
+On average, Target Analysis scores $\frac{1}{2}$ point harsher per target than a human scorer, due to human bias towards the shooter as documented [here](https://www.orionscoringsystem.com/orion/SupportFaq.aspx?FaqID=75). However, statistically, the system is $\frac{1}{10}$ more likely to score a doubtful shot as an X. In testing, the Target Analysis system reaches a higher statistical accuracy than the Orion scoring system.
+
 ![Excel Spreadsheet](https://github.com/PicoPlanetDev/Target-Analysis/blob/main/help/accuracy-vs-hand-scored.png?raw=true)
 
-## Installation
-**Bundled installation (reccomended)**
+# Installation
+## Windows
 1. Download the *TargetAnalysis.zip* file on [this page](https://github.com/PicoPlanetDev/Target-Analysis/releases) and extract it to a memorable location.
-2. Open the TargetAnalysis folder and double click to run **gui.exe**
+2. Open the TargetAnalysis folder and double click to run **gui.exe** or **TargetAnalysis.exe** depending on your version.
 
-**Source installation**
-1. On [this page](https://github.com/PicoPlanetDev/Target-Analysis), click the download code button <kbd>⇩ Code ▼</kbd> and select *Download Zip*
-2. Save the Zip file to a memorable location and extract it.
-3. Open the Target-Analysis-main folder (depending on your system, you might have to open it twice), then
-3. Double click to run ```install_dependencies.bat```
-4. Double click to run ```gui.pyw``` to run the analysis software.
-
-**Testing**
-
+**Test after installation:**
 The images folder includes two scanned targets to test functionality. Run the software (see the Usage section) and click Show Output, ensuring that a score of 94-4X is displayed.
 
-## Documentation
-### Information
-
-Created by Sigmond Kukla for the Mt. Lebanon Rifle Team in 2021. Project started in May 2021, currently in active development.
-
-### Measurements
-
-*Disclaimer: This might not actually be what these rings are called... I'm just going off of what I used in the code.
-
-Measurements are from *NRA Smallbore Rifle Rules* January 2010 edition booklet.
-
-**NRA A-17 target:**
-```
-- Outer ring    - 46.150 millimeters radius
-- Five ring     - 37.670 millimeters radius
-- Six ring      - 29.210 millimeters radius
-- Seven ring    - 20.750 millimeters radius
-- Eight ring    - 12.270 millimeters radius
-- Nine ring     - 03.810 millimeters radius
-```
-**NRA/USAS-50 target:**
-```
-- outer (three) - 33.38 millimeters radius
-- four          - 28.50 millimeters radius
-- five          - 23.63 millimeters radius
-- six           - 18.75 millimeters radius
-- seven         - 13.87 millimeters radius
-- eight         - 09.00 millimeters radius
-- nine          - 04.12 millimeters radius
-- ten           - 00.76 millimeters radius
-```
-Inner scoring spindle on scoring gauge uses radius 2.8 millimeters (equivalent to ⌀5.6mm)
-Outer scoring spindle uses radius 4.5 millimeters (equivalent to ⌀9mm)
-
-All of these millimeter values are converted to pixel values through calibration to the detected outer ring of the target.
-The target analysis system uses OpenCV Hough Circles to identify a large circle in the scanned image. If the ratio of the detected ring to the image size is incorrect, the circle will be multiplied to adjust it accordingly.
-
-### Requirements
-
-**If you installed Target Analysis using the bundled installation:**
-
-Nothing else is necessary. You should be able to simply open **gui.exe** or **TargetAnalysis.exe**, depending on the version.
-
-**If you installed Target Analysis manually (with Python):**
+## Linux (experimental)
+To install Target Analysis on another operating system, you must download the Python source code and install the necessary dependencies detailed below.
 
 Python 3 and the following Python packages must be installed:
 - opencv-python
@@ -83,13 +47,14 @@ Python 3 and the following Python packages must be installed:
 - matplotlib
 - ttkthemes
 
-You can do this automatically by running the **install_dependencies.bat** file in the Target-Analysis-main directory.
-If you are running Target Analysis on Linux, you must use the Python installation. You can install the required packages by using the following command:
+Python and pip must first be installed on your Linux machine You can install the required packages by using the following command:
 ```$ pip install -r requirements.txt```
 
-### Scanning
+# Documentation
 
-#### NRA A-17 target scanning
+## Usage
+
+### NRA A-17 target scanning
 
 For a normal-sized scanner glass, two scans must be used.
 
@@ -105,12 +70,12 @@ For example:
 
 ![Scanning Diagram](https://github.com/PicoPlanetDev/Target-Analysis/blob/main/help/scanner-digital.png?raw=true)
 
-#### Orion NRA/USAS-50 target scanning
+### Orion NRA/USAS-50 target scanning
 
 For an Orion Scoring System NRA/USAS-50 target, only one scan is necessary.
 Make sure that the corner of the target with the barcode is aligned to the front-right corner of the scanner.
 
-### Usage
+## Analyzing a target
 
 **To score a target:**
 1. Select a target type by clicking one of the tabs on the main screen: **NRA A-17** or **NRA/USAS-50**. The NRA/USAS-50 is compatible with scoring ORION targets. You can also select the **NRA/USAS-50 as NRA A-17** tab to score an NRA/USAS-50 target as if it were NRA A-17.
@@ -124,7 +89,7 @@ Data for each target is stored in the `/data` folder named as follows:
 
 ```data-[Name][Day][Month][Year][Target number].csv```
 
-#### To set the date, name, and target number
+### To set the date, name, and target number:
 
 If "Use info from file" is selected, the program will automatically update the date and target number (and also the name for NRA/USAS-50 targets).
 
@@ -179,25 +144,39 @@ Orion targets also have a set of bubbles at the top right of the page that can b
 8. Then, under the *NRA/USAS-50* or the *NRA/USAS-50 as NRA A-17* tab, enable *Name from bubbles*
 9. *Name from bubbles* works for both individual targets *and* batch scanning. In the event that a name was supplied in the filename and also by bubbles, the name from the bubbles takes priority. If the name from the bubbles is not recognized, or an error occurs in the bubble comparison process, the name from the file will be used. If no name is provided in the filename, Target Analysis will revert to the default or last used name in this case.
 
-#### To display trends for a single shooter across a range of dates:
+An example initials to names mapping might look something like this:
+```
+[index]
+index = 2
+
+[initials]
+0 = SK
+1 = FB
+
+[names]
+0 = Sigmond
+1 = Foobar
+```
+## To display trends for a single shooter across a range of dates:
+
 1. Click File -> Show Trends.
 2. Select Load Folder or Load File, depending on what trend you would like to see:
     a. Load Folder allows you to open the data folder (or another folder with output files in it) to see which bull has the lowest score on average versus the highest score.
     b. Load File allows you to select a CSV data file to see a graph of shooting performance including score and X Count.
 Remember, these are designed for a single shooter. Please copy and paste data files / folder to another location to isolate them to score only a single shooter.
 
-### If Target Analysis is not working properly:
+## If Target Analysis is not working properly:
 
 Click File -> Settings to open the settigs menu.
 
 Then, ensure that the DPI setting matches your scanner's selected DPI.
 The 300dpi setting is active by default.
 
-Test Target Analysis again. If it still doesn't work, open settings and select the tab corresponding with the targets that you are scanning (either NRA A-17 or NRA/USAS-50). Then, tune the settings shown and retry the software after each change.
+Test Target Analysis again. If it still doesn't work, open settings and select the tab corresponding with the targets that you are scanning (either NRA A-17 or NRA/USAS-50). Then, tune the settings shown and retry the software after each change. A decription of settings is included below.
 
-If you are unsure what settings to change or cannot make Target Analysis work properly, please email Sigmond at picoplanetdev@gmail.com or skukla61@mtlstudents.net, making sure to include screenshots of the issue.
+If you are unsure what settings to change or cannot make Target Analysis work properly, please contact Sigmond at picoplanetdev@gmail.com or skukla61@mtlstudents.net, making sure to include screenshots of the issue.
 
-**Tuning overview**
+### Tuning overview
 
 To tune the target analysis software, open the settings menu by pressing File -> Settings.
 Then, select the tab that corresponds with the target that you are trying to tune (NRA A-17 or NRA/USAS-50).
@@ -206,12 +185,13 @@ Settings with the DPI 1 notation correspond with the 300dpi scanner setting. Set
 
 Please note that there was not a noticeable accuracy increase when using the 600dpi mode for NRA A-17 targets, so if that mode is enabled, targets will automatically be scaled in accordance with a 300dpi resolution. Using an unecessarily high DPI results in slower target processing with more CPU cost, therefore, it is discouraged. NRA/USAS-50 targets *do* score more accurately when using the 600dpi mode due to their smaller size. Therefore, the 600dpi mode is present in the analysis algorithm for NRA/USAS-50 targets. If your scanner supports 600dpi, I encourage you to take advantage of it for NRA/USAS-50 targets.
 
-**These settings affect the ring detection on each bull**
+**These settings affect the ring detection on each bull:**
 - Kernel Size: Affects the blur kernel used on the grayscale bull image to smooth it and remove some high-frequency noise. Higher values result in a stronger blur. Because the blur kernel is 2D, this value is passed for both kernel dimensions.
 - Param 1: Affects the sensitivity of the Hough Circles detector. Higher values result in stronger edges being detected. If this is set too high, no circles will be detected. If it is set too low, more circles will be detected including false cicles. Aim for only one circle to be detected when tuning this parameter. See this StackExchange answer for more details: https://dsp.stackexchange.com/a/22649
 - Param 2: Affects the number of points that must be detected on one circle for it to be used. Higher values result in stronger circles being detected. If this is set too high, no circles will be detected. If it is set too low, more circles will be detected including false cicles. Aim for only one circle to be detected when tuning this parameter. See this StackExchange answer for more details: https://dsp.stackexchange.com/a/22649
 - Min Circle Radius: Any circles detected by Hough Circles will be discarded if they are smaller than this radius.
-**These settings affect the bullet hole detection**
+
+**These settings affect the bullet hole detection:**
 - Thresh Min: The bullet hole detection system applies a threshold to the image, making it black if below this value or white if above this value and below the max value. This is to make contours more apparent to the contour detector. Range from 0 to 255.
 - Thresh Max: This is the max value that the threshold uses. Not reccomended to change this.
 - Morphology Opening Kernel Size: An opening morphology filter is applied to the black and white image to reduce noise. This process erodes the image (making white areas smaller), then dilates the image (making white areas larger). Small dots of noise are removed in the erosion and never appear in the dilation, but larger areas remain unchanged by the filter. This kernal size affects the number of pixels that are counted when performing these operations. Similar to the blur kernal size, this value is applied to both axes.
@@ -220,7 +200,8 @@ Please note that there was not a noticeable accuracy increase when using the 600
 - Max hole radius: If a contour is detected, and it passes the min/max area filter, and its size is smaller than this radius, it is counted as a bullet hole and scored.
 
 ### Folder structure
-```Target-Analysis
+```
+Target-Analysis
 ├───assets
 ├───data
 ├───help
@@ -228,36 +209,29 @@ Please note that there was not a noticeable accuracy increase when using the 600
     └───output
 ```
 
-**assets** - Do not edit.
+*Note:* depending on your version of Target Analysis, some folders may not be shown
 
-**data** - Contains output CSV files. Clear them manually by deleting them, or by using File -> Clear Data inside the software. Files in this folder may be opened in a program such as Excel or Calc. Files in this folder may be copied to another folder to preserve them for future reference.
+**assets** - Contains icons and tkinter theme. Do not edit.
 
-**help** - Contains documentation files. Not reccomended to edit anything in this folder, although files in this folder may be manually opened in a programs such as Notepad (TXT) or Photos (PNG).
+**data** - Contains output CSV files. Clear them manually by deleting them, or by using File -> Clear Data inside the software. Files in this folder may be opened in a program such as Microsoft Excel. Files in this folder may be copied to another folder to preserve them for future reference.
+
+**help** - Contains documentation files. Not reccomended to edit anything in this folder, although files in this folder may be manually opened in a programs such as Notepad (.txt) or Photos (.png / .jpg).
 
 **images** - Put targets that need to be scored here. You can set this as your default scanning directory so that the scanner automatically sends them here.
 
 **images/output** - Do not edit while Target Analysis is running, files inside are automatically overwritten every time a target is scored. Files in this folder may be viewed for debugging or verification purposes. Files in this folder may be copied to another folder to preserve them for future reference, where they will not be overwritten by Target Analysis.
 
-### Building to an EXE
-Using pyinstaller, an EXE file can be built for distribution. If you only intend to use Target Analysis, this is not necessary. See **Installation** for more details.
-
-This step-by-step is designed for advanced user:
-1. Clone or Download the Target Analysis code
-2. `cd` into the code directory, or open a terminal there
-3. Use `pyi-makespec gui.pyw` to create a SPEC file to customize.
-4. Edit the SPEC file to include every file in the target-analysis directory and all subdirectories as a tuple in datas=[] (not every file is required, but to avoid errors, include every file)
-5. Use `pyinstaller gui.spec` to create the EXE
-6. Zip the entire folder that the EXE is inside of and share it.
-
-### Developer's note
+# Developer's note
 
 This is getting to be a pretty long README, thank you for sticking with it all the way down to here!
+
 I really enjoyed developing Target Analysis (still thinking about the name) and hope that it can be of use to someone. If you have anything that you would like to see in the software, please let me know and I will investigate ways to include it. Also, I would appreciate it if you sent me any bugs or issues that you have found. I would be happy to help sort them out.
 
 Thanks for using Target Analysis!
-Sigmond Kukla
 
-### Copyright, License, and Contact Information
+\- Sigmond Kukla
+
+# Copyright, License, and Contact Information
 ```
 ############################################################
 ## Target Analysis                                        ##
