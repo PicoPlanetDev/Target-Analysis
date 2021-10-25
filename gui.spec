@@ -1,5 +1,13 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+# This spec file is used to generate a Windows executable for Target Analysis.
+# Make sure to set pathex to the correct path to the directory containing Target Analysis.
+# The path is currently set for my machine, which will likey be different for you.
+# I set the folder name to 'Target-Analysis - Copy' because I just make a copy of the source folder and Windows names it like that.
+
+# To build this spec file, run the following command: 'pyinstaller gui.spec'
+# The built data will be inside the folder 'dist/TargetAnalysis'
+# For user frienldlyness, I hide all folders and files that are not needed inside that directory that the user doesn't need to interact with.
 
 block_cipher = None
 
