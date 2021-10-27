@@ -42,6 +42,9 @@ from configparser import ConfigParser
 
 # Loads an image for the left side of the target
 def load_image_left():
+    """
+    Prompts the user to select an image from their computer which is used for the left scan of the NRA A-17 target.
+    """
     main_label.config(text="Loading left image...") # Update the main label
 
     left_canvas.delete("all") # Clear the left canvas in case it already has an image
@@ -67,6 +70,9 @@ def load_image_left():
 
 # Loads an image for the right side of the target
 def load_image_right():
+    """
+    Prompts the user to select an image from their computer which is used for the right scan of the NRA A-17 target.
+    """
     main_label.config(text="Loading right image...") # Update the main label
 
     right_canvas.delete("all") # Clear the right canvas in case it already has an image
@@ -104,10 +110,18 @@ def load_image_single():
     crop_single(single_image) # Crop the image to prepare for analysis
 
 # Loads an image for an Orion target
-def load_image_orion():
+def load_image_orion(target_type):
+    """Loads an image for an Orion target. and displays it on the preview canvas.
+
+    Args:
+        target_type (str): 'orion' or 'orion-nrascoring'
+    """
     main_label.config(text="Loading image...") # Update the main label
 
-    orion_single_canvas.delete("all") # Clear the orion single canvas in case it already has an image
+    if target_type == "orion": canvas = orion_single_canvas
+    elif target_type == "orion-nrascoring": canvas = orion_single_canvas_nra
+
+    canvas.delete("all") # Clear the orion single canvas in case it already has an image
 
     image_file = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
     single_image = cv2.imread(image_file) # Load the image for OpenCV image
@@ -116,36 +130,11 @@ def load_image_orion():
     if use_file_info_var.get() is True:
         set_info_from_file(image_file)
 
-    orion_single_canvas.grid(row = 0, column = 1) # Refresh the canvas
+    canvas.grid(row = 0, column = 1) # Refresh the canvas
     
     global orion_preview # Images must be stored globally to be show on the canvas
     orion_preview = ImageTk.PhotoImage(Image.open(image_file).resize((230, 350), Image.ANTIALIAS)) # Store the image as a tkinter photo image and resize it
-    orion_single_canvas.create_image(0, 0, anchor="nw", image=orion_preview) # Place the image on the canvas
-
-    main_label.config(text="Orion image loaded") # Update the main label
-
-    root.minsize(550,540) # Increase the window size to accomodate the image
-
-    crop_orion(single_image) # Crop the image to prepare for analysis
-
-# Loads an image for an Orion target
-def load_image_orion_nra():
-    main_label.config(text="Loading image...") # Update the main label
-
-    orion_single_canvas_nra.delete("all") # Clear the orion single canvas in case it already has an image
-
-    image_file = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
-    single_image = cv2.imread(image_file) # Load the image for OpenCV image
-
-    # If the user wants to use information from the file name, do so
-    if use_file_info_var.get() is True:
-        set_info_from_file(image_file)
-
-    orion_single_canvas_nra.grid(row = 0, column = 1) # Refresh the canvas
-    
-    global orion_nra_preview # Images must be stored globally to be show on the canvas
-    orion_nra_preview = ImageTk.PhotoImage(Image.open(image_file).resize((230, 350), Image.ANTIALIAS)) # Store the image as a tkinter photo image and resize it
-    orion_single_canvas_nra.create_image(0, 0, anchor="nw", image=orion_nra_preview) # Place the image on the canvas
+    canvas.create_image(0, 0, anchor="nw", image=orion_preview) # Place the image on the canvas
 
     main_label.config(text="Orion image loaded") # Update the main label
 
@@ -179,6 +168,11 @@ def load_image_outdoor():
 
 # Crop image for an Orion target
 def crop_orion(image):
+    """Crops the given image for an Orion NRA/USAS-50 target. Stores the cropped images in the images/output folder.
+
+    Args:
+        image (cv2 image): [description]
+    """    
     main_label.config(text="Cropping image...") # Update the main label
     check_output_dir() # Make sure the output directory exists
 
@@ -413,6 +407,11 @@ def crop_single(image):
 
 # Crop image for right side of the target and start analysis process
 def crop_right(image):
+    """Crops the given image for the right side of an NRA A-17 target. Stores the cropped images in the images/output folder.
+
+    Args:
+        image (cv2 image): [description]
+    """ 
     main_label.config(text="Cropping right image...") # Update main label
 
     check_output_dir() # Make sure that output directory exists
@@ -471,6 +470,11 @@ def crop_right(image):
 
 # Crop image for left side of the target and start analysis process
 def crop_left(image):
+    """Crops the given image for the left side of an NRA A-17 target, which includes flipping the image. Stores the cropped images in the images/output folder.
+
+    Args:
+        image (cv2 image): [description]
+    """ 
     main_label.config(text="Cropping left image...") # Update main label
 
     check_output_dir() # Make sure that output directory exists
@@ -519,6 +523,11 @@ def crop_left(image):
 
 # Runs the analyze_image function for every image that has been cropped out
 def analyze_target(type):
+    """Runs the appropriate analyze_image function for every image that has been cropped and saved.
+
+    Args:
+        type (str): 'nra' or 'orion' or 'orion-nrascoring'
+    """    
     main_label.config(text="Analyzing target...") # Update main label
 
     # Create and store a name for the target output file
@@ -613,6 +622,7 @@ def analyze_target(type):
 
 # Shows the results of the program in a separate window and provides buttons for opening CSV files
 def show_output():
+    """Shows the most recently saved results of the analysis in a new window."""
     main_label.config(text="Showing output") # Update main label
 
     #region Create window
@@ -725,6 +735,11 @@ def show_output():
 # Open the working folder in Explorer
 # TODO Make this work on any operating system
 def show_folder(path):
+    """Runs the explorer to the path given
+
+    Args:
+        path (str): where to navigate to in explorer
+    """    
     print("Opening folder: " + path)
     main_label.config(text="Opening folder... ONLY WORKS ON WINDOWS")
     os.system("explorer " + '"' + path + '"') # Run a system command to open the folder using Explorer (Windows only)
@@ -2855,7 +2870,7 @@ open_folder_nra_button.grid(row=0, column=3, padx=5, pady=5)
 #endregion
 
 #region Buttons for Orion NRA/USAS-50 target loading and analysis
-load_image_button = ttk.Button(orion_buttons_frame, text = "Select image", command = load_image_orion)
+load_image_button = ttk.Button(orion_buttons_frame, text = "Select image", command = lambda: load_image_orion("orion"))
 load_image_button.grid(row=0, column=0, padx=5, pady=5)
 
 analyze_orion_target_button = ttk.Button(orion_buttons_frame, text = "Analyze target", command = lambda: analyze_target("orion"))
@@ -2869,13 +2884,13 @@ use_bubbles_checkbutton.grid(column=3, row=0, padx=5, pady=5)
 #endregion
 
 #region Buttons for Orion NRA/USAS-50 scored as NRA A-17 target loading and analysis
-load_image_button_orion_nra = ttk.Button(orion_as_nra_frame, text = "Select image", command = load_image_orion_nra)
+load_image_button_orion_nra = ttk.Button(orion_as_nra_frame, text = "Select image", command = lambda: analyze_target("orion-nrascoring"))
 load_image_button_orion_nra.grid(row=0, column=0, padx=5, pady=5)
 
 analyze_orion_target_button_nra = ttk.Button(orion_as_nra_frame, text = "Analyze with Orion scoring", command = lambda: analyze_target("orion-nrascoring"))
 analyze_orion_target_button_nra.grid(row=0, column=1, padx=5, pady=5)
 
-open_folder_orion_target_button_nra = ttk.Button(orion_as_nra_frame, text = "Open folder", command = open_folder_orion)
+open_folder_orion_target_button_nra = ttk.Button(orion_as_nra_frame, text = "Open folder", command = open_folder_orion) # works for both orion and orion-nrascoring by checking which tab is active
 open_folder_orion_target_button_nra.grid(row=0, column=2, padx=5, pady=5)
 
 use_bubbles_checkbutton_nra = ttk.Checkbutton(orion_as_nra_frame, text='Name from bubbles', style='Switch.TCheckbutton', variable=use_bubbles_var, onvalue=True, offvalue=False, command=update_config)
