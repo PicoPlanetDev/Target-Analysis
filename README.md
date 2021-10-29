@@ -1,6 +1,6 @@
 # Target Analysis
 
-A target analysis system offering insights into accuracy
+An automated computer target scoring system
 
 Currently, the target analysis Python script allows you to automatically:
 - Score a target
@@ -31,11 +31,11 @@ On average, Target Analysis scores $\frac{1}{2}$ point harsher per target than a
 
 # Installation
 ## Windows
-1. Download the *TargetAnalysis.zip* file on [this page](https://github.com/PicoPlanetDev/Target-Analysis/releases) and extract it to a memorable location.
+1. Download the latest *TargetAnalysis.zip* file on [this page](https://github.com/PicoPlanetDev/Target-Analysis/releases) and extract it to a memorable location.
 2. Open the TargetAnalysis folder and double click to run **gui.exe** or **TargetAnalysis.exe** depending on your version.
 
 **Test after installation:**
-The images folder includes two scanned targets to test functionality. Run the software (see the Usage section) and click Show Output, ensuring that a score of 94-4X is displayed.
+The images folder includes some pre-scanned targets to test functionality. Run the software (see the *Usage* section of this readme) and ensure that Target Analysis functions properly.
 
 ## Linux (experimental)
 To install Target Analysis on another operating system, you must download the Python source code and install the necessary dependencies detailed below.
@@ -47,8 +47,7 @@ Python 3 and the following Python packages must be installed:
 - matplotlib
 - ttkthemes
 
-Python and pip must first be installed on your Linux machine You can install the required packages by using the following command:
-```$ pip install -r requirements.txt```
+Python and pip must first be installed on your Linux machine You can install the required packages by using the following command: ```$ pip install -r requirements.txt```
 
 # Documentation
 
@@ -59,9 +58,9 @@ Python and pip must first be installed on your Linux machine You can install the
 For a normal-sized scanner glass, two scans must be used.
 
 1. Place the target on the scanner glass with the top left of the back of the target pressed firmly into the back right corner of the glass.
-2. Scan the target to the computer, saving it as an IMAGE (jpeg file) in the Target Analysis -> "images" folder.
+2. Scan the target to the computer, saving it as an image (jpg/jpeg) in the Target Analysis -> "images" folder.
 3. Rotate the target 180° so that the top left of the back of the page is now in the front left corner. Firmly press the top right into the back left of the scanner glass.
-4. Scan the target to the computer, saving it as an IMAGE (jpeg file) in the Target Analysis -> "images" folder.
+4. Scan the target to the computer, saving it as an image (jpg/jpeg) in the Target Analysis -> "images" folder.
 
 If you would like to use the Open Folder operation or automatic information parsing, make sure to name the scans as such:
 <2 number day><3 letter shortened month><Year><left side or right><target number>.jpeg
@@ -209,7 +208,7 @@ Target-Analysis
     └───output
 ```
 
-*Note:* depending on your version of Target Analysis, some folders may not be shown
+*Note:* depending on your version of Target Analysis, some folders may not be shown.
 
 **assets** - Contains icons and tkinter theme. Do not edit.
 
