@@ -40,6 +40,8 @@ import matplotlib
 from configparser import ConfigParser
 #endregion
 
+# --------------------------- Load image functions --------------------------- #
+
 # Loads an image for the left side of the target
 def load_image_left():
     """
@@ -165,6 +167,8 @@ def load_image_outdoor():
     csv_name = "data/data-" + name_var.get() + day_var.get() + month_var.get() + year_var.get() + target_num_var.get() + ".csv"
 
     analyze_outdoor_image("images/output/outdoorBull.jpg")
+
+# --------------------------- Crop image functions --------------------------- #
 
 # Crop image for an Orion target
 def crop_orion(image):
@@ -521,6 +525,8 @@ def crop_left(image):
 
     main_label.config(text="Cropped image") # Update the main label
 
+# -------------------- Target processing control functions ------------------- #
+
 # Runs the analyze_image function for every image that has been cropped out
 def analyze_target(type):
     """Runs the appropriate analyze_image function for every image that has been cropped and saved.
@@ -750,6 +756,145 @@ def open_file(file):
     main_label.config(text="Opening file " + str(file)) # Update the main label
     os.system(file) # Run a system command to open the file using the default viewer (should work on any operating system)
 
+# Ensures that an image/output directory is available to save images
+def check_output_dir():
+    path = os.getcwd() + "/images/output" # Store the path to the output directory
+    # If the output directory does not exist, create it
+    if os.path.isdir(path) == False:
+        os.mkdir(path)
+    # Otherwise, nothing needs to be done
+
+# Show analysis output for each image
+def open_analysis_window():
+    # Load all of the images that have been saved from analysis
+    def load_images():
+        # Create a list of images
+        global output_images
+        global output_image_names
+        output_images = []
+        output_image_names = []
+        # os.listdir returns a list of the files in the directory
+        for file in os.listdir("images/output"):
+            # Output images are saved as such: <original image name>-output.png
+            if file.endswith("output.jpg"):
+                output_images.append(ImageTk.PhotoImage(Image.open("images/output/" + file).resize((600, 600), Image.ANTIALIAS))) # Load the image as a tkinter photo image and add it to the list
+                output_image_names.append(file) # Add the image name to the list
+        
+        # Prepare image names lists for use by ordering them in a clockwise fashion, starting with the top middle target image.
+        # Define the correct order for the list
+        clockwise_order = {"top-mid.jpg-output.jpg" : 0, 
+                            "top-right.jpg-output.jpg" : 1, 
+                            "upper-right.jpg-output.jpg" : 2, 
+                            "lower-right.jpg-output.jpg" : 3, 
+                            "bottom-right.jpg-output.jpg" : 4, 
+                            "bottom-mid.jpg-output.jpg" : 5,
+                            "bottom-left.jpg-output.jpg" : 6,
+                            "lower-left.jpg-output.jpg" : 7,
+                            "upper-left.jpg-output.jpg" : 8, 
+                            "top-left.jpg-output.jpg" : 9}
+        # Sort the images and image names list by the image names according to the clockwise order
+        sorted_zipped = sorted(zip(output_images, output_image_names), key=lambda d: clockwise_order[d[1]])
+        # Unzip the sorted list into images and image names
+        output_images = [x for x, y in sorted_zipped]
+        output_image_names = [y for x, y in sorted_zipped]
+        # Create friendly names for use in the GUI by removing the file extension and "-output" from the image name,
+        # replacing the hyphens with spaces and capitalizing the first letter of each word.
+        global output_friendly_names
+        output_friendly_names = [(y.split(".jpg-output.jpg")[0]).replace("-", " ").capitalize() for x, y in sorted_zipped]
+
+    # Delete everything on the analysis canvas
+    def clear_canvas():
+        analysis_canvas.delete("all")
+
+    # Shows the indexth image in the output_images list
+    def show_image(index):
+        analysis_canvas.create_image(0, 0, anchor="nw", image=output_images[index]) # Create the image on the canvas
+        analysis_top_label.config(text=output_friendly_names[index]) # Update the top label with the friendly name of the image
+
+    # Advance to the next image in the output_images list if allowed
+    def on_next_button_pressed():
+        global image_index
+        if image_index < len(output_images) - 1:
+            image_index += 1
+            clear_canvas()
+            show_image(image_index)
+        update_buttons()
+
+    # Move back to the previous image in the output_images list if allowed
+    def on_back_button_pressed():
+        global image_index
+        if image_index > 0:
+            image_index -= 1
+            clear_canvas()
+            show_image(image_index)
+        update_buttons()
+
+    # Close the analysis window and show the output window if enabled
+    def on_finish_button_pressed():
+        analysis_window.destroy()
+        if show_output_when_finished_var.get():
+            show_output()
+
+    # Update the buttons to show the correct state based on the current image index
+    def update_buttons():
+        if image_index == 0:
+            analysis_back_button.config(state=DISABLED) # Disable the back button if the first image is showing
+        else:
+            analysis_back_button.config(state=NORMAL) # Enable the back button if the first image is not showing
+
+        if image_index == len(output_images)-1:
+            analysis_next_button.config(text="Finish", style="Accent.TButton", command=on_finish_button_pressed) # If the last image is showing, change the next button to say "Finish" and make it an accent button (blue) for emphasis
+        else:
+            analysis_next_button.config(state=NORMAL, text="Next", style="Button.TButton") # If the last image is not showing, change the next button to say "Next" and make it a normal button
+
+    #region Create the analysis window
+    analysis_window = tk.Toplevel(root)
+    analysis_window.title("Target Analysis")
+    analysis_window.minsize(width=600, height=690)
+    analysis_window.geometry("600x690")
+    analysis_window.tk.call('wm', 'iconphoto', analysis_window._w, tk.PhotoImage(file='assets/icon.png'))
+    #endregion
+
+    #region Create frames
+    # Top frame shows the image name
+    analysis_top_frame = ttk.Frame(analysis_window)
+    analysis_top_frame.pack(side=TOP, fill=X)
+
+    # Images frame holds the canvas with the images
+    analysis_images_frame = ttk.Frame(analysis_window)
+    analysis_images_frame.pack(side=TOP, fill=X)
+
+    # Bottom frame holds the buttons
+    analysis_bottom_frame = ttk.Frame(analysis_window)
+    analysis_bottom_frame.pack(side=BOTTOM, fill=X)
+    #endregion
+
+    #region Create top label
+    analysis_top_label = ttk.Label(analysis_top_frame, text="Analysis", font="bold")
+    analysis_top_label.pack(pady=10)
+    #endregion
+
+    #region Create canvas
+    analysis_canvas = tk.Canvas(analysis_images_frame, width=600, height=600)
+    analysis_canvas.pack()
+    #endregion
+
+    #region Create buttons
+    analysis_next_button = ttk.Button(analysis_bottom_frame, text="Next", command=on_next_button_pressed)#, style="Accent.TButton")
+    analysis_next_button.pack(side=RIGHT, padx=5, pady=5)
+
+    analysis_back_button = ttk.Button(analysis_bottom_frame, text="Back", command=on_back_button_pressed)#, style="Accent.TButton")
+    analysis_back_button.pack(side=LEFT, padx=5, pady=5)
+    #endregion
+
+    #Show first image
+    global image_index
+    image_index = 0
+    load_images()
+    clear_canvas()
+    show_image(image_index)
+    update_buttons()
+
 # Create CSV file set up for the global data csv
 def create_csv():
     # Open the CSV file
@@ -758,6 +903,8 @@ def create_csv():
         filewriter.writerow(['Name', 'Date', 'Target Number', 'Score','X']) # Write the header row
         csvfile.close() # Close the file
     main_label.config(text="Created CSV data file") # Update the main label
+
+# --------------------------- Open folder functions -------------------------- #
 
 # Opens and analyzes all files in a folder (more complex than Orion because it has to distinguish between left and right images)
 def open_folder():
@@ -996,6 +1143,8 @@ def show_trends():
     load_csv_button = ttk.Button(trends_window, text="Load CSV (for graph)", command=showTrendGraph)
     load_csv_button.pack(padx=10, pady=0)
 
+# ---------------------------- File info funtions ---------------------------- #
+
 # Sets file options by parsing a correctly-named target         
 def set_info_from_file(file):
     filename = os.path.basename(file) # Get the filename alone in case it is given a full path
@@ -1038,7 +1187,7 @@ def set_info_from_file(file):
         name_var.set(filename[9:-6])
 
     # Update the main label
-    main_label.config(text="Set date to: " + month_var.get() + " " + day_var.get() + " " + year_var.get() + " with target number " + target_num_var.get())
+    main_label.config(text="Set date to: " + month_var.get() + " " + day_var.get() + ", " + year_var.get() + " and target number " + target_num_var.get())
 
 # Sets file options from today's date
 def set_info_from_today():
@@ -1051,7 +1200,9 @@ def set_info_from_today():
     target_num_var.set("1") # Default the target number to 1
 
     # Update the main label
-    main_label.config(text="Set date to: " + month_var.get() + " " + day_var.get() + " " + year_var.get() + " with target number " + target_num_var.get())
+    main_label.config(text="Set date to: " + month_var.get() + " " + day_var.get() + ", " + year_var.get() + " and target number 1")
+
+# ----------------------------- Bubbles functions ---------------------------- #
 
 # Sets shooter name from bubbled in initials on Orion targets
 def set_name_from_bubbles(image):
@@ -1261,6 +1412,8 @@ def load_names_config():
     
     return initials_list, names_list
 
+# -------------------------- Miscellaneous functions ------------------------- #
+
 # Delete all files in the data folder
 def clear_data():
     path = str(os.getcwd()) + "/data" # Set the path to the data folder
@@ -1279,7 +1432,7 @@ def clear_data():
 
     main_label.config(text="/data and /images/output directories cleared") # Update the main label
 
-# Create a settings window
+# Open the settings window
 def open_settings():
     # If the settings window is going to be closed, save the changes and destroy the window
     def on_close_settings():
@@ -1580,137 +1733,6 @@ def open_settings():
 
     settings_window.protocol("WM_DELETE_WINDOW", on_close_settings) # If the settings window is closing, run the on_close_settings function
 
-# Show analysis output for each image
-def open_analysis_window():
-    # Load all of the images that have been saved from analysis
-    def load_images():
-        # Create a list of images
-        global output_images
-        global output_image_names
-        output_images = []
-        output_image_names = []
-        # os.listdir returns a list of the files in the directory
-        for file in os.listdir("images/output"):
-            # Output images are saved as such: <original image name>-output.png
-            if file.endswith("output.jpg"):
-                output_images.append(ImageTk.PhotoImage(Image.open("images/output/" + file).resize((600, 600), Image.ANTIALIAS))) # Load the image as a tkinter photo image and add it to the list
-                output_image_names.append(file) # Add the image name to the list
-        
-        # Prepare image names lists for use by ordering them in a clockwise fashion, starting with the top middle target image.
-        # Define the correct order for the list
-        clockwise_order = {"top-mid.jpg-output.jpg" : 0, 
-                            "top-right.jpg-output.jpg" : 1, 
-                            "upper-right.jpg-output.jpg" : 2, 
-                            "lower-right.jpg-output.jpg" : 3, 
-                            "bottom-right.jpg-output.jpg" : 4, 
-                            "bottom-mid.jpg-output.jpg" : 5,
-                            "bottom-left.jpg-output.jpg" : 6,
-                            "lower-left.jpg-output.jpg" : 7,
-                            "upper-left.jpg-output.jpg" : 8, 
-                            "top-left.jpg-output.jpg" : 9}
-        # Sort the images and image names list by the image names according to the clockwise order
-        sorted_zipped = sorted(zip(output_images, output_image_names), key=lambda d: clockwise_order[d[1]])
-        # Unzip the sorted list into images and image names
-        output_images = [x for x, y in sorted_zipped]
-        output_image_names = [y for x, y in sorted_zipped]
-        # Create friendly names for use in the GUI by removing the file extension and "-output" from the image name,
-        # replacing the hyphens with spaces and capitalizing the first letter of each word.
-        global output_friendly_names
-        output_friendly_names = [(y.split(".jpg-output.jpg")[0]).replace("-", " ").capitalize() for x, y in sorted_zipped]
-
-    # Delete everything on the analysis canvas
-    def clear_canvas():
-        analysis_canvas.delete("all")
-
-    # Shows the indexth image in the output_images list
-    def show_image(index):
-        analysis_canvas.create_image(0, 0, anchor="nw", image=output_images[index]) # Create the image on the canvas
-        analysis_top_label.config(text=output_friendly_names[index]) # Update the top label with the friendly name of the image
-
-    # Advance to the next image in the output_images list if allowed
-    def on_next_button_pressed():
-        global image_index
-        if image_index < len(output_images) - 1:
-            image_index += 1
-            clear_canvas()
-            show_image(image_index)
-        update_buttons()
-
-    # Move back to the previous image in the output_images list if allowed
-    def on_back_button_pressed():
-        global image_index
-        if image_index > 0:
-            image_index -= 1
-            clear_canvas()
-            show_image(image_index)
-        update_buttons()
-
-    # Close the analysis window and show the output window if enabled
-    def on_finish_button_pressed():
-        analysis_window.destroy()
-        if show_output_when_finished_var.get():
-            show_output()
-
-    # Update the buttons to show the correct state based on the current image index
-    def update_buttons():
-        if image_index == 0:
-            analysis_back_button.config(state=DISABLED) # Disable the back button if the first image is showing
-        else:
-            analysis_back_button.config(state=NORMAL) # Enable the back button if the first image is not showing
-
-        if image_index == len(output_images)-1:
-            analysis_next_button.config(text="Finish", style="Accent.TButton", command=on_finish_button_pressed) # If the last image is showing, change the next button to say "Finish" and make it an accent button (blue) for emphasis
-        else:
-            analysis_next_button.config(state=NORMAL, text="Next", style="Button.TButton") # If the last image is not showing, change the next button to say "Next" and make it a normal button
-
-    #region Create the analysis window
-    analysis_window = tk.Toplevel(root)
-    analysis_window.title("Target Analysis")
-    analysis_window.minsize(width=600, height=690)
-    analysis_window.geometry("600x690")
-    analysis_window.tk.call('wm', 'iconphoto', analysis_window._w, tk.PhotoImage(file='assets/icon.png'))
-    #endregion
-
-    #region Create frames
-    # Top frame shows the image name
-    analysis_top_frame = ttk.Frame(analysis_window)
-    analysis_top_frame.pack(side=TOP, fill=X)
-
-    # Images frame holds the canvas with the images
-    analysis_images_frame = ttk.Frame(analysis_window)
-    analysis_images_frame.pack(side=TOP, fill=X)
-
-    # Bottom frame holds the buttons
-    analysis_bottom_frame = ttk.Frame(analysis_window)
-    analysis_bottom_frame.pack(side=BOTTOM, fill=X)
-    #endregion
-
-    #region Create top label
-    analysis_top_label = ttk.Label(analysis_top_frame, text="Analysis", font="bold")
-    analysis_top_label.pack(pady=10)
-    #endregion
-
-    #region Create canvas
-    analysis_canvas = tk.Canvas(analysis_images_frame, width=600, height=600)
-    analysis_canvas.pack()
-    #endregion
-
-    #region Create buttons
-    analysis_next_button = ttk.Button(analysis_bottom_frame, text="Next", command=on_next_button_pressed)#, style="Accent.TButton")
-    analysis_next_button.pack(side=RIGHT, padx=5, pady=5)
-
-    analysis_back_button = ttk.Button(analysis_bottom_frame, text="Back", command=on_back_button_pressed)#, style="Accent.TButton")
-    analysis_back_button.pack(side=LEFT, padx=5, pady=5)
-    #endregion
-
-    #Show first image
-    global image_index
-    image_index = 0
-    load_images()
-    clear_canvas()
-    show_image(image_index)
-    update_buttons()
-
 # Enables/Disables dark theme UI based on dark_mode boolean variable state
 def update_dark_mode():
     # If dark mode is enabled, set the theme to dark
@@ -1718,6 +1740,309 @@ def update_dark_mode():
         root.tk.call("set_theme", "dark") # Set the theme to dark
     else:
         root.tk.call("set_theme", "light") # Set the theme to light
+
+# --------------------------- Settings functions -------------------------- #
+
+# Open the settings window
+def open_settings():
+    # If the settings window is going to be closed, save the changes and destroy the window
+    def on_close_settings():
+        update_config()
+        settings_window.destroy()
+
+    # Update the settings using the config-backup.ini file, which should never be changed
+    def revert_settings():
+        update_settings_from_config("config-backup.ini")
+        update_config()
+
+    def open_names_file():
+        path = "'" + str(os.getcwd()) + '/' + 'names.ini' + "'"
+        print(path)
+        os.system("notepad " + path)
+
+    main_label.config(text="Showing settings window") # Update the main label
+
+    #region Create settings window
+    settings_window = tk.Toplevel(root)
+    settings_window.title("Target Analysis")
+    settings_window.minsize(width=600, height=640)
+    settings_window.geometry("600x640")
+    settings_window.tk.call('wm', 'iconphoto', settings_window._w, tk.PhotoImage(file='assets/icon.png'))
+    #endregion
+
+    #region Create frames
+    # Each global setting has its own frame
+    settings_top_frame = ttk.Frame(settings_window)
+    settings_top_frame.pack(side=TOP, expand=False, pady=5, fill=X)
+
+    settings_global_label_frame = ttk.Frame(settings_window)
+    settings_global_label_frame.pack(side=TOP, fill=X)
+
+    settings_dpi_frame = ttk.Frame(settings_window)
+    settings_dpi_frame.pack(side=TOP, fill=X, padx=5)
+
+    settings_show_output_frame = ttk.Frame(settings_window)
+    settings_show_output_frame.pack(side=TOP, fill=X, padx=5)
+
+    settings_indivdual_output_frame = ttk.Frame(settings_window)
+    settings_indivdual_output_frame.pack(side=TOP, fill=X, padx=5)
+
+    settings_dark_mode_frame = ttk.Frame(settings_window)
+    settings_dark_mode_frame.pack(side=TOP, fill=X, padx=5)
+
+    settings_global_separator = ttk.Separator(settings_window, orient=HORIZONTAL)
+    settings_global_separator.pack(side=TOP, fill=X, pady=5)
+
+    settings_bottom_frame = ttk.Frame(settings_window)
+    settings_bottom_frame.pack(side=TOP, fill=X)
+
+    settings_buttons_frame = ttk.Frame(settings_window)
+    settings_buttons_frame.pack(side=BOTTOM, fill=X)
+
+    # Notebook allows for a tabbed view
+    settings_tab_control = ttk.Notebook(settings_bottom_frame)
+
+    settingstab1nraa17 = ttk.Frame(settings_tab_control)
+    settingstab2orion = ttk.Frame(settings_tab_control)
+    settingstab3orionDPI2 = ttk.Frame(settings_tab_control)
+    settingstab4names = ttk.Frame(settings_tab_control)
+
+    settings_tab_control.add(settingstab1nraa17, text ='NRA A-17')
+    settings_tab_control.add(settingstab2orion, text ='NRA/USAS-50 Orion 300dpi')
+    settings_tab_control.add(settingstab3orionDPI2, text ='NRA/USAS-50 Orion 600dpi')
+    settings_tab_control.add(settingstab4names, text ='Names')
+
+    settings_tab_control.pack(side=TOP, fill=X, padx=10, pady=5)
+
+    save_separator = ttk.Separator(settings_buttons_frame, orient=HORIZONTAL)
+    save_separator.pack(side=TOP, fill=X)
+
+    revert_button = ttk.Button(settings_buttons_frame, text="Revert settings to default", command=revert_settings)
+    revert_button.pack(side=LEFT, pady=5, padx=5)
+
+    save_button = ttk.Button(settings_buttons_frame, text="Save Settings", command=update_config)
+    save_button.pack(side=RIGHT, pady=5, padx=5)
+    #endregion
+
+    #region Create top label
+    # Header label
+    settings_label1 = ttk.Label(settings_top_frame, text="Settings", font='bold')
+    settings_label1.pack(side=TOP)
+    # Warning label
+    settings_label2 = ttk.Label(settings_top_frame, text="⚠️ Change these only if the software does not work properly ⚠️")
+    settings_label2.pack(side=TOP)
+    # Separator
+    label_separator = ttk.Separator(settings_top_frame, orient=HORIZONTAL)
+    label_separator.pack(side=TOP, fill=X, pady=(5, 0))
+    #endregion
+
+    #region Create top widgets
+    # Global settings label
+    settings_label1 = ttk.Label(settings_global_label_frame, text="Global settings", font = 'bold')
+    settings_label1.pack()
+
+    # 300dpi / 600dpi selection buttons
+    dpi_button300 = ttk.Radiobutton(settings_dpi_frame, text="300 dpi scanner", variable=dpi_var, value=1)
+    dpi_button300.grid(row=1, column=0)
+    dpi_button600 = ttk.Radiobutton(settings_dpi_frame, text="600 dpi scanner", variable=dpi_var, value=2)
+    dpi_button600.grid(row=1, column=1)
+
+    # Show output when finished switch
+    global show_output_when_finished_var
+    show_output_when_finished_check_button_settings = ttk.Checkbutton(settings_show_output_frame, text='Show output when finished', style='Switch.TCheckbutton', variable=show_output_when_finished_var, onvalue=True, offvalue=False)
+    show_output_when_finished_check_button_settings.grid(column=0, row=0)
+
+    # Use new analysis display switch (tkinter version)
+    global individual_output_type_var
+    individual_output_type_check_button_settings = ttk.Checkbutton(settings_indivdual_output_frame, text='Use new analysis display', style='Switch.TCheckbutton', variable=individual_output_type_var, onvalue="tkinter", offvalue="legacy")
+    individual_output_type_check_button_settings.grid(column=0, row=0)
+
+    # Dark mode switch
+    # TODO: Figure out why dark mode makes labels more padded
+    global dark_mode_var
+    dark_mode_checkbutton = ttk.Checkbutton(settings_dark_mode_frame, text='Use dark theme', style='Switch.TCheckbutton', variable=dark_mode_var, onvalue=True, offvalue=False, command=update_dark_mode)
+    dark_mode_checkbutton.grid(column=0, row=0)
+    #endregion
+
+    #region Create NRA A-17 widgets
+    # Create a header label
+    settings_label2 = ttk.Label(settingstab1nraa17, text="NRA A-17 settings" , font='bold')
+    settings_label2.grid(row=0, column=0, columnspan=2)
+
+    # The settings should be self explanatory
+    # But if you aren't sure, check the **Tuning Overview** in README.md
+    nra_kernal_size_label = ttk.Label(settingstab1nraa17, text="NRA A-17 Kernel Size")
+    nra_kernal_size_label.grid(row=1, column=0)
+    nra_kernal_size_entry = ttk.Entry(settingstab1nraa17, textvariable=nra_kernal_size)
+    nra_kernal_size_entry.grid(row=1, column=1)
+
+    nra_param1_label = ttk.Label(settingstab1nraa17, text="NRA A-17 Param 1")
+    nra_param1_label.grid(row=2, column=0)
+    nra_param1_entry = ttk.Entry(settingstab1nraa17, textvariable=nra_param1)
+    nra_param1_entry.grid(row=2, column=1)
+
+    nra_param2_label = ttk.Label(settingstab1nraa17, text="NRA A-17 Param 2")
+    nra_param2_label.grid(row=3, column=0)
+    nra_param2_entry = ttk.Entry(settingstab1nraa17, textvariable=nra_param2)
+    nra_param2_entry.grid(row=3, column=1)
+
+    nra_min_radius_label = ttk.Label(settingstab1nraa17, text="NRA A-17 Min Circle Radius")
+    nra_min_radius_label.grid(row=4, column=0)
+    nra_min_radius_entry = ttk.Entry(settingstab1nraa17, textvariable=nra_min_radius)
+    nra_min_radius_entry.grid(row=4, column=1)
+
+    nra_thresh_min_label = ttk.Label(settingstab1nraa17, text="NRA A-17 Thresh Min")
+    nra_thresh_min_label.grid(row=5, column=0)
+    nra_thresh_min_entry = ttk.Entry(settingstab1nraa17, textvariable=nra_thresh_min)
+    nra_thresh_min_entry.grid(row=5, column=1)
+
+    nra_thresh_max_label = ttk.Label(settingstab1nraa17, text="NRA A-17 Thresh Max")
+    nra_thresh_max_label.grid(row=6, column=0)
+    nra_thresh_max_entry = ttk.Entry(settingstab1nraa17, textvariable=nra_thresh_max)
+    nra_thresh_max_entry.grid(row=6, column=1)
+
+    nra_morphology_opening_kernel_size_label = ttk.Label(settingstab1nraa17, text="NRA A-17 Morph Kernal Size")
+    nra_morphology_opening_kernel_size_label.grid(row=7, column=0)
+    nra_morphology_opening_kernel_size_entry = ttk.Entry(settingstab1nraa17, textvariable=nra_morphology_opening_kernel_size)
+    nra_morphology_opening_kernel_size_entry.grid(row=7, column=1)
+
+    nra_min_contour_area_label = ttk.Label(settingstab1nraa17, text="NRA A-17 Min cnt area")
+    nra_min_contour_area_label.grid(row=8, column=0)
+    nra_min_contour_area_entry = ttk.Entry(settingstab1nraa17, textvariable=nra_min_contour_area)
+    nra_min_contour_area_entry.grid(row=8, column=1)
+
+    nra_max_contour_area_label = ttk.Label(settingstab1nraa17, text="NRA A-17 Max cnt area")
+    nra_max_contour_area_label.grid(row=9, column=0)
+    nra_max_contour_area_entry = ttk.Entry(settingstab1nraa17, textvariable=nra_max_contour_area)
+    nra_max_contour_area_entry.grid(row=9, column=1)
+
+    nramax_hole_radius_label = ttk.Label(settingstab1nraa17, text="NRA A-17 Max hole radius")
+    nramax_hole_radius_label.grid(row=10, column=0)
+    nramax_hole_radius_entry = ttk.Entry(settingstab1nraa17, textvariable=nramax_hole_radius)
+    nramax_hole_radius_entry.grid(row=10, column=1)
+    #endregion
+
+    #region Create Orion widgets
+    # Create a header label
+    settings_label1 = ttk.Label(settingstab2orion, text="Orion settings (300dpi)" , font='bold')
+    settings_label1.grid(row=0, column=0, columnspan=2)
+
+    # Create a header label for the Orion 600dpi settigs
+    settings_label_orion600 = ttk.Label(settingstab3orionDPI2, text="Orion settings (600dpi)" , font='bold')
+    settings_label_orion600.grid(row=0, column=0, columnspan=2)
+
+    # The settings should be self explanatory
+    # But if you aren't sure, check the **Tuning Overview** in README.md
+    # Settings below include both 300dpi (dpi1) and 600dpi (dpi2) settings
+    # They are simply sorted into either settingstab2orion (dpi1) or settingstab3orionDPI2 (dpi2)
+
+    orion_kernel_size_dpi1_label = ttk.Label(settingstab2orion, text="Orion Kernel Size dpi 1")
+    orion_kernel_size_dpi1_label.grid(row=1, column=0)
+    orion_kernel_size_dpi1_entry = ttk.Entry(settingstab2orion, textvariable=orion_kernel_size_dpi1)
+    orion_kernel_size_dpi1_entry.grid(row=1, column=1)
+
+    orion_kernel_size_dpi2_label = ttk.Label(settingstab3orionDPI2, text="Orion Kernel Size dpi 2")
+    orion_kernel_size_dpi2_label.grid(row=2, column=0)
+    orion_kernel_size_dpi2_entry = ttk.Entry(settingstab3orionDPI2, textvariable=orion_kernel_size_dpi2)
+    orion_kernel_size_dpi2_entry.grid(row=2, column=1)
+
+    orion_param1_dpi1_label = ttk.Label(settingstab2orion, text="Orion Param1 dpi 1")
+    orion_param1_dpi1_label.grid(row=3, column=0)
+    orion_param1_dpi1_entry = ttk.Entry(settingstab2orion, textvariable=orion_param1_dpi1)
+    orion_param1_dpi1_entry.grid(row=3, column=1)
+
+    orion_param2_dpi1_label = ttk.Label(settingstab2orion, text="Orion Param2 dpi 1")
+    orion_param2_dpi1_label.grid(row=4, column=0)
+    orion_param2_dpi1_entry = ttk.Entry(settingstab2orion, textvariable=orion_param2_dpi1)
+    orion_param2_dpi1_entry.grid(row=4, column=1)
+
+    orion_param1_dpi2_label = ttk.Label(settingstab3orionDPI2, text="Orion Param1 dpi 2")
+    orion_param1_dpi2_label.grid(row=5, column=0)
+    orion_param1_dpi2_entry = ttk.Entry(settingstab3orionDPI2, textvariable=orion_param1_dpi2)
+    orion_param1_dpi2_entry.grid(row=5, column=1)
+
+    orion_param2_dpi2_label = ttk.Label(settingstab3orionDPI2, text="Orion Param2 dpi 2")
+    orion_param2_dpi2_label.grid(row=6, column=0)
+    orion_param2_dpi2_entry = ttk.Entry(settingstab3orionDPI2, textvariable=orion_param2_dpi2)
+    orion_param2_dpi2_entry.grid(row=6, column=1)
+
+    orion_min_radius_dpi1_label = ttk.Label(settingstab2orion, text="Orion MinRadius dpi 1")
+    orion_min_radius_dpi1_label.grid(row=7, column=0)
+    orion_min_radius_dpi1_entry = ttk.Entry(settingstab2orion, textvariable=orion_min_radius_dpi1)
+    orion_min_radius_dpi1_entry.grid(row=7, column=1)
+
+    orion_min_radius_dpi2_label = ttk.Label(settingstab3orionDPI2, text="Orion MinRadius dpi 2")
+    orion_min_radius_dpi2_label.grid(row=8, column=0)
+    orion_min_radius_dpi2_entry = ttk.Entry(settingstab3orionDPI2, textvariable=orion_min_radius_dpi2)
+    orion_min_radius_dpi2_entry.grid(row=8, column=1)
+
+    orion_thresh_min_label = ttk.Label(settingstab2orion, text="Orion thresh min")
+    orion_thresh_min_label.grid(row=9, column=0)
+    orion_thresh_min_entry = ttk.Entry(settingstab2orion, textvariable=orion_thresh_min)
+    orion_thresh_min_entry.grid(row=9, column=1)
+
+    orion_thresh_max_label = ttk.Label(settingstab2orion, text="Orion thresh max")
+    orion_thresh_max_label.grid(row=10, column=0)
+    orion_thresh_max_entry = ttk.Entry(settingstab2orion, textvariable=orion_thresh_max)
+    orion_thresh_max_entry.grid(row=10, column=1)
+
+    orion_thresh_min_label_dpi2 = ttk.Label(settingstab3orionDPI2, text="Orion thresh min")
+    orion_thresh_min_label_dpi2.grid(row=9, column=0)
+    orion_thresh_min_entry_dpi2 = ttk.Entry(settingstab3orionDPI2, textvariable=orion_thresh_min)
+    orion_thresh_min_entry_dpi2.grid(row=9, column=1)
+
+    orion_thresh_max_label_dpi2 = ttk.Label(settingstab3orionDPI2, text="Orion thresh max")
+    orion_thresh_max_label_dpi2.grid(row=10, column=0)
+    orion_thresh_max_entry_dpi2 = ttk.Entry(settingstab3orionDPI2, textvariable=orion_thresh_max)
+    orion_thresh_max_entry_dpi2.grid(row=10, column=1)
+
+    orion_min_contour_area_dpi1_label = ttk.Label(settingstab2orion, text="Orion min cnt area dpi 1")
+    orion_min_contour_area_dpi1_label.grid(row=11, column=0)
+    orion_min_contour_area_dpi1_entry = ttk.Entry(settingstab2orion, textvariable=orion_min_contour_area_dpi1)
+    orion_min_contour_area_dpi1_entry.grid(row=11, column=1)
+
+    orion_max_contour_area_dpi1_label = ttk.Label(settingstab2orion, text="Orion max cnt area dpi 1")
+    orion_max_contour_area_dpi1_label.grid(row=12, column=0)
+    orion_max_contour_area_dpi1_entry = ttk.Entry(settingstab2orion, textvariable=orion_max_contour_area_dpi1)
+    orion_max_contour_area_dpi1_entry.grid(row=12, column=1)
+
+    orion_min_contour_area_dpi2_label = ttk.Label(settingstab3orionDPI2, text="Orion min cnt area dpi 2")
+    orion_min_contour_area_dpi2_label.grid(row=13, column=0)
+    orion_min_contour_area_dpi2_entry = ttk.Entry(settingstab3orionDPI2, textvariable=orion_min_contour_area_dpi2)
+    orion_min_contour_area_dpi2_entry.grid(row=13, column=1)
+
+    orion_max_contour_area_dpi2_label = ttk.Label(settingstab3orionDPI2, text="Orion max cnt area dpi 2")
+    orion_max_contour_area_dpi2_label.grid(row=14, column=0)
+    orion_max_contour_area_dpi2_entry = ttk.Entry(settingstab3orionDPI2, textvariable=orion_max_contour_area_dpi2)
+    orion_max_contour_area_dpi2_entry.grid(row=14, column=1)
+
+    orionmax_hole_radius_dpi1_label = ttk.Label(settingstab2orion, text="Orion min hole rad dpi 1")
+    orionmax_hole_radius_dpi1_label.grid(row=15, column=0)
+    orionmax_hole_radius_dpi1_entry = ttk.Entry(settingstab2orion, textvariable=orionmax_hole_radius_dpi1)
+    orionmax_hole_radius_dpi1_entry.grid(row=15, column=1)
+
+    orionmax_hole_radius_dpi2_label = ttk.Label(settingstab3orionDPI2, text="Orion min hole rad dpi 2")
+    orionmax_hole_radius_dpi2_label.grid(row=16, column=0)
+    orionmax_hole_radius_dpi2_entry = ttk.Entry(settingstab3orionDPI2, textvariable=orionmax_hole_radius_dpi2)
+    orionmax_hole_radius_dpi2_entry.grid(row=16, column=1)
+    #endregion
+
+    #region Create names
+    # Frame is named 'settingstab4names'
+    # TODO: Add built in support for editing names file
+    names_label = ttk.Label(settingstab4names, text="Initials to Names mapping", font=BOLD)
+    names_label.pack(padx=5, pady=5, fill=X)
+    description_label = ttk.Label(settingstab4names, text="Initials and Names are stored in an INI file which must be manually edited.")
+    description_label.pack(padx=5, pady=5, fill=X)
+    namesButton = ttk.Button(settingstab4names, text="Open names file", command=open_names_file)
+    namesButton.pack(padx=5, pady=5)
+    names_info_label = ttk.Label(settingstab4names, text="Make sure to set the index to the number of names in the list (key + 1)")
+    names_info_label.pack(padx=5, pady=5, fill=X)
+    names_info_label2 = ttk.Label(settingstab4names, text="So if the last entry is '5 = Sigmond' set 'index = 6'")
+    names_info_label2.pack(padx=5, pady=5, fill=X)
+    #endregion
+
+    settings_window.protocol("WM_DELETE_WINDOW", on_close_settings) # If the settings window is closing, run the on_close_settings function
 
 # Read settings from config file and apply them to the necessary tk vars
 def update_settings_from_config(file):
@@ -1872,13 +2197,7 @@ def update_config():
     with open('config.ini', 'w') as f:
         config.write(f)
 
-# Ensures that an image/output directory is available to save images
-def check_output_dir():
-    path = os.getcwd() + "/images/output" # Store the path to the output directory
-    # If the output directory does not exist, create it
-    if os.path.isdir(path) == False:
-        os.mkdir(path)
-    # Otherwise, nothing needs to be done
+# -------------------------- Analyze image functions ------------------------- #
 
 # Analyze an outdoor bull (CURRENTLY DISABLED) (ALSO NOT DOCUMENTED)
 def analyze_outdoor_image(image):
@@ -2655,6 +2974,8 @@ def analyze_orion_image_nra_scoring(image):
         cv2.imshow("output", output) # Optional but make sure to use waitkey below if enabled, or else only image will show up.
         cv2.waitKey(0)
     cv2.imwrite(image + "-output.jpg", output) # Save the output image
+
+# ------------------------------ Driver program ------------------------------ #
 
 #region Initialize tkinter window
 root = tk.Tk()
