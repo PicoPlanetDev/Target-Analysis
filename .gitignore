@@ -160,6 +160,7 @@ data/*
 config.ini
 config-backup.ini
 names.ini
+teams.ini
 
 # keep spec
 !gui.spec
