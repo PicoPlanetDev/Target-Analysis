@@ -164,6 +164,24 @@ index = 2
     b. Load File allows you to select a CSV data file to see a graph of shooting performance including score and X Count.
 Remember, these are designed for a single shooter. Please copy and paste data files / folder to another location to isolate them to score only a single shooter.
 
+## Teams
+Target Analysis supports the creation and analysis of two teams in a match. While still somewhat limited, targets can be added to a team as they are scored and team
+scores can be added up and viewed. Team data is saved into a CSV file for future reference.
+
+### Getting started with Teams functionality:
+1. Click File -> Teams to open the teams menu.
+2. Add a name for `Team 1` and `Team 2` by selecting their respective tabs and typing in the names
+3. Enable teams using the switch at the top of the menu
+4. Close the teams menu
+5. Before scoring a target, select the team to add the target to by clicking one of the radio buttons on the right side of the top options pane
+6. To add targets to another team, simply select the other team before scoring them.
+7. When using the Open Folder functionality, only one teams' targets may be in the folder. Therefore, you must separate the targets into two folders if you intend to use Open Folder.
+8. To add up the scores for each team, reopen the Teams window (File -> Teams) and select `Load Scores`
+9. The total scores for each team will be displayed below.
+10. You can click on the `Open CSV` button for either team to see individual scores on that team. Make sure that a spreadsheet viewer is installed such as Excel or Calc.
+11. To disable teams, turn off the switch in the Teams window. Then (warning: deletes all data in the `data` and `images/output` dirs) click File -> Clear Data to 
+remove all team scores. Team names and enabled status remain saved.
+
 ## If Target Analysis is not working properly:
 
 Click File -> Settings to open the settigs menu.
