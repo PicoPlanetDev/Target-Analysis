@@ -610,6 +610,13 @@ def analyze_target(type):
                 filewriter.writerow([name_var.get(), day_var.get() + " " + month_var.get() + " " + year_var.get(), target_num_var.get(), score, x_count])
                 csvfile.close()
 
+    if enable_teams_var.get():
+        teams_csv_path = "data/" + active_team_var.get() + ".csv"
+        with open(teams_csv_path, 'a', newline="") as csvfile:
+                filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                filewriter.writerow([name_var.get(), day_var.get() + " " + month_var.get() + " " + year_var.get(), target_num_var.get(), score, x_count])
+                csvfile.close()
+
     main_label.config(text="Done") # Update main label
 
     # Enable the "Show Output" menu item
@@ -754,7 +761,7 @@ def show_folder(path):
 # Open documentation with associated viewer
 def open_file(file):
     main_label.config(text="Opening file " + str(file)) # Update the main label
-    os.system(file) # Run a system command to open the file using the default viewer (should work on any operating system)
+    os.system("start " + file) # Run a system command to open the file using the default viewer (should work on any operating system)
 
 # Ensures that an image/output directory is available to save images
 def check_output_dir():
@@ -1447,11 +1454,40 @@ def open_teams_window():
     # If the teams window is going to be closed, save the teams info and close the window
     def on_close_teams():
         update_teams_config()
+        refresh_team_options()
         teams_window.destroy()
 
+    # When teams are enabled or disabled, save the teams config file and refresh the UI
     def on_teams_switch_toggled():
         update_teams_config()
         refresh_team_options()
+        if enable_teams_var.get() == True:
+            if not os.path.exists("data/team1.csv") or not os.path.exists("data/team2.csv"):
+                create_teams_csv_files()
+
+    # Load scores from teams csv files and update the UI
+    def load_scores(team1_score_label, team1_x_count_label, team2_score_label, team2_x_count_label):
+
+        def get_score(path):
+            out_score = 0
+            out_x_count = 0
+            with open(path) as csv_file:
+                csv_reader = csv.reader(csv_file, delimiter=',')
+                line_count = 0
+                for row in csv_reader:
+                    if line_count != 0:
+                        out_score += int(row[3])
+                        out_x_count += int(row[4])
+                    line_count += 1
+            return out_score, out_x_count
+
+        team1_score, team1_x_count = get_score("data/team1.csv")
+        team2_score, team2_x_count = get_score("data/team2.csv")
+
+        team1_score_label.config(text="Score: " + str(team1_score) + "-")
+        team1_x_count_label.config(text=str(team1_x_count) + "X")
+        team2_score_label.config(text="Score: "  + str(team2_score) + "-")
+        team2_x_count_label.config(text=str(team2_x_count) + "X")
 
     #region Create teams window
     teams_window = tk.Toplevel(root)
@@ -1462,19 +1498,14 @@ def open_teams_window():
     teams_window.protocol("WM_DELETE_WINDOW", on_close_teams)
     #endregion
 
-    #region Load team info from file
-    if not os.path.exists("teams.ini"):
-        create_teams_config()
-    load_teams_config()
-    refresh_team_options()
-    #endregion
-
     #region Create frames
     teams_top_frame = ttk.Frame(teams_window)
     teams_top_frame.pack(side=TOP, pady=5, padx=5,  fill=X)
 
     teams_bottom_frame = ttk.Frame(teams_window)
     teams_bottom_frame.pack(side=TOP, pady=5, padx=5, fill=X)
+
+    teams_results_frame = ttk.Frame(teams_bottom_frame)
     #endregion
 
     #region Create enable teams switch
@@ -1491,6 +1522,16 @@ def open_teams_window():
     teams_notebook.add(team2_frame, text="Team 2")
     teams_notebook.pack(side=TOP, fill=X, padx=10, pady=5)
     #endregion
+
+    teams_results_frame.pack()
+    team1_results_frame = ttk.Frame(teams_results_frame)
+    team2_results_frame = ttk.Frame(teams_results_frame)
+    team1_results_frame.grid(row=2, column=0)
+    team2_results_frame.grid(row=2, column=1)
+
+    # Load scores button in teams_results_frame
+    load_scores_button = ttk.Button(teams_results_frame, text="Load scores", command=lambda: load_scores(team1_score_label, team1_x_count_label, team2_score_label, team2_x_count_label))
+    load_scores_button.grid(row=0, column=0, columnspan=2)
 
     #region Create labels
     teams_label = ttk.Label(teams_top_frame, text="Teams", font=BOLD)
@@ -1511,6 +1552,30 @@ def open_teams_window():
     global team2_name_var
     team2_name_entry = ttk.Entry(team2_frame, textvariable=team2_name_var, width=20)
     team2_name_entry.grid(row=2, column=1, pady=10)
+    #endregion
+
+    #region Create team 1 results
+    team1_results_label = ttk.Label(team1_results_frame, text=team1_name_var.get() + "'s results", font=BOLD)
+    team1_results_label.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
+    team1_score_label = ttk.Label(team1_results_frame, text="Please load scores")
+    team1_score_label.grid(row=1, column=0, padx=10, pady=10)
+    team1_x_count_label = ttk.Label(team1_results_frame, text="Please load scores")
+    team1_x_count_label.grid(row=1, column=1, padx=10, pady=10)
+
+    team1_open_csv_button = ttk.Button(team1_results_frame, text="Open CSV", command=lambda: open_file("data/team1.csv"))
+    team1_open_csv_button.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
+    #endregion
+
+    #region Create team 2 results
+    team2_results_label = ttk.Label(team2_results_frame, text=team2_name_var.get() + "'s results", font=BOLD)
+    team2_results_label.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
+    team2_score_label = ttk.Label(team2_results_frame, text="Please load scores")
+    team2_score_label.grid(row=1, column=0, padx=10, pady=10)
+    team2_x_count_label = ttk.Label(team2_results_frame, text="Please load scores")
+    team2_x_count_label.grid(row=1, column=1, padx=10, pady=10)
+
+    team2_open_csv_button = ttk.Button(team2_results_frame, text="Open CSV", command=lambda: open_file("data/team2.csv"))
+    team2_open_csv_button.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
     #endregion
 
 # Creates a default teams config file
@@ -1552,12 +1617,13 @@ def load_teams_config():
     team1_name_var.set(config.get('teams', 'team1_name'))
     team2_name_var.set(config.get('teams', 'team2_name'))
 
+# Refreshes the UI for the team selector on the main page
 def refresh_team_options():
     global teams_frame
-    team1_radio_button = ttk.Radiobutton(teams_frame, text=team1_name_var.get(), variable=active_team_var, value=1)
-    team1_radio_button.grid(row=0, column=0, padx=5)
-    team2_radio_button = ttk.Radiobutton(teams_frame, text=team2_name_var.get(), variable=active_team_var, value=2)
-    team2_radio_button.grid(row=0, column=1, padx=5)
+    team1_radio_button = ttk.Radiobutton(teams_frame, text=team1_name_var.get(), variable=active_team_var, value="team1")
+    team1_radio_button.grid(row=0, column=0, padx=5, sticky=NSEW)
+    team2_radio_button = ttk.Radiobutton(teams_frame, text=team2_name_var.get(), variable=active_team_var, value="team2")
+    team2_radio_button.grid(row=0, column=1, padx=5, sticky=NSEW)
 
     global use_file_info_checkbutton
     global today_button
@@ -1583,6 +1649,20 @@ def refresh_team_options():
         # Cycle the today button and revert it back to the original position
         today_button.grid_forget()
         today_button.grid(column=4, row=0, rowspan=2, padx=2.5)
+
+# Creates team1.csv and team2.csv files for storing scores
+def create_teams_csv_files():
+    with open('data/team1.csv', 'x', newline="") as csvfile:
+        filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL) # Create a filewriter
+        filewriter.writerow(['Name', 'Date', 'Target Number', 'Score','X']) # Write the header row
+        csvfile.close() # Close the file
+
+    with open('data/team2.csv', 'x', newline="") as csvfile:
+        filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL) # Create a filewriter
+        filewriter.writerow(['Name', 'Date', 'Target Number', 'Score','X']) # Write the header row
+        csvfile.close() # Close the file
+    
+    main_label.config(text="Created teams CSV files") # Update the main label
 
 # ---------------------------- Settings functions ---------------------------- #
 
@@ -2846,7 +2926,7 @@ is_opening_folder = False
 enable_teams_var = tk.BooleanVar(root, False)
 team1_name_var = tk.StringVar(root, "Team 1")
 team2_name_var = tk.StringVar(root, "Team 2")
-active_team_var = tk.IntVar(root, 1)
+active_team_var = tk.StringVar(root, "team1")
 
 #region While many similar parameters exist for non-Orion targets, each has been tuned for its use case and therefore are unique to Orion scanning.
 orion_kernel_size_dpi1 = tk.IntVar(root, 2)
@@ -3027,8 +3107,12 @@ use_file_info_checkbutton.grid(column=5, row=0, rowspan=2, padx=5)
 
 # Teams frame enabled only when teams are enabled
 teams_frame = ttk.Frame(options_frame)
-
+# Update teams info
+if not os.path.exists("teams.ini"):
+    create_teams_config()
+load_teams_config()
 refresh_team_options()
+
 #endregion
 
 #region NRA A-17 tab
