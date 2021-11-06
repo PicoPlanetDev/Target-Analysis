@@ -1468,6 +1468,7 @@ def open_teams_window():
     # Load scores from teams csv files and update the UI
     def load_scores(team1_score_label, team1_x_count_label, team2_score_label, team2_x_count_label):
 
+        # Iterates through lines in the csv file and adds the scores to the respective variables, returns the total score and x count
         def get_score(path):
             out_score = 0
             out_x_count = 0
@@ -3144,7 +3145,7 @@ use_bubbles_checkbutton.grid(column=3, row=0, padx=5, pady=5)
 #endregion
 
 #region Orion scored as NRA tab
-load_image_button_orion_nra = ttk.Button(orion_as_nra_frame, text = "Select image", command = lambda: analyze_target("orion-nrascoring"))
+load_image_button_orion_nra = ttk.Button(orion_as_nra_frame, text = "Select image", command = lambda: load_image_orion("orion-nrascoring"))
 load_image_button_orion_nra.grid(row=0, column=0, padx=5, pady=5)
 
 analyze_orion_target_button_nra = ttk.Button(orion_as_nra_frame, text = "Analyze with Orion scoring", command = lambda: analyze_target("orion-nrascoring"))
