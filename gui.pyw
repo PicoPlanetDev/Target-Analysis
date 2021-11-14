@@ -1525,10 +1525,10 @@ def open_teams_window():
     #endregion
 
     teams_results_frame.pack()
-    team1_results_frame = ttk.Frame(teams_results_frame)
-    team2_results_frame = ttk.Frame(teams_results_frame)
-    team1_results_frame.grid(row=2, column=0)
-    team2_results_frame.grid(row=2, column=1)
+    team1_results_frame = ttk.LabelFrame(teams_results_frame, text="Team 1")
+    team2_results_frame = ttk.LabelFrame(teams_results_frame, text="Team 2")
+    team1_results_frame.grid(row=2, column=0, padx=(0,15))
+    team2_results_frame.grid(row=2, column=1, padx=(0,15))
 
     # Load scores button in teams_results_frame
     load_scores_button = ttk.Button(teams_results_frame, text="Load scores", command=lambda: load_scores(team1_score_label, team1_x_count_label, team2_score_label, team2_x_count_label))
@@ -1681,7 +1681,7 @@ def open_settings():
 
     def open_names_file():
         path = "'" + str(os.getcwd()) + '/' + 'names.ini' + "'"
-        print(path)
+        #print(path)
         os.system("notepad " + path)
 
     main_label.config(text="Showing settings window") # Update the main label
@@ -3148,7 +3148,7 @@ use_bubbles_checkbutton.grid(column=3, row=0, padx=5, pady=5)
 load_image_button_orion_nra = ttk.Button(orion_as_nra_frame, text = "Select image", command = lambda: load_image_orion("orion-nrascoring"))
 load_image_button_orion_nra.grid(row=0, column=0, padx=5, pady=5)
 
-analyze_orion_target_button_nra = ttk.Button(orion_as_nra_frame, text = "Analyze with Orion scoring", command = lambda: analyze_target("orion-nrascoring"))
+analyze_orion_target_button_nra = ttk.Button(orion_as_nra_frame, text = "Analyze with NRA A-17 scoring", command = lambda: analyze_target("orion-nrascoring"))
 analyze_orion_target_button_nra.grid(row=0, column=1, padx=5, pady=5)
 
 open_folder_orion_target_button_nra = ttk.Button(orion_as_nra_frame, text = "Open folder", command = open_folder_orion) # works for both orion and orion-nrascoring by checking which tab is active
