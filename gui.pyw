@@ -1468,22 +1468,54 @@ def open_teams_window():
     # Load scores from teams csv files and update the UI
     def load_scores(team1_score_label, team1_x_count_label, team2_score_label, team2_x_count_label):
 
-        # Iterates through lines in the csv file and adds the scores to the respective variables, returns the total score and x count
-        def get_score(path):
-            out_score = 0
-            out_x_count = 0
+        #region (REPLACED BY LIST METHOD BELOW) Iterates through lines in the csv file and adds the scores to the respective variables, returns the total score and x count
+        # def get_score(path):
+        #     out_score = 0
+        #     out_x_count = 0
+        #     with open(path) as csv_file:
+        #         csv_reader = csv.reader(csv_file, delimiter=',')
+        #         line_count = 0
+        #         for row in csv_reader:
+        #             if line_count != 0:
+        #                 out_score += int(row[3])
+        #                 out_x_count += int(row[4])
+        #             line_count += 1
+        #     return out_score, out_x_count
+        #endregion
+
+        # Load scores from the CSV file path and put them in a list of tuples (score, x_count)
+        def get_score_to_list(path):
+            out_scores = []
             with open(path) as csv_file:
                 csv_reader = csv.reader(csv_file, delimiter=',')
                 line_count = 0
                 for row in csv_reader:
                     if line_count != 0:
-                        out_score += int(row[3])
-                        out_x_count += int(row[4])
+                        out_scores.append(tuple((int(row[3]), int(row[4]))))
                     line_count += 1
-            return out_score, out_x_count
+            return out_scores
 
-        team1_score, team1_x_count = get_score("data/team1.csv")
-        team2_score, team2_x_count = get_score("data/team2.csv")
+        # Removes the appropriate number of worst scores from the score_list
+        def drop_scores(score_list):
+            score_list_sorted = sorted(score_list, key=lambda score_tuple: (score_tuple[0], score_tuple[1]))
+            scores_to_drop = len(score_list_sorted) - keep_best_var.get()
+            if scores_to_drop < 0: scores_to_drop = 0
+            score_list_best = score_list_sorted[scores_to_drop:]
+            return score_list_best
+        
+        def sum_scores(score_list):
+            score = sum(score_tuple[0] for score_tuple in score_list)
+            x_count = sum(score_tuple[1] for score_tuple in score_list)
+            return score, x_count
+
+        team1_score_list = get_score_to_list("data/team1.csv")
+        team2_score_list = get_score_to_list("data/team2.csv")
+
+        team1_score_list_best = drop_scores(team1_score_list)
+        team2_score_list_best = drop_scores(team2_score_list)
+
+        team1_score, team1_x_count = sum_scores(team1_score_list_best)
+        team2_score, team2_x_count = sum_scores(team2_score_list_best)
 
         team1_score_label.config(text="Score: " + str(team1_score) + "-")
         team1_x_count_label.config(text=str(team1_x_count) + "X")
@@ -1506,6 +1538,8 @@ def open_teams_window():
     teams_bottom_frame = ttk.Frame(teams_window)
     teams_bottom_frame.pack(side=TOP, pady=5, padx=5, fill=X)
 
+    teams_controls_frame = ttk.Frame(teams_bottom_frame)
+
     teams_results_frame = ttk.Frame(teams_bottom_frame)
     #endregion
 
@@ -1524,6 +1558,8 @@ def open_teams_window():
     teams_notebook.pack(side=TOP, fill=X, padx=10, pady=5)
     #endregion
 
+    teams_controls_frame.pack()
+
     teams_results_frame.pack()
     team1_results_frame = ttk.LabelFrame(teams_results_frame, text="Team 1")
     team2_results_frame = ttk.LabelFrame(teams_results_frame, text="Team 2")
@@ -1531,8 +1567,12 @@ def open_teams_window():
     team2_results_frame.grid(row=2, column=1, padx=(0,15))
 
     # Load scores button in teams_results_frame
-    load_scores_button = ttk.Button(teams_results_frame, text="Load scores", command=lambda: load_scores(team1_score_label, team1_x_count_label, team2_score_label, team2_x_count_label))
-    load_scores_button.grid(row=0, column=0, columnspan=2)
+    load_scores_button = ttk.Button(teams_controls_frame, text="Load scores", command=lambda: load_scores(team1_score_label, team1_x_count_label, team2_score_label, team2_x_count_label))
+    load_scores_button.grid(row=0, column=0, padx=(0,10))
+    keep_best_label = ttk.Label(teams_controls_frame, text="Keep best:")
+    keep_best_label.grid(row=0, column=1, padx=(10,5))
+    keep_best_entry = ttk.Entry(teams_controls_frame, width=5, textvariable=keep_best_var)
+    keep_best_entry.grid(row=0, column=2, padx=(5, 0))
 
     #region Create labels
     teams_label = ttk.Label(teams_top_frame, text="Teams", font=BOLD)
@@ -1591,6 +1631,8 @@ def create_teams_config():
     config.set('teams', 'team1_name', team1_name_var.get())
     config.set('teams', 'team2_name', team2_name_var.get())
 
+    config.set('teams', 'keep_best', str(keep_best_var.get()))
+
     # Write the changes to the config file
     with open('teams.ini', 'w') as f:
         config.write(f)
@@ -1604,6 +1646,7 @@ def update_teams_config():
     config.set('teams', 'enable', str(enable_teams_var.get()))
     config.set('teams', 'team1_name', team1_name_var.get())
     config.set('teams', 'team2_name', team2_name_var.get())
+    config.set('teams', 'keep_best', str(keep_best_var.get()))
 
     # Write the changes to the config file
     with open('teams.ini', 'w') as f:
@@ -1617,6 +1660,7 @@ def load_teams_config():
     enable_teams_var.set(config.getboolean('teams', 'enable'))
     team1_name_var.set(config.get('teams', 'team1_name'))
     team2_name_var.set(config.get('teams', 'team2_name'))
+    keep_best_var.set(config.getint('teams', 'keep_best'))
 
 # Refreshes the UI for the team selector on the main page
 def refresh_team_options():
@@ -2928,6 +2972,7 @@ enable_teams_var = tk.BooleanVar(root, False)
 team1_name_var = tk.StringVar(root, "Team 1")
 team2_name_var = tk.StringVar(root, "Team 2")
 active_team_var = tk.StringVar(root, "team1")
+keep_best_var = tk.IntVar(root, 8)
 
 #region While many similar parameters exist for non-Orion targets, each has been tuned for its use case and therefore are unique to Orion scanning.
 orion_kernel_size_dpi1 = tk.IntVar(root, 2)
