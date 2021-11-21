@@ -252,6 +252,107 @@ def crop_orion(image):
 
     main_label.config(text="Cropped image") # Update the main label
 
+# Crop image for an Orion target
+def crop_conventional(image):
+    """Crops the given image for an Orion 50ft Conventional target. Stores the cropped images in the images/output folder.
+
+    Args:
+        image (cv2 image): [description]
+    """    
+    main_label.config(text="Cropping image...") # Update the main label
+    check_output_dir() # Make sure the output directory exists
+
+    ratio_height = 3507
+    ratio_width = 2550
+
+    # Height and width are set once and used for all bulls
+    # The height and width are determined by the size of the image multipled by a ratio,
+    # allowing slight deviations in printer resolution to be ignored
+    bull_size = 600
+    h=int((bull_size/ratio_height)*image.shape[0])
+    w=int((bull_size/ratio_width)*image.shape[1])
+
+    # Positions as below
+    # (LeftX, TopY) (MidX, TopY) (RightX, TopY)
+    # (LeftX, UpperY) (RightX, UpperY)
+    # (LeftX, LowerY) (RightX, LowerY)
+    # (LeftX, BottomY) (MidX, BottomY) (RightX, BottomY)
+
+    leftX = 115
+    midX = 965
+    rightX = 1805
+
+    topY = 355
+    upperY = 1090
+    lowerY = 1850
+    bottomY = 2600
+
+    y=int((topY/ratio_height)*image.shape[0])
+    x=int((midX/ratio_width)*image.shape[1])
+    crop1 = image[y:y+h, x:x+w]
+
+    y=int((topY/ratio_height)*image.shape[0])
+    x=int((rightX/ratio_width)*image.shape[1])
+    crop2 = image[y:y+h, x:x+w]
+
+    y=int((upperY/ratio_height)*image.shape[0])
+    x=int((rightX/ratio_width)*image.shape[1])
+
+    crop3 = image[y:y+h, x:x+w]
+
+    y=int((lowerY/ratio_height)*image.shape[0])
+    x=int((rightX/ratio_width)*image.shape[1])
+
+    crop4 = image[y:y+h, x:x+w]
+
+    y=int((bottomY/ratio_height)*image.shape[0])
+    x=int((rightX/ratio_width)*image.shape[1])
+
+    crop5 = image[y:y+h, x:x+w]
+
+    y=int((bottomY/ratio_height)*image.shape[0])
+    x=int((midX/ratio_width)*image.shape[1])
+
+    crop6 = image[y:y+h, x:x+w]
+
+    y=int((topY/ratio_height)*image.shape[0])
+    x=int((leftX/ratio_width)*image.shape[1])
+
+    crop7 = image[y:y+h, x:x+w]
+
+    y=int((upperY/ratio_height)*image.shape[0])
+    x=int((leftX/ratio_width)*image.shape[1])
+
+    crop8 = image[y:y+h, x:x+w]
+
+    y=int((lowerY/ratio_height)*image.shape[0])
+    x=int((leftX/ratio_width)*image.shape[1])
+
+    crop9 = image[y:y+h, x:x+w]
+
+    y=int((bottomY/ratio_height)*image.shape[0])
+    x=int((leftX/ratio_width)*image.shape[1])
+
+    crop10 = image[y:y+h, x:x+w]
+
+    # Save the cropped images
+    cv2.imwrite("images/output/top-mid.jpg", crop1)
+    cv2.imwrite("images/output/top-right.jpg", crop2)
+    cv2.imwrite("images/output/upper-right.jpg", crop3)
+    cv2.imwrite("images/output/lower-right.jpg", crop4)
+    cv2.imwrite("images/output/bottom-right.jpg", crop5)
+    cv2.imwrite("images/output/bottom-mid.jpg", crop6)
+    cv2.imwrite("images/output/top-left.jpg", crop7)
+    cv2.imwrite("images/output/upper-left.jpg", crop8)
+    cv2.imwrite("images/output/lower-left.jpg", crop9)
+    cv2.imwrite("images/output/bottom-left.jpg", crop10)
+
+    if use_bubbles_var.get() and (tab_control.index("current") == 1 or tab_control.index("current") == 2):
+        main_label.config(text="Setting name from bubbles...")
+        set_name_from_bubbles(image)
+
+    main_label.config(text="Cropped image") # Update the main label
+
 # Runs perspective transform to the image and crops it to 10 output images (CURRENTLY DISABLED)
 def crop_single(image):
     # Helper function for four_point_transform - puts points in order in a clockwise fashion with the top left point listed first
