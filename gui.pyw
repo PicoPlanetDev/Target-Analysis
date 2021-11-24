@@ -38,6 +38,8 @@ import datetime
 import matplotlib.pyplot as plt
 import matplotlib
 from configparser import ConfigParser
+from enum import Enum
+#import traceback # For debugging - Usage: traceback.print_stack()
 #endregion
 
 # --------------------------- Load image functions --------------------------- #
@@ -119,7 +121,7 @@ def load_image_orion(target_type):
     if use_file_info_var.get() is True:
         set_info_from_file(image_file)
 
-    canvas.grid(row = 0, column = 1) # Refresh the canvas
+    canvas.grid(row = 0, column = 0) # Refresh the canvas
     
     global orion_preview # Images must be stored globally to be show on the canvas
     orion_preview = ImageTk.PhotoImage(Image.open(image_file).resize((230, 350), Image.ANTIALIAS)) # Store the image as a tkinter photo image and resize it
@@ -130,6 +132,54 @@ def load_image_orion(target_type):
     root.minsize(550,540) # Increase the window size to accomodate the image
 
     crop_orion(single_image) # Crop the image to prepare for analysis
+
+# Loads an image for any target type
+def load_image(target_type):
+    """Prompts the user to select an image from their computer for analysis
+
+    Args:
+        target_type (TargetType): NRA_LEFT, NRA_RIGHT, ORION_USAS_50, ORION_USAS_50_NRA_SCORING, ORION_50FT_CONVENTIONAL
+    """
+
+    #region Type-specific changes
+    if target_type == TargetTypes.NRA_LEFT:
+        canvas = left_canvas
+    if target_type == TargetTypes.NRA_RIGHT:
+        canvas = right_canvas
+    if target_type == TargetTypes.ORION_USAS_50 or target_type == TargetTypes.ORION_USAS_50_NRA_SCORING:
+        canvas = orion_single_canvas
+    if target_type == TargetTypes.ORION_50FT_CONVENTIONAL:
+        canvas = orion_50ft_conventional_canvas
+    #endregion
+
+    main_label.config(text="Loading image...") # Update the main label
+
+    canvas.delete("all") # Clear the left canvas in case it already has an image
+
+    image_file = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
+    image = cv2.imread(image_file) # Load the image for OpenCV image
+
+    # If the user wants to use information from the file name, do so
+    if use_file_info_var.get(): set_info_from_file(image_file)
+
+    if (target_type == TargetTypes.NRA_LEFT or
+            target_type == TargetTypes.ORION_USAS_50 or
+            target_type == TargetTypes.ORION_USAS_50_NRA_SCORING or
+            target_type == TargetTypes.ORION_50FT_CONVENTIONAL):
+        canvas.grid(row = 0, column = 0) # Refresh the canvas
+    
+    if target_type == TargetTypes.NRA_RIGHT:
+        canvas.grid(row = 0, column = 1) # Refresh the canvas, placing it in the correct column
+    
+    global target_preview # Images must be stored globally to be show on the canvas
+    target_preview = ImageTk.PhotoImage(Image.open(image_file).resize((230, 350), Image.ANTIALIAS)) # Store the image as a tkinter photo image and resize it
+    canvas.create_image(0, 0, anchor="nw", image=target_preview) # Place the image on the canvas
+
+    main_label.config(text="Image loaded") # Update the main label
+
+    root.minsize(550,540) # Increase the window size to accomodate the image
+
+    crop_image(image, target_type) # Crop the image to prepare for analysis
 
 # --------------------------- Crop image functions --------------------------- #
 
@@ -399,28 +449,29 @@ def crop_left(image):
     #     dsize = (2550, 3507)
     #     verticalFlippedImage = cv2.resize(verticalFlippedImage, dsize, interpolation = cv2.INTER_LINEAR)
 
-    y=int((240/3507)*image.shape[0])
-    x=int((185/2550)*image.shape[1])
-    h=int((580/3507)*image.shape[0])
-    w=int((580/2550)*image.shape[1])
+    ratio_height = 3507
+    ratio_width = 2550
+
+    bull_size = 580
+    h=int((bull_size/ratio_height)*image.shape[0])
+    w=int((bull_size/ratio_width)*image.shape[1])
+
+    leftX = 185
+
+    y=int((240/ratio_height)*image.shape[0])
+    x=int((leftX/ratio_width)*image.shape[1])
     crop2 = verticalFlippedImage[y:y+h, x:x+w]
 
-    y=int((1040/3507)*image.shape[0])
-    x=int((185/2550)*image.shape[1])
-    h=int((580/3507)*image.shape[0])
-    w=int((580/2550)*image.shape[1])
+    y=int((1040/ratio_height)*image.shape[0])
+    x=int((leftX/ratio_width)*image.shape[1])
     crop3 = verticalFlippedImage[y:y+h, x:x+w]
 
-    y=int((1840/3507)*image.shape[0])
-    x=int((185/2550)*image.shape[1])
-    h=int((580/3507)*image.shape[0])
-    w=int((580/2550)*image.shape[1])
+    y=int((1840/ratio_height)*image.shape[0])
+    x=int((leftX/ratio_width)*image.shape[1])
     crop4 = verticalFlippedImage[y:y+h, x:x+w]
 
-    y=int((2645/3507)*image.shape[0])
-    x=int((185/2550)*image.shape[1])
-    h=int((580/3507)*image.shape[0])
-    w=int((580/2550)*image.shape[1])
+    y=int((2645/ratio_height)*image.shape[0])
+    x=int((leftX/ratio_width)*image.shape[1])
     crop5 = verticalFlippedImage[y:y+h, x:x+w]
     #endregion
 
@@ -432,14 +483,217 @@ def crop_left(image):
 
     main_label.config(text="Cropped image") # Update the main label
 
+# Crops the image based on the given target_type and saves the bulls to images/output
+def crop_image(image, target_type):
+    main_label.config(text="Cropping image...") # Update main label
+    check_output_dir()
+
+    # Pixel measurements were taken from 300dpi targets, so use the same ratio where necessary
+    ratio_height = 3507
+    ratio_width = 2550
+
+    # Crop left side of NRA target
+    if target_type == TargetTypes.NRA_LEFT:
+        # Flip the image vertically and horizontally before cropping
+        verticalFlippedImage = cv2.flip(image, -1)
+        cv2.imwrite("images/output/vertical-flipped.jpg", verticalFlippedImage)
+
+        # Set the bull size for NRA A-17 targets and calculate the height and width of the cropped images
+        bull_size = 580
+        h=int((bull_size/ratio_height)*image.shape[0])
+        w=int((bull_size/ratio_width)*image.shape[1])
+
+        leftX = 185
+
+        y=int((240/ratio_height)*image.shape[0])
+        x=int((leftX/ratio_width)*image.shape[1])
+        crop2 = verticalFlippedImage[y:y+h, x:x+w]
+
+        y=int((1040/ratio_height)*image.shape[0])
+        x=int((leftX/ratio_width)*image.shape[1])
+        crop3 = verticalFlippedImage[y:y+h, x:x+w]
+
+        y=int((1840/ratio_height)*image.shape[0])
+        x=int((leftX/ratio_width)*image.shape[1])
+        crop4 = verticalFlippedImage[y:y+h, x:x+w]
+
+        y=int((2645/ratio_height)*image.shape[0])
+        x=int((leftX/ratio_width)*image.shape[1])
+        crop5 = verticalFlippedImage[y:y+h, x:x+w]
+
+        # Save the cropped sections
+        cv2.imwrite("images/output/top-left.jpg", crop2)
+        cv2.imwrite("images/output/upper-left.jpg", crop3)
+        cv2.imwrite("images/output/lower-left.jpg", crop4)
+        cv2.imwrite("images/output/bottom-left.jpg", crop5)
+    
+    # Crop right side of NRA target
+    if target_type == TargetTypes.NRA_RIGHT:
+        # Set the bull size for NRA A-17 targets and calculate the height and width of the cropped images
+        bull_size = 580
+        h=int((bull_size/ratio_height)*image.shape[0])
+        w=int((bull_size/ratio_width)*image.shape[1])
+
+        midX = 720
+        rightX = 1760
+
+        topY = 275
+        upperY = 1070
+        lowerY = 1880
+        bottomY = 2680
+
+        y=int((topY/ratio_height)*image.shape[0])
+        x=int((midX/ratio_width)*image.shape[1])
+        crop1 = image[y:y+h, x:x+w]
+
+        y=int((topY/ratio_height)*image.shape[0])
+        x=int((rightX/ratio_width)*image.shape[1])
+        crop2 = image[y:y+h, x:x+w]
+
+        y=int((upperY/ratio_height)*image.shape[0])
+        x=int((rightX/ratio_width)*image.shape[1])
+        crop3 = image[y:y+h, x:x+w]
+
+        y=int((lowerY/ratio_height)*image.shape[0])
+        x=int((rightX/ratio_width)*image.shape[1])
+        crop4 = image[y:y+h, x:x+w]
+
+        y=int((bottomY/ratio_height)*image.shape[0])
+        x=int((rightX/ratio_width)*image.shape[1])
+        crop5 = image[y:y+h, x:x+w]
+
+        y=int((bottomY/ratio_height)*image.shape[0])
+        x=int((midX/ratio_width)*image.shape[1])
+        crop6 = image[y:y+h, x:x+w]
+
+        # Save the cropped sections
+        cv2.imwrite("images/output/top-mid.jpg", crop1)
+        cv2.imwrite("images/output/top-right.jpg", crop2)
+        cv2.imwrite("images/output/upper-right.jpg", crop3)
+        cv2.imwrite("images/output/lower-right.jpg", crop4)
+        cv2.imwrite("images/output/bottom-right.jpg", crop5)
+        cv2.imwrite("images/output/bottom-mid.jpg", crop6)
+    
+    # Crop Orion target
+    if target_type == TargetTypes.ORION_USAS_50 or target_type == TargetTypes.ORION_USAS_50_NRA_SCORING or target_type == TargetTypes.ORION_50FT_CONVENTIONAL:
+        # Pixel measurements were taken from 300dpi targets, so use the same ratio where necessary
+        ratio_height = 3507
+        ratio_width = 2550
+        
+        # Set positions for Orion NRA/USAS-50 targets
+        if target_type == TargetTypes.ORION_USAS_50 or target_type == TargetTypes.ORION_USAS_50_NRA_SCORING:
+            bull_size = 400
+            
+            #    (LeftX, TopY)   (MidX, TopY)  (RightX, TopY)
+            #  (LeftX, UpperY)                 (RightX, UpperY)
+            #  (LeftX, LowerY)                 (RightX, LowerY)
+            # (LeftX, BottomY) (MidX, BottomY) (RightX, BottomY)
+
+            leftX = 225
+            midX = 1070
+            rightX = 1920
+
+            topY = 425
+            upperY = 1175
+            lowerY = 1925
+            lowerY = 2680
+
+        # Set positions for Orion 50ft conventional targets
+        if target_type == TargetTypes.ORION_50FT_CONVENTIONAL:
+            bull_size = 600
+
+            # (LeftX, TopY) (MidX, TopY) (RightX, TopY)
+            # (LeftX, UpperY) (RightX, UpperY)
+            # (LeftX, LowerY) (RightX, LowerY)
+            # (LeftX, BottomY) (MidX, BottomY) (RightX, BottomY)
+
+            leftX = 115
+            midX = 965
+            rightX = 1805
+
+            topY = 355
+            upperY = 1090
+            lowerY = 1850
+            bottomY = 2600
+        
+        h=int((bull_size/ratio_height)*image.shape[0])
+        w=int((bull_size/ratio_width)*image.shape[1])
+
+        y=int((topY/ratio_height)*image.shape[0])
+        x=int((midX/ratio_width)*image.shape[1])
+        crop1 = image[y:y+h, x:x+w]
+
+        y=int((topY/ratio_height)*image.shape[0])
+        x=int((rightX/ratio_width)*image.shape[1])
+        crop2 = image[y:y+h, x:x+w]
+
+        y=int((upperY/ratio_height)*image.shape[0])
+        x=int((rightX/ratio_width)*image.shape[1])
+
+        crop3 = image[y:y+h, x:x+w]
+
+        y=int((lowerY/ratio_height)*image.shape[0])
+        x=int((rightX/ratio_width)*image.shape[1])
+
+        crop4 = image[y:y+h, x:x+w]
+
+        y=int((lowerY/ratio_height)*image.shape[0])
+        x=int((rightX/ratio_width)*image.shape[1])
+
+        crop5 = image[y:y+h, x:x+w]
+
+        y=int((bottomY/ratio_height)*image.shape[0])
+        x=int((midX/ratio_width)*image.shape[1])
+
+        crop6 = image[y:y+h, x:x+w]
+
+        y=int((topY/ratio_height)*image.shape[0])
+        x=int((leftX/ratio_width)*image.shape[1])
+
+        crop7 = image[y:y+h, x:x+w]
+
+        y=int((upperY/ratio_height)*image.shape[0])
+        x=int((leftX/ratio_width)*image.shape[1])
+
+        crop8 = image[y:y+h, x:x+w]
+
+        y=int((lowerY/ratio_height)*image.shape[0])
+        x=int((leftX/ratio_width)*image.shape[1])
+
+        crop9 = image[y:y+h, x:x+w]
+
+        y=int((lowerY/ratio_height)*image.shape[0])
+        x=int((leftX/ratio_width)*image.shape[1])
+
+        crop10 = image[y:y+h, x:x+w]
+
+        # Save the cropped images
+        cv2.imwrite("images/output/top-mid.jpg", crop1)
+        cv2.imwrite("images/output/top-right.jpg", crop2)
+        cv2.imwrite("images/output/upper-right.jpg", crop3)
+        cv2.imwrite("images/output/lower-right.jpg", crop4)
+        cv2.imwrite("images/output/bottom-right.jpg", crop5)
+        cv2.imwrite("images/output/bottom-mid.jpg", crop6)
+        cv2.imwrite("images/output/top-left.jpg", crop7)
+        cv2.imwrite("images/output/upper-left.jpg", crop8)
+        cv2.imwrite("images/output/lower-left.jpg", crop9)
+        cv2.imwrite("images/output/bottom-left.jpg", crop10)
+
+    # Get name from bubbles if enabled
+    if use_bubbles_var.get() and (tab_control.index("current") == 1 or tab_control.index("current") == 2):
+        main_label.config(text="Setting name from bubbles...")
+        set_name_from_bubbles(image)
+    
+    main_label.config(text="Cropped image") # Update the main label
+
 # -------------------- Target processing control functions ------------------- #
 
 # Runs the analyze_image function for every image that has been cropped out
-def analyze_target(type):
+def analyze_target(target_type):
     """Runs the appropriate analyze_image function for every image that has been cropped and saved.
 
     Args:
-        type (str): 'nra' or 'orion' or 'orion-nrascoring'
+        target_type (TargetType): The type of target to analyze
     """    
     main_label.config(text="Analyzing target...") # Update main label
 
@@ -459,7 +713,7 @@ def analyze_target(type):
         csvfile.close()
 
     # Analyze each cropped image
-    if type == "nra":
+    if target_type == ScoringTypes.NRA:
         analyze_image("images/output/top-mid.jpg")
         analyze_image("images/output/top-right.jpg")
         analyze_image("images/output/upper-right.jpg")
@@ -470,7 +724,7 @@ def analyze_target(type):
         analyze_image("images/output/lower-left.jpg")
         analyze_image("images/output/upper-left.jpg")
         analyze_image("images/output/top-left.jpg")
-    elif type == "orion":
+    elif target_type == ScoringTypes.ORION_USAS_50:
         analyze_orion_image("images/output/top-mid.jpg")
         analyze_orion_image("images/output/top-right.jpg")
         analyze_orion_image("images/output/upper-right.jpg")
@@ -481,7 +735,7 @@ def analyze_target(type):
         analyze_orion_image("images/output/lower-left.jpg")
         analyze_orion_image("images/output/upper-left.jpg")
         analyze_orion_image("images/output/top-left.jpg")
-    elif type == "orion-nrascoring":
+    elif target_type == ScoringTypes.ORION_USAS_50_NRA_SCORING:
         analyze_orion_image_nra_scoring("images/output/top-mid.jpg")
         analyze_orion_image_nra_scoring("images/output/top-right.jpg")
         analyze_orion_image_nra_scoring("images/output/upper-right.jpg")
@@ -492,6 +746,18 @@ def analyze_target(type):
         analyze_orion_image_nra_scoring("images/output/lower-left.jpg")
         analyze_orion_image_nra_scoring("images/output/upper-left.jpg")
         analyze_orion_image_nra_scoring("images/output/top-left.jpg")
+    elif target_type == ScoringTypes.ORION_50FT_CONVENTIONAL:
+        analyze_50ft_conventional("images/output/top-mid.jpg")
+        analyze_50ft_conventional("images/output/top-right.jpg")
+        analyze_50ft_conventional("images/output/upper-right.jpg")
+        analyze_50ft_conventional("images/output/lower-right.jpg")
+        analyze_50ft_conventional("images/output/bottom-right.jpg")
+        analyze_50ft_conventional("images/output/bottom-mid.jpg")
+        analyze_50ft_conventional("images/output/bottom-left.jpg")
+        analyze_50ft_conventional("images/output/lower-left.jpg")
+        analyze_50ft_conventional("images/output/upper-left.jpg")
+        analyze_50ft_conventional("images/output/top-left.jpg")
+    
     # Create variables to store the score and x count
     global score, x_count
     score = 100
@@ -653,7 +919,7 @@ def show_output():
     #endregion
 
 # Open the working folder in Explorer
-# TODO Make this work on any operating system
+# TODO: Make this work on any operating system
 def show_folder(path):
     """Runs the explorer to the path given
 
@@ -821,7 +1087,7 @@ def create_csv():
 # --------------------------- Open folder functions -------------------------- #
 
 # Opens and analyzes all files in a folder (more complex than Orion because it has to distinguish between left and right images)
-def open_folder():
+def open_folder_nra():
     global is_opening_folder
     is_opening_folder = True # Set a flag to indicate that the folder is being opened
     # Temporarily save the show_output_when_finished_var to restore after the function is done
@@ -891,171 +1157,55 @@ def open_folder_orion():
     is_opening_folder = False # Keep track of whether or not the folder is being opened
     show_folder(os.getcwd() + "\data") # Open the data folder in Explorer
 
-# Allows viewing of trends from existing data files
-def show_trends():
-    main_label.config(text="Showing trends window") # Update the main label
+def open_folder(scoring_type):
+    """Loads, crops, and analyzes all files in a user-selected folder
 
-    #region Create window
-    trends_window = tk.Toplevel(root)
-    trends_window.minsize(250,100)
-    trends_window.geometry("250x100")
-    trends_window.tk.call('wm', 'iconphoto', trends_window._w, tk.PhotoImage(file='assets/icon.png'))
-    trends_window.title("Target Analysis")
-    #endregion
+    Args:
+        scoring_type (ScoringTypes): The type of target that is in the folder
+    """    
+    global is_opening_folder
+    is_opening_folder = True # Keep track of whether or not the folder is being opened
+    show_output_when_finished_backup = show_output_when_finished_var.get()
+    show_output_when_finished_var.set(False)
+    main_label.config(text="Opening folder... This could take a while") # Update the main label
+    folder = filedialog.askdirectory() # Get the folder to open
 
-    def showMostMissed():
-        bulls = [0,0,0,0,0,0,0,0,0,0] # Create a list of bulls to keep track of the most missed targets
+    nra_file_num = 0 # Keep track of how many files have been opened
 
-        folder = filedialog.askdirectory() # Get the folder to open
-        # os.listdir() returns a list of all files in the folder
-        for file in os.listdir(folder):
-            # Ignore files that are not target CSVs
-            if not "data.csv" in file and not ".gitkeep" in file:
-                # Open the CSV file
-                with open("data/" + file) as csv_file:
-                    csv_reader = csv.reader(csv_file, delimiter=',') # Create a CSV reader
-                    line_count = 0 # Keep track of the line number
-                    for row in csv_reader:
-                        # Ignore the header row and rows beyond ten (if there are more than ten rows, there is a problem)
-                        if line_count != 0 and line_count <= 10:
-                            bulls[line_count-1] += int(row[1]) # Add the score from each bull to the bulls list
-                        line_count += 1 # Increment the line number
-                    csv_file.close() # Close the file
+    # os.listdir() returns a list of all files in the folder
+    for file in os.listdir(folder):
+        # Ignore files that are not images
+        if file.endswith(".jpeg") or file.endswith(".jpg"):
+            path = folder + "/" + file # Get the path to the file
+            set_info_from_file(file) # Set the info from the file (correct naming is important for this operation)
+            file_image = cv2.imread(path) # Open the image
 
-        # Create a frame to display the data
-        frame = ttk.Frame(trends_window)
-        frame.pack(pady=5)
+            if scoring_type == ScoringTypes.NRA:
+                # Check if the image is a left or right image
+                if "left" in file:
+                    crop_image(file_image, TargetTypes.NRA_LEFT)
+                elif "right" in file:
+                    crop_image(file_image, TargetTypes.NRA_RIGHT)
+                file_num += 1 # Increment the file number
+                # For every two files opened, analyze the target
+                # Again, it is imperative that the naming convention is correct
+                # See the README for more information
+                if file_num == 2:
+                    analyze_target(ScoringTypes.NRA)
+                    file_num = 0 # Reset the file number and continue
+            elif scoring_type == ScoringTypes.ORION_USAS_50:
+                crop_image(file_image, TargetTypes.ORION_USAS_50)
+                analyze_target(ScoringTypes.ORION_USAS_50)
+            elif scoring_type == ScoringTypes.ORION_USAS_50_NRA_SCORING:
+                crop_image(file_image, TargetTypes.ORION_USAS_50_NRA_SCORING)
+                analyze_target(ScoringTypes.ORION_USAS_50_NRA_SCORING)
+            elif scoring_type == ScoringTypes.ORION_50FT_CONVENTIONAL:
+                crop_image(file_image, TargetTypes.ORION_50FT_CONVENTIONAL)
+                analyze_target(ScoringTypes.ORION_50FT_CONVENTIONAL)
 
-        trends_window.geometry("250x300") # Resize the window to accomodate the data display
-
-        # Create a label for a header
-        most_missed_label = ttk.Label(frame, text="Most missed is highest number")
-        most_missed_label.grid(row=0, column=0, columnspan=3)
-
-        #region Create a label for each bull
-        label1 = ttk.Label(frame, text=str(bulls[0]), borderwidth=2, relief=RIDGE, padding=10)
-        label1.grid(row=1,column=0)
-
-        label2 = ttk.Label(frame, text=str(bulls[1]), borderwidth=2, relief=RIDGE, padding=10)
-        label2.grid(row=2,column=0)
-
-        label3 = ttk.Label(frame, text=str(bulls[2]), borderwidth=2, relief=RIDGE, padding=10)
-        label3.grid(row=3,column=0)
-
-        label4 = ttk.Label(frame, text=str(bulls[3]), borderwidth=2, relief=RIDGE, padding=10)
-        label4.grid(row=4,column=0)
-
-        label5 = ttk.Label(frame, text=str(bulls[4]), borderwidth=2, relief=RIDGE, padding=10)
-        label5.grid(row=1,column=1)
-
-        label6 = ttk.Label(frame, text=str(bulls[5]), borderwidth=2, relief=RIDGE, padding=10)
-        label6.grid(row=1,column=2)
-
-        label7 = ttk.Label(frame, text=str(bulls[6]), borderwidth=2, relief=RIDGE, padding=10)
-        label7.grid(row=2,column=2)
-
-        label8 = ttk.Label(frame, text=str(bulls[7]), borderwidth=2, relief=RIDGE, padding=10)
-        label8.grid(row=3,column=2)
-
-        label9 = ttk.Label(frame, text=str(bulls[8]), borderwidth=2, relief=RIDGE, padding=10)
-        label9.grid(row=4,column=2)
-
-        label10 = ttk.Label(frame, text=str(bulls[9]), borderwidth=2, relief=RIDGE, padding=10)
-        label10.grid(row=4,column=1)
-        #endregion
-
-    def showTrendGraph():
-        data_csv = filedialog.askopenfilename() # Get the CSV file to open (this can be a backup to accomodate for multiple shooters)
-
-        # Create some arrays for relevant data
-        dates = []
-        scores = []
-        x_count = []
-
-        # Open the CSV file
-        with open(data_csv) as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=',') # Create a CSV reader
-            line_count = 0 # Keep track of the line number
-            for row in csv_reader:
-                # Ignore the header row
-                if line_count != 0:
-                    dates.append(row[1]) # The dates are in the second column
-                    scores.append(row[3]) # The scores are in the fourth column
-                    x_count.append(row[4]) # The x_count are in the fifth column
-                line_count += 1 # Increment the line number
-            csv_file.close() # Close the file
-        
-        # Zip the data together, with the dates first
-        # Then sort the data using the date as the key
-        sorted_zipped = sorted(zip(dates,scores,x_count), key=lambda date: datetime.datetime.strptime(date[0], "%d %B %Y"))
-
-        # Unpack the data back into separate lists
-        dates,scores,x_count = map(list,zip(*sorted_zipped))
-
-        # Convert the scores and x_count back
-        scores = list(map(int, scores))
-        x_count = list(map(int, x_count))
-
-        # Create some matplotlib plots to show data
-        fig,axs = plt.subplots(2)
-
-        # Plot the scores and x_count on separate graphs
-        axs[0].plot(dates,scores, marker='o', color = 'blue')
-        axs[1].plot(dates,x_count, marker='x', color = 'orange')
-
-        # Create a label for each point for the scores graph
-        for x,y in zip(dates,scores):
-            label = y
-            axs[0].annotate(label, # this is the text
-                        (x,y), # this is the point to label
-                        textcoords="offset points", # how to position the text
-                        xytext=(-15,0), # distance from text to points (x,y)
-                        ha='center') # horizontal alignment can be left, right or center
-
-        # Create a label for each point for the x_count graph
-        for x,y in zip(dates,x_count):
-            label = str(y) + "X"
-            axs[1].annotate(label, # this is the text
-                        (x,y), # this is the point to label
-                        textcoords="offset points", # how to position the text
-                        xytext=(-15,0), # distance from text to points (x,y)
-                        ha='center') # horizontal alignment can be left, right or center
-
-        # Convert the dates to numbers
-        datesNum = matplotlib.dates.datestr2num(dates)
-
-        # Create a trendline for the scores graph
-        z = np.polyfit(datesNum, scores, 1)
-        p = np.poly1d(z)
-
-        # Plot the trendline on the scores graph
-        axs[0].plot(dates,p(datesNum), 'r--')
-
-        # Set the x axis user-facing label to Date for both graphs
-        axs[0].set_xlabel('Date')
-        axs[1].set_xlabel('Date')
-        
-        # Set the y axis user-facing label to Score and X Count for each graph respectively
-        axs[0].set_ylabel('Score')
-        axs[1].set_ylabel('X Count')
-
-        # Angle the dates at a 40 degree angle for both graphs
-        axs[0].xaxis.set_tick_params(rotation=40)
-        axs[1].xaxis.set_tick_params(rotation=40)
-
-        # Add some space between the graphs
-        plt.subplots_adjust(hspace=0.8)
-
-        # Show the plots
-        plt.show()
-
-    # Create a button to load a folder of data (for one shooter) to show which bull has the highest value (thus the most missed)
-    load_folder_button = ttk.Button(trends_window, text="Load Folder (for most missed)", command=showMostMissed)
-    load_folder_button.pack(padx=10, pady=10)
-
-    # Create a button to load a global data CSV (for one shooter) to show improvement over time
-    load_csv_button = ttk.Button(trends_window, text="Load CSV (for graph)", command=showTrendGraph)
-    load_csv_button.pack(padx=10, pady=0)
+    show_output_when_finished_var.set(show_output_when_finished_backup) # Revert the show_output_when_finished_var to its original value
+    is_opening_folder = False # Keep track of whether or not the folder is being opened
+    show_folder(os.getcwd() + "\data") # Open the data folder in Explorer
 
 # ---------------------------- File info funtions ---------------------------- #
 
@@ -1353,6 +1503,172 @@ def update_dark_mode():
         root.tk.call("set_theme", "dark") # Set the theme to dark
     else:
         root.tk.call("set_theme", "light") # Set the theme to light
+
+# Allows viewing of trends from existing data files
+def show_trends():
+    main_label.config(text="Showing trends window") # Update the main label
+
+    #region Create window
+    trends_window = tk.Toplevel(root)
+    trends_window.minsize(250,100)
+    trends_window.geometry("250x100")
+    trends_window.tk.call('wm', 'iconphoto', trends_window._w, tk.PhotoImage(file='assets/icon.png'))
+    trends_window.title("Target Analysis")
+    #endregion
+
+    def showMostMissed():
+        bulls = [0,0,0,0,0,0,0,0,0,0] # Create a list of bulls to keep track of the most missed targets
+
+        folder = filedialog.askdirectory() # Get the folder to open
+        # os.listdir() returns a list of all files in the folder
+        for file in os.listdir(folder):
+            # Ignore files that are not target CSVs
+            if not "data.csv" in file and not ".gitkeep" in file:
+                # Open the CSV file
+                with open("data/" + file) as csv_file:
+                    csv_reader = csv.reader(csv_file, delimiter=',') # Create a CSV reader
+                    line_count = 0 # Keep track of the line number
+                    for row in csv_reader:
+                        # Ignore the header row and rows beyond ten (if there are more than ten rows, there is a problem)
+                        if line_count != 0 and line_count <= 10:
+                            bulls[line_count-1] += int(row[1]) # Add the score from each bull to the bulls list
+                        line_count += 1 # Increment the line number
+                    csv_file.close() # Close the file
+
+        # Create a frame to display the data
+        frame = ttk.Frame(trends_window)
+        frame.pack(pady=5)
+
+        trends_window.geometry("250x300") # Resize the window to accomodate the data display
+
+        # Create a label for a header
+        most_missed_label = ttk.Label(frame, text="Most missed is highest number")
+        most_missed_label.grid(row=0, column=0, columnspan=3)
+
+        #region Create a label for each bull
+        label1 = ttk.Label(frame, text=str(bulls[0]), borderwidth=2, relief=RIDGE, padding=10)
+        label1.grid(row=1,column=0)
+
+        label2 = ttk.Label(frame, text=str(bulls[1]), borderwidth=2, relief=RIDGE, padding=10)
+        label2.grid(row=2,column=0)
+
+        label3 = ttk.Label(frame, text=str(bulls[2]), borderwidth=2, relief=RIDGE, padding=10)
+        label3.grid(row=3,column=0)
+
+        label4 = ttk.Label(frame, text=str(bulls[3]), borderwidth=2, relief=RIDGE, padding=10)
+        label4.grid(row=4,column=0)
+
+        label5 = ttk.Label(frame, text=str(bulls[4]), borderwidth=2, relief=RIDGE, padding=10)
+        label5.grid(row=1,column=1)
+
+        label6 = ttk.Label(frame, text=str(bulls[5]), borderwidth=2, relief=RIDGE, padding=10)
+        label6.grid(row=1,column=2)
+
+        label7 = ttk.Label(frame, text=str(bulls[6]), borderwidth=2, relief=RIDGE, padding=10)
+        label7.grid(row=2,column=2)
+
+        label8 = ttk.Label(frame, text=str(bulls[7]), borderwidth=2, relief=RIDGE, padding=10)
+        label8.grid(row=3,column=2)
+
+        label9 = ttk.Label(frame, text=str(bulls[8]), borderwidth=2, relief=RIDGE, padding=10)
+        label9.grid(row=4,column=2)
+
+        label10 = ttk.Label(frame, text=str(bulls[9]), borderwidth=2, relief=RIDGE, padding=10)
+        label10.grid(row=4,column=1)
+        #endregion
+
+    def showTrendGraph():
+        data_csv = filedialog.askopenfilename() # Get the CSV file to open (this can be a backup to accomodate for multiple shooters)
+
+        # Create some arrays for relevant data
+        dates = []
+        scores = []
+        x_count = []
+
+        # Open the CSV file
+        with open(data_csv) as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=',') # Create a CSV reader
+            line_count = 0 # Keep track of the line number
+            for row in csv_reader:
+                # Ignore the header row
+                if line_count != 0:
+                    dates.append(row[1]) # The dates are in the second column
+                    scores.append(row[3]) # The scores are in the fourth column
+                    x_count.append(row[4]) # The x_count are in the fifth column
+                line_count += 1 # Increment the line number
+            csv_file.close() # Close the file
+        
+        # Zip the data together, with the dates first
+        # Then sort the data using the date as the key
+        sorted_zipped = sorted(zip(dates,scores,x_count), key=lambda date: datetime.datetime.strptime(date[0], "%d %B %Y"))
+
+        # Unpack the data back into separate lists
+        dates,scores,x_count = map(list,zip(*sorted_zipped))
+
+        # Convert the scores and x_count back
+        scores = list(map(int, scores))
+        x_count = list(map(int, x_count))
+
+        # Create some matplotlib plots to show data
+        fig,axs = plt.subplots(2)
+
+        # Plot the scores and x_count on separate graphs
+        axs[0].plot(dates,scores, marker='o', color = 'blue')
+        axs[1].plot(dates,x_count, marker='x', color = 'orange')
+
+        # Create a label for each point for the scores graph
+        for x,y in zip(dates,scores):
+            label = y
+            axs[0].annotate(label, # this is the text
+                        (x,y), # this is the point to label
+                        textcoords="offset points", # how to position the text
+                        xytext=(-15,0), # distance from text to points (x,y)
+                        ha='center') # horizontal alignment can be left, right or center
+
+        # Create a label for each point for the x_count graph
+        for x,y in zip(dates,x_count):
+            label = str(y) + "X"
+            axs[1].annotate(label, # this is the text
+                        (x,y), # this is the point to label
+                        textcoords="offset points", # how to position the text
+                        xytext=(-15,0), # distance from text to points (x,y)
+                        ha='center') # horizontal alignment can be left, right or center
+
+        # Convert the dates to numbers
+        datesNum = matplotlib.dates.datestr2num(dates)
+
+        # Create a trendline for the scores graph
+        z = np.polyfit(datesNum, scores, 1)
+        p = np.poly1d(z)
+
+        # Plot the trendline on the scores graph
+        axs[0].plot(dates,p(datesNum), 'r--')
+
+        # Set the x axis user-facing label to Date for both graphs
+        axs[0].set_xlabel('Date')
+        axs[1].set_xlabel('Date')
+        
+        # Set the y axis user-facing label to Score and X Count for each graph respectively
+        axs[0].set_ylabel('Score')
+        axs[1].set_ylabel('X Count')
+
+        # Angle the dates at a 40 degree angle for both graphs
+        axs[0].xaxis.set_tick_params(rotation=40)
+        axs[1].xaxis.set_tick_params(rotation=40)
+
+        # Add some space between the graphs
+        plt.subplots_adjust(hspace=0.8)
+
+        # Show the plots
+        plt.show()
+
+    # Create a button to load a folder of data (for one shooter) to show which bull has the highest value (thus the most missed)
+    load_folder_button = ttk.Button(trends_window, text="Load Folder (for most missed)", command=showMostMissed)
+    load_folder_button.pack(padx=10, pady=10)
+
+    # Create a button to load a global data CSV (for one shooter) to show improvement over time
+    load_csv_button = ttk.Button(trends_window, text="Load CSV (for graph)", command=showTrendGraph)
+    load_csv_button.pack(padx=10, pady=0)
 
 # ------------------------------ Teams funtions ------------------------------ #
 
@@ -2683,6 +2999,195 @@ def analyze_orion_image_nra_scoring(image):
         cv2.waitKey(0)
     cv2.imwrite(image + "-output.jpg", output) # Save the output image
 
+# TODO: Fix mulipliers etc
+def analyze_50ft_conventional(image):
+    # Basic implementation of the distance formula
+    def compute_distance(x1, y1, x2, y2):
+        return math.sqrt(((x2 - x1) ** 2)+((y2 - y1) ** 2))
+
+    #region multipliers are from NRA A-17 target in millimeters
+    outer = 46.150
+    five = 37.670/outer
+    six = 29.210/outer
+    seven = 20.750/outer
+    eight = 12.270/outer
+    nine = 3.810/outer
+
+    spindle_radius = 2.83
+    outer_spindle_radius = 4.5
+    #endregion
+
+    # Hold local dropped points and x count variables
+    dropped_points = 0
+    x_count = 0
+
+    img = cv2.imread(image) # Read in the image for OpenCV
+    output = img.copy() # Create a copy of the image to draw on
+
+    #region Identify the target's outer ring
+    # Convert the image to grayscale
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    
+    # Blur using 3 * 3 kernel
+    gray_blurred = cv2.blur(gray, (nra_kernal_size.get(), nra_kernal_size.get()))
+    #cv2.imshow("gray_blurred", gray_blurred)
+
+    #threshold_image=cv2.inRange(gray_blurred, 100, 255)
+    #cv2.imshow("threshold_image", threshold_image)
+    
+    # Apply Hough transform on the blurred image.
+    detected_circles = cv2.HoughCircles(gray_blurred, cv2.HOUGH_GRADIENT, nra_param1.get(), nra_param2.get(), minRadius = nra_min_radius.get())
+    
+    # Draw circles that are detected
+    if detected_circles is not None:
+    
+        # Convert the circle parameters a, b and r to integers
+        detected_circles = np.uint16(np.around(detected_circles))
+    
+        for pt in detected_circles[0, :]:
+            a, b, r = pt[0], pt[1], pt[2]
+
+            # Draw a small circle (of radius 1) to show the center.
+            cv2.circle(output, (a, b), 1, (0, 0, 255), 3)
+
+            pixel_outer = r
+
+            # Perform a calculation to determine if the system detected the wrong ring, and if so, correct the error
+            height, width, channels = img.shape
+            if r/width < 0.4 and r/width > 0.35:
+                pixel_outer = outer/37.670 * r
+            
+            if r/width < 0.35:
+                pixel_outer = outer/29.210 * r
+
+            pixel_five = pixel_outer*five
+            pixel_six = pixel_outer*six
+            pixel_seven = pixel_outer*seven
+            pixel_eight = pixel_outer*eight
+            pixel_nine = pixel_outer*nine
+
+            spindle_radius = spindle_radius*(pixel_outer/outer)
+            outer_spindle_radius = outer_spindle_radius*(pixel_outer/outer)
+
+            cv2.circle(output, (a, b), int(pixel_outer), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_five), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_six), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_seven), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_eight), (0, 255, 0), 2)
+            cv2.circle(output, (a, b), int(pixel_nine), (0, 255, 0), 2)
+
+            # Draw a small circle to show the center.
+            cv2.circle(output, (a, b), 1, (0, 0, 255), 3)
+    #endregion
+
+    #region Identify the hole in the target
+    # Make the image binary using a threshold
+    img_thresholded = cv2.inRange(img, (nra_thresh_min.get(), nra_thresh_min.get(), nra_thresh_min.get()), (nra_thresh_max.get(), nra_thresh_max.get(), nra_thresh_max.get()))
+    #cv2.imshow('Image Thresholded', img_thresholded)
+
+    # Remove noise from the binary image using the opening operation
+    kernel = np.ones((nra_morphology_opening_kernel_size.get(),nra_morphology_opening_kernel_size.get()),np.uint8)
+    opening = cv2.morphologyEx(img_thresholded, cv2.MORPH_OPEN, kernel)
+    #cv2.imshow('opening',opening)
+
+    # Find contours based on the denoised image
+    contours, hierarchy = cv2.findContours(opening.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+
+    for contour in contours:
+        # Get the area of the contours
+        area = cv2.contourArea(contour)
+        #print(area)
+        # Check if area is between max and min values for a bullet hole. Area is usually about 1000
+        if area<nra_max_contour_area.get() and area>nra_min_contour_area.get():
+            print("Area: " + str(area))
+            # Draw the detected contour for debugging
+            cv2.drawContours(output,[contour],0,(255,0,0),2)
+
+            # Create an enclosing circle that can represent the bullet hole
+
+            (hole_x,hole_y),hole_radius = cv2.minEnclosingCircle(contour)
+            hole_center = (int(hole_x),int(hole_y))
+            hole_radius = int(hole_radius)
+            #print(hole_radius)
+            if hole_radius < nramax_hole_radius.get():
+                #cv2.circle(output,hole_center,hole_radius,(0,255,0),2) # Enclosing circle
+                cv2.circle(output, hole_center, 1, (0, 0, 255), 3) # Dot at the center
+
+                # Draw the spindle
+                cv2.circle(output,hole_center,int(spindle_radius),(0,255,255),2)
+                #cv2.circle(output,hole_center,int(outer_spindle_radius),(0,255,255),2)
+
+                distance = compute_distance(hole_x, hole_y, a, b)
+
+                # Currently only scores target to a 4
+                if distance-spindle_radius < pixel_nine:
+                    print("X")
+                    cv2.putText(output, "X", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    x_count += 1
+
+                if distance+spindle_radius < pixel_eight and distance-spindle_radius > pixel_nine:
+                    print("0")
+                    cv2.putText(output, "0", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+
+                if distance+spindle_radius > pixel_eight and distance+spindle_radius < pixel_seven:
+                    print("1")
+                    cv2.putText(output, "1", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    dropped_points += 1
+
+                if distance+spindle_radius > pixel_seven and distance+spindle_radius < pixel_six:
+                    print("2")
+                    cv2.putText(output, "2", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    dropped_points += 2
+
+                if distance+spindle_radius > pixel_six and distance+spindle_radius < pixel_five:
+                    print("3")
+                    cv2.putText(output, "3", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    dropped_points += 3
+
+                if distance+spindle_radius > pixel_five and distance+spindle_radius < pixel_outer:
+                    print("4")
+                    cv2.putText(output, "4", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    dropped_points += 4
+
+                hole_ratio_x = (hole_x-a) / pixel_outer
+                hole_ratio_y = (hole_y-a) / pixel_outer
+
+                global csv_name
+
+                with open(csv_name, 'a', newline="") as csvfile:
+                    filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                    filewriter.writerow([image, dropped_points, x_count, hole_x, hole_y, distance, hole_ratio_x, hole_ratio_y])
+                    csvfile.close()
+    #endregion
+
+    if individual_output_type_var.get() == "legacy":
+        cv2.imshow("output", output) # Optional but make sure to use waitkey below if enabled, or else only image will show up.
+        cv2.waitKey(0)
+    cv2.imwrite(image + "-output.jpg", output) # Save the output image
+
+# --------------------------------- Enums ------------------------------------ #
+
+# Explanation of the enums:
+# TargetTypes has definitions for the left and right image on an NRA-A17 target.
+# Scoring types simply has the NRA definition
+# TargetTypes is used for load image and crop image
+# While ScoringTypes is used for scoring images and opening a folder
+# See TODO below for more info
+
+class TargetTypes(Enum):
+    NRA_LEFT = 'nra-left'
+    NRA_RIGHT = 'nra-right'
+    ORION_USAS_50 = 'orion-usas-50'
+    ORION_USAS_50_NRA_SCORING = 'orion-usas50-nrascoring'
+    ORION_50FT_CONVENTIONAL = 'orion-50ft-conventional'
+
+# TODO: Replace the separate TargetTypes and ScoringTypes with an optional left and right parameter
+class ScoringTypes(Enum):
+    NRA = 'nra-a17'
+    ORION_USAS_50 = 'orion-usas-50'
+    ORION_USAS_50_NRA_SCORING = 'orion-usas-50-as-nra'
+    ORION_50FT_CONVENTIONAL = 'orion-50ft-conventional'
+
 # ------------------------------ Driver program ------------------------------ #
 
 #region Initialize tkinter
@@ -2706,6 +3211,7 @@ individual_output_type_var = tk.StringVar(root, "tkinter")
 use_file_info_var = tk.BooleanVar(root, True)
 use_bubbles_var = tk.BooleanVar(root, False)
 is_opening_folder = False
+score_as_nra_var = tk.BooleanVar(root, False)
 
 # Teams
 enable_teams_var = tk.BooleanVar(root, False)
@@ -2757,15 +3263,10 @@ else:
     create_default_config("config.ini")
 
 # If there is not config backup, create one now
-if not os.path.isfile("config-backup.ini"):
-    # If the file does not exist, create it and set the default values
-    create_default_config("config-backup.ini")
+if not os.path.isfile("config-backup.ini"): create_default_config("config-backup.ini")    
 
-#region If there is not a names config, create one now
-if not os.path.isfile("names.ini"):
-    # If the file does not exist, create it and set the default values
-    create_names_config()
-#endregion
+# If there is not a names config, create one now
+if not os.path.isfile("names.ini"): create_names_config()
 #endregion
 
 #region Menubar
@@ -2814,32 +3315,32 @@ tab_control = ttk.Notebook(root)
 
 tab0_indoor = ttk.Frame(tab_control)
 tab1_orion = ttk.Frame(tab_control)
-tab3_orionnra = ttk.Frame(tab_control)
+tab3_orion50ftconventional = ttk.Frame(tab_control)
 
 tab_control.add(tab0_indoor, text ='NRA A-17')
-tab_control.add(tab1_orion, text ='NRA/USAS-50')
-tab_control.add(tab3_orionnra, text ='NRA/USAS-50 as NRA A-17')
+tab_control.add(tab1_orion, text ='Orion USAS-50')
+tab_control.add(tab3_orion50ftconventional, text ='Orion 50ft conventional')
 
 tab_control.pack(side=tk.TOP, fill=BOTH, padx=10, pady=10)
 
 # Buttons frames are a child of the tabs
+# Frames for the NRA A-17
 buttons_frame = ttk.Frame(tab0_indoor)
 buttons_frame.pack(side=tk.TOP)
-
 bottom_frame = ttk.Frame(tab0_indoor)
 bottom_frame.pack(side=tk.TOP)
 
+# Frames for Orion USAS-50
 orion_buttons_frame = ttk.Frame(tab1_orion)
 orion_buttons_frame.pack(side=tk.TOP)
-
 orion_bottom_frame = ttk.Frame(tab1_orion)
 orion_bottom_frame.pack(side=tk.TOP)
 
-orion_as_nra_frame = ttk.Frame(tab3_orionnra)
-orion_as_nra_frame.pack(side=tk.TOP)
-
-orion_as_nra_bottom_frame = ttk.Frame(tab3_orionnra)
-orion_as_nra_bottom_frame.pack(side=tk.TOP)
+# Frames for Orion 50ft conventional
+orion50ft_buttons_frame = ttk.Frame(tab3_orion50ftconventional)
+orion50ft_buttons_frame.pack(side=tk.TOP)
+orion50ft_bottom_frame = ttk.Frame(tab3_orion50ftconventional)
+orion50ft_bottom_frame.pack(side=tk.TOP)
 #endregion
 
 #region Main label
@@ -2902,46 +3403,58 @@ refresh_team_options()
 #endregion
 
 #region NRA A-17 tab
-left_image_button = ttk.Button(buttons_frame, text = "Select left image", command = load_image_left)
+left_image_button = ttk.Button(buttons_frame, text = "Select left image", command=lambda: load_image(TargetTypes.NRA_LEFT))
 left_image_button.grid(row=0, column=0, padx=5, pady=5)
 
-analyze_target_button = ttk.Button(buttons_frame, text = "Analyze target", command = lambda: analyze_target("nra"))
+analyze_target_button = ttk.Button(buttons_frame, text = "Analyze target", command = lambda: analyze_target(ScoringTypes.NRA))
 analyze_target_button.grid(row=0, column=1, padx=5, pady=5)
 
-right_image_button = ttk.Button(buttons_frame, text = "Select right image", command = load_image_right)
+right_image_button = ttk.Button(buttons_frame, text = "Select right image", command =lambda: load_image(TargetTypes.NRA_LEFT))
 right_image_button.grid(row=0, column=2, padx=5, pady=5)
 
-open_folder_nra_button = ttk.Button(buttons_frame, text = "Open folder", command = open_folder)
+open_folder_nra_button = ttk.Button(buttons_frame, text = "Open folder", command=lambda: open_folder(ScoringTypes.NRA))
 open_folder_nra_button.grid(row=0, column=3, padx=5, pady=5)
 #endregion
 
 #region Orion tab
-load_image_button = ttk.Button(orion_buttons_frame, text = "Select image", command = lambda: load_image_orion("orion"))
+def on_load_image_orion_button_pressed():
+    if score_as_nra_var.get(): load_image(TargetTypes.ORION_USAS_50_NRA_SCORING)
+    else: load_image(TargetTypes.ORION_USAS_50)
+
+def on_analyze_target_orion_button_pressed():
+    if score_as_nra_var.get(): analyze_target(ScoringTypes.ORION_USAS_50_NRA_SCORING)
+    else: analyze_target(ScoringTypes.ORION_USAS_50)
+
+orion_tab_upper_buttons_frame = ttk.Frame(orion_buttons_frame)
+orion_tab_lower_buttons_frame = ttk.Frame(orion_buttons_frame)
+orion_tab_upper_buttons_frame.pack()
+orion_tab_lower_buttons_frame.pack()
+
+load_image_button = ttk.Button(orion_tab_upper_buttons_frame, text = "Select image", command=on_load_image_orion_button_pressed)
 load_image_button.grid(row=0, column=0, padx=5, pady=5)
 
-analyze_orion_target_button = ttk.Button(orion_buttons_frame, text = "Analyze target", command = lambda: analyze_target("orion"))
+analyze_orion_target_button = ttk.Button(orion_tab_upper_buttons_frame, text = "Analyze target", command=on_analyze_target_orion_button_pressed)
 analyze_orion_target_button.grid(row=0, column=1, padx=5, pady=5)
 
-open_folder_orion_target_button = ttk.Button(orion_buttons_frame, text = "Open folder", command = open_folder_orion)
+open_folder_orion_target_button = ttk.Button(orion_tab_upper_buttons_frame, text = "Open folder", command=lambda: open_folder(TargetTypes.ORION_USAS_50))
 open_folder_orion_target_button.grid(row=0, column=2, padx=5, pady=5)
 
-use_bubbles_checkbutton = ttk.Checkbutton(orion_buttons_frame, text='Name from bubbles', style='Switch.TCheckbutton', variable=use_bubbles_var, onvalue=True, offvalue=False, command=update_config)
-use_bubbles_checkbutton.grid(column=3, row=0, padx=5, pady=5)
+score_as_nra_checkbutton = ttk.Checkbutton(orion_tab_lower_buttons_frame, text='Score as NRA A-17 target', style='Switch.TCheckbutton', variable=score_as_nra_var, onvalue=True, offvalue=False)
+score_as_nra_checkbutton.grid(column=0, row=0, padx=5, pady=5)
+
+use_bubbles_checkbutton = ttk.Checkbutton(orion_tab_lower_buttons_frame, text='Name from bubbles', style='Switch.TCheckbutton', variable=use_bubbles_var, onvalue=True, offvalue=False, command=update_config)
+use_bubbles_checkbutton.grid(column=1, row=0, padx=5, pady=5)
 #endregion
 
-#region Orion scored as NRA tab
-load_image_button_orion_nra = ttk.Button(orion_as_nra_frame, text = "Select image", command = lambda: load_image_orion("orion-nrascoring"))
-load_image_button_orion_nra.grid(row=0, column=0, padx=5, pady=5)
+#region Orion 50ft conventional tab
+load_image_conventional_button = ttk.Button(orion50ft_buttons_frame, text = "Select image", command=lambda: load_image(TargetTypes.ORION_50FT_CONVENTIONAL))
+load_image_conventional_button.grid(row=0, column=0, padx=5, pady=5)
 
-analyze_orion_target_button_nra = ttk.Button(orion_as_nra_frame, text = "Analyze with NRA A-17 scoring", command = lambda: analyze_target("orion-nrascoring"))
-analyze_orion_target_button_nra.grid(row=0, column=1, padx=5, pady=5)
+analyze_50ft_conventional_target_button = ttk.Button(orion50ft_buttons_frame, text = "Analyze target", command=lambda: analyze_target(ScoringTypes.ORION_50FT_CONVENTIONAL))
+analyze_50ft_conventional_target_button.grid(row=0, column=1, padx=5, pady=5)
 
-open_folder_orion_target_button_nra = ttk.Button(orion_as_nra_frame, text = "Open folder", command = open_folder_orion) # works for both orion and orion-nrascoring by checking which tab is active
-open_folder_orion_target_button_nra.grid(row=0, column=2, padx=5, pady=5)
-
-use_bubbles_checkbutton_nra = ttk.Checkbutton(orion_as_nra_frame, text='Name from bubbles', style='Switch.TCheckbutton', variable=use_bubbles_var, onvalue=True, offvalue=False, command=update_config)
-use_bubbles_checkbutton_nra.grid(column=3, row=0, padx=5, pady=5)
-#endregion
+open_folder_conventional_button = ttk.Button(orion50ft_buttons_frame, text = "Open folder", command=lambda: open_folder(ScoringTypes.ORION_50FT_CONVENTIONAL))
+open_folder_conventional_button.grid(row=0, column=2, padx=5, pady=5)
 
 #region Canvases for target previews
 # NRA tab canvases
@@ -2955,9 +3468,9 @@ right_canvas.grid(row = 0, column = 1, padx=5, pady=5)
 orion_single_canvas = tk.Canvas(orion_bottom_frame, width=230,height=300)
 orion_single_canvas.grid(row = 0, column = 0)
 
-# Orion as NRA tab canvases
-orion_single_canvas_nra = tk.Canvas(orion_as_nra_bottom_frame, width=230,height=300)
-orion_single_canvas_nra.grid(row = 0, column = 0)
+# Orion 50ft conventional canvas
+orion_50ft_conventional_canvas = tk.Canvas(orion50ft_bottom_frame, width=230,height=300)
+orion_50ft_conventional_canvas.grid(row = 0, column = 0)
 #endregion
 
 tk.mainloop()
