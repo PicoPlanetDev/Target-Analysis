@@ -1996,11 +1996,13 @@ def open_settings():
     settingstab1nraa17 = ttk.Frame(settings_tab_control)
     settingstab2orion = ttk.Frame(settings_tab_control)
     settingstab3orionDPI2 = ttk.Frame(settings_tab_control)
+    settingstab5orion50ft = ttk.Frame(settings_tab_control)
     settingstab4names = ttk.Frame(settings_tab_control)
 
     settings_tab_control.add(settingstab1nraa17, text ='NRA A-17')
     settings_tab_control.add(settingstab2orion, text ='NRA/USAS-50 Orion 300dpi')
     settings_tab_control.add(settingstab3orionDPI2, text ='NRA/USAS-50 Orion 600dpi')
+    settings_tab_control.add(settingstab5orion50ft, text ='Orion 50ft Conventional')
     settings_tab_control.add(settingstab4names, text ='Names')
 
     settings_tab_control.pack(side=TOP, fill=X, padx=10, pady=5)
@@ -3082,7 +3084,7 @@ def analyze_50ft_conventional(image):
 
     #region Identify the hole in the target
     # Make the image binary using a threshold
-    img_thresholded = cv2.inRange(img, (nra_thresh_min.get(), nra_thresh_min.get(), nra_thresh_min.get()), (nra_thresh_max.get(), nra_thresh_max.get(), nra_thresh_max.get()))
+    img_thresholded = cv2.inRange(img, (orion_thresh_min.get(), orion_thresh_min.get(), orion_thresh_min.get()), (orion_thresh_max.get(), orion_thresh_max.get(), orion_thresh_max.get()))
     #cv2.imshow('Image Thresholded', img_thresholded)
 
     # Remove noise from the binary image using the opening operation
@@ -3098,8 +3100,8 @@ def analyze_50ft_conventional(image):
         area = cv2.contourArea(contour)
         #print(area)
         # Check if area is between max and min values for a bullet hole. Area is usually about 1000
-        if area<nra_max_contour_area.get() and area>nra_min_contour_area.get():
-            print("Area: " + str(area))
+        if area<orion50ftconventional_max_contour_area.get() and area>orion50ftconventional_min_contour_area.get():
+            #print("Area: " + str(area))
             # Draw the detected contour for debugging
             cv2.drawContours(output,[contour],0,(255,0,0),2)
 
@@ -3109,7 +3111,7 @@ def analyze_50ft_conventional(image):
             hole_center = (int(hole_x),int(hole_y))
             hole_radius = int(hole_radius)
             #print(hole_radius)
-            if hole_radius < nramax_hole_radius.get():
+            if hole_radius <= orion50ftconventional_max_hole_radius.get():
                 #cv2.circle(output,hole_center,hole_radius,(0,255,0),2) # Enclosing circle
                 cv2.circle(output, hole_center, 1, (0, 0, 255), 3) # Dot at the center
 
@@ -3252,6 +3254,12 @@ nra_morphology_opening_kernel_size = tk.IntVar(root, 10)
 nra_min_contour_area = tk.IntVar(root, 200)
 nra_max_contour_area = tk.IntVar(root, 1500)
 nramax_hole_radius = tk.IntVar(root, 40)
+#endregion
+
+#region Fine tuning settings for Orion 50ft conventional targets
+orion50ftconventional_min_contour_area = tk.IntVar(root, 200)
+orion50ftconventional_max_contour_area = tk.IntVar(root, 5000)
+orion50ftconventional_max_hole_radius = tk.IntVar(root, 40)
 #endregion
 
 # Check for a config file. If it exists, load the values from it. Otherwise, create a config file frome the defaults.
