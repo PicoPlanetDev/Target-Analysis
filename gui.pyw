@@ -1515,8 +1515,8 @@ def open_settings():
     #region Create settings window
     settings_window = tk.Toplevel(root)
     settings_window.title("Target Analysis")
-    settings_window.minsize(width=600, height=640)
-    settings_window.geometry("600x640")
+    settings_window.minsize(width=700, height=640)
+    settings_window.geometry("700x640")
     settings_window.tk.call('wm', 'iconphoto', settings_window._w, tk.PhotoImage(file='assets/icon.png'))
     #endregion
 
@@ -1779,6 +1779,32 @@ def open_settings():
     orionmax_hole_radius_dpi2_entry.grid(row=16, column=1)
     #endregion
 
+    #region Create 50ft conventional widgets
+
+    # Header label
+    settings_label_50ft = ttk.Label(settingstab5orion50ft, text="50ft Conventional" , font='bold')
+    settings_label_50ft.grid(row=0, column=0, columnspan=2)
+
+    # Notes label
+    settings_label_50ft_notes = ttk.Label(settingstab5orion50ft, text="Inherits from Orion and NRA for settings that aren't listed")
+    settings_label_50ft_notes.grid(row=1, column=0, columnspan=2)
+
+    nra_min_contour_area_label = ttk.Label(settingstab5orion50ft, text="50ft conv Min cnt area")
+    nra_min_contour_area_label.grid(row=2, column=0)
+    nra_min_contour_area_entry = ttk.Entry(settingstab5orion50ft, textvariable=orion50ftconventional_min_contour_area)
+    nra_min_contour_area_entry.grid(row=2, column=1)
+
+    nra_max_contour_area_label = ttk.Label(settingstab5orion50ft, text="50ft conv Max cnt area")
+    nra_max_contour_area_label.grid(row=3, column=0)
+    nra_max_contour_area_entry = ttk.Entry(settingstab5orion50ft, textvariable=orion50ftconventional_max_contour_area)
+    nra_max_contour_area_entry.grid(row=3, column=1)
+
+    nramax_hole_radius_label = ttk.Label(settingstab5orion50ft, text="50ft conv Max hole radius")
+    nramax_hole_radius_label.grid(row=4, column=0)
+    nramax_hole_radius_entry = ttk.Entry(settingstab5orion50ft, textvariable=orion50ftconventional_max_hole_radius)
+    nramax_hole_radius_entry.grid(row=4, column=1)
+    #endregion
+
     #region Create names
     # Frame is named 'settingstab4names'
     # TODO: Add built in support for editing names file
@@ -1795,6 +1821,8 @@ def open_settings():
     #endregion
 
     settings_window.protocol("WM_DELETE_WINDOW", on_close_settings) # If the settings window is closing, run the on_close_settings function
+
+# ----------------------------- Config functions ----------------------------- #
 
 # Read settings from config file and apply them to the necessary tk vars
 def update_settings_from_config(file):
@@ -1843,6 +1871,11 @@ def update_settings_from_config(file):
     nra_min_contour_area.set(config.getint("nra", "nra_min_contour_area"))
     nra_max_contour_area.set(config.getint("nra", "nra_max_contour_area"))
     nramax_hole_radius.set(config.getint("nra", "nramax_hole_radius"))
+
+    # 50ft conventional
+    orion50ftconventional_min_contour_area.set(config.getint("50ftconventional", "50ftconventional_min_contour_area"))
+    orion50ftconventional_max_contour_area.set(config.getint("50ftconventional", "50ftconventional_max_contour_area"))
+    orion50ftconventional_max_hole_radius.set(config.getint("50ftconventional", "50ftconventional_max_hole_radius"))
 
 # Save settings to config file
 def create_default_config(file):
@@ -1897,6 +1930,13 @@ def create_default_config(file):
     config.set('nra', 'nra_max_contour_area', str(nra_max_contour_area.get()))
     config.set('nra', 'nramax_hole_radius', str(nramax_hole_radius.get()))
 
+    # Add the 50ft conventional section to the config file
+    config.add_section('50ftconventional')
+    # Settings for the 50ft convetional targets
+    config.set('50ftconventional', '50ftconventional_min_contour_area', str(orion50ftconventional_min_contour_area.get()))
+    config.set('50ftconventional', '50ftconventional_max_contour_area', str(orion50ftconventional_max_contour_area.get()))
+    config.set('50ftconventional', '50ftconventional_max_hole_radius', str(orion50ftconventional_max_hole_radius.get()))
+
     # Write the changes to the config file
     with open(file, 'w') as f:
         config.write(f)
@@ -1944,6 +1984,10 @@ def update_config():
     config.set('nra', 'nra_min_contour_area', str(nra_min_contour_area.get()))
     config.set('nra', 'nra_max_contour_area', str(nra_max_contour_area.get()))
     config.set('nra', 'nramax_hole_radius', str(nramax_hole_radius.get()))
+    # Continue updating the settings for the 50ft conventional section
+    config.set('nra', '50ftconventional_min_contour_area', str(orion50ftconventional_min_contour_area.get()))
+    config.set('nra', '50ftconventional_max_contour_area', str(orion50ftconventional_max_contour_area.get()))
+    config.set('nra', '50ftconventional_max_hole_radius', str(orion50ftconventional_max_hole_radius.get()))
 
     # Write the changes to the config file
     with open('config.ini', 'w') as f:
@@ -2560,7 +2604,7 @@ def analyze_orion_image_nra_scoring(image):
         cv2.waitKey(0)
     cv2.imwrite(image + "-output.jpg", output) # Save the output image
 
-# TODO: Fix mulipliers etc
+# Derived from analyze_image
 def analyze_50ft_conventional(image):
     # Basic implementation of the distance formula
     def compute_distance(x1, y1, x2, y2):
@@ -2728,12 +2772,13 @@ def analyze_50ft_conventional(image):
 
 # --------------------------------- Enums ------------------------------------ #
 
-# Explanation of the enums:
+#region Explanation of the enums:
 # TargetTypes has definitions for the left and right image on an NRA-A17 target.
 # Scoring types simply has the NRA definition
 # TargetTypes is used for load image and crop image
 # While ScoringTypes is used for scoring images and opening a folder
 # See TODO below for more info
+#endregion
 
 class TargetTypes(Enum):
     NRA_LEFT = 'nra-left'
@@ -3022,6 +3067,7 @@ analyze_50ft_conventional_target_button.grid(row=0, column=1, padx=5, pady=5)
 
 open_folder_conventional_button = ttk.Button(orion50ft_buttons_frame, text = "Open folder", command=lambda: open_folder(ScoringTypes.ORION_50FT_CONVENTIONAL))
 open_folder_conventional_button.grid(row=0, column=2, padx=5, pady=5)
+#endregion
 
 #region Canvases for target previews
 # NRA tab canvases
