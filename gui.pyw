@@ -3069,6 +3069,11 @@ analyze_50ft_conventional_target_button.grid(row=0, column=1, padx=5, pady=5)
 
 open_folder_conventional_button = ttk.Button(orion50ft_buttons_frame, text = "Open folder", command=lambda: open_folder(ScoringTypes.ORION_50FT_CONVENTIONAL))
 open_folder_conventional_button.grid(row=0, column=2, padx=5, pady=5)
+
+#TODO: fix position for bubbles on new 50ft conventional targets
+
+# use_bubbles_checkbutton = ttk.Checkbutton(orion50ft_buttons_frame, text='Name from bubbles', style='Switch.TCheckbutton', variable=use_bubbles_var, onvalue=True, offvalue=False, command=update_config)
+# use_bubbles_checkbutton.grid(column=3, row=0, padx=5, pady=5)
 #endregion
 
 #region Canvases for target previews
