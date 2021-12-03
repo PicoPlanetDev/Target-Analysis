@@ -46,10 +46,10 @@ from enum import Enum
 
 # Loads an image for any target type
 def load_image(target_type):
-    """Prompts the user to select an image from their computer for analysis
+    """Prompts the user to select an image from their computer, adds it to the preview, and calls the appropriate function to crop the image
 
     Args:
-        target_type (TargetType): NRA_LEFT, NRA_RIGHT, ORION_USAS_50, ORION_USAS_50_NRA_SCORING, ORION_50FT_CONVENTIONAL
+        target_type (TargetType): The type of target to load the image for
     """
 
     #region Type-specific changes
@@ -96,6 +96,13 @@ def load_image(target_type):
 
 # Crops the image based on the given target_type and saves the bulls to images/output
 def crop_image(image, target_type):
+    """Crops the given image based on the given target_type and saves the bulls to images/output
+
+    Args:
+        image (cv2 image): The image to crop
+        target_type (TargetTypes): The type of target to crop
+    """
+
     main_label.config(text="Cropping image...") # Update main label
     check_output_dir()
 
@@ -705,11 +712,15 @@ def create_csv():
 
 # --------------------------- Open folder functions -------------------------- #
 
+# Opens a folder of images for any scoring type
 def open_folder(scoring_type):
     """Loads, crops, and analyzes all files in a user-selected folder
 
     Args:
         scoring_type (ScoringTypes): The type of target that is in the folder
+    
+    Special note:
+        This function uses ScoringTypes because it automatically distinguishes between left and right NRA targets
     """    
     global is_opening_folder
     is_opening_folder = True # Keep track of whether or not the folder is being opened
