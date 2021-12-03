@@ -728,9 +728,9 @@ def open_folder_nra():
             file_image = cv2.imread(path) # Open the image
             # Check if the image is a left or right image
             if "left" in file:
-                crop_left(file_image)
+                crop_image(file_image, TargetTypes.NRA_LEFT)
             elif "right" in file:
-                crop_right(file_image)
+                crop_image(file_image, TargetTypes.NRA_RIGHT)
             
             file_num += 1 # Increment the file number
 
@@ -766,7 +766,7 @@ def open_folder_orion():
             path = folder + "/" + file # Get the path to the file
             set_info_from_file(file) # Set the info from the file (correct naming is important for this operation)
             file_image = cv2.imread(path) # Open the image for OpenCV
-            crop_orion(file_image) # Crop the image
+            crop_image(file_image, TargetTypes.ORION_USAS_50) # Crop the image
             if tab_control.index("current") == 1: # If the tab is the Orion tab
                 analyze_target("orion") # Analyze the target
             elif tab_control.index("current") == 2: # If the tab is the Orion as NRA tab
