@@ -44,95 +44,6 @@ from enum import Enum
 
 # --------------------------- Load image functions --------------------------- #
 
-# Loads an image for the left side of the target
-def load_image_left():
-    """
-    Prompts the user to select an image from their computer which is used for the left scan of the NRA A-17 target.
-    """
-    main_label.config(text="Loading left image...") # Update the main label
-
-    left_canvas.delete("all") # Clear the left canvas in case it already has an image
-
-    image_file = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
-    left_image = cv2.imread(image_file) # Load the image for OpenCV image
-
-    # If the user wants to use information from the file name, do so
-    if use_file_info_var.get() is True:
-        set_info_from_file(image_file)
-
-    left_canvas.grid(row = 0, column = 0) # Refresh the canvas
-    
-    global left_preview # Images must be stored globally to be show on the canvas
-    left_preview = ImageTk.PhotoImage(Image.open(image_file).resize((230, 350), Image.ANTIALIAS)) # Store the image as a tkinter photo image and resize it
-    left_canvas.create_image(0, 0, anchor="nw", image=left_preview) # Place the image on the canvas
-
-    main_label.config(text="Right image loaded") # Update the main label
-
-    root.minsize(550,540) # Increase the window size to accomodate the image
-
-    crop_left(left_image) # Crop the image to prepare for analysis
-
-# Loads an image for the right side of the target
-def load_image_right():
-    """
-    Prompts the user to select an image from their computer which is used for the right scan of the NRA A-17 target.
-    """
-    main_label.config(text="Loading right image...") # Update the main label
-
-    right_canvas.delete("all") # Clear the right canvas in case it already has an image
-
-    image_file = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
-    right_image = cv2.imread(image_file) # Load the image for OpenCV image
-
-    # If the user wants to use information from the file name, do so
-    if use_file_info_var.get() is True:
-        set_info_from_file(image_file)
-
-    right_canvas.grid(row = 0, column = 1) # Refresh the canvas
-    
-    global right_preview # Images must be stored globally to be show on the canvas
-    right_preview = ImageTk.PhotoImage(Image.open(image_file).resize((230, 350), Image.ANTIALIAS)) # Store the image as a tkinter photo image and resize it
-    right_canvas.create_image(0, 0, anchor="nw", image=right_preview) # Place the image on the canvas
-
-    main_label.config(text="Left image loaded") # Update the main label
-
-    root.minsize(550,540) # Increase the window size to accomodate the image
-
-    crop_right(right_image) # Crop the image to prepare for analysis
-
-# Loads an image for an Orion target
-def load_image_orion(target_type):
-    """Loads an image for an Orion target. and displays it on the preview canvas.
-
-    Args:
-        target_type (str): 'orion' or 'orion-nrascoring'
-    """
-    main_label.config(text="Loading image...") # Update the main label
-
-    if target_type == "orion": canvas = orion_single_canvas
-    elif target_type == "orion-nrascoring": canvas = orion_single_canvas_nra
-
-    canvas.delete("all") # Clear the orion single canvas in case it already has an image
-
-    image_file = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
-    single_image = cv2.imread(image_file) # Load the image for OpenCV image
-
-    # If the user wants to use information from the file name, do so
-    if use_file_info_var.get() is True:
-        set_info_from_file(image_file)
-
-    canvas.grid(row = 0, column = 0) # Refresh the canvas
-    
-    global orion_preview # Images must be stored globally to be show on the canvas
-    orion_preview = ImageTk.PhotoImage(Image.open(image_file).resize((230, 350), Image.ANTIALIAS)) # Store the image as a tkinter photo image and resize it
-    canvas.create_image(0, 0, anchor="nw", image=orion_preview) # Place the image on the canvas
-
-    main_label.config(text="Orion image loaded") # Update the main label
-
-    root.minsize(550,540) # Increase the window size to accomodate the image
-
-    crop_orion(single_image) # Crop the image to prepare for analysis
-
 # Loads an image for any target type
 def load_image(target_type):
     """Prompts the user to select an image from their computer for analysis
@@ -182,306 +93,6 @@ def load_image(target_type):
     crop_image(image, target_type) # Crop the image to prepare for analysis
 
 # --------------------------- Crop image functions --------------------------- #
-
-# Crop image for an Orion target
-def crop_orion(image):
-    """Crops the given image for an Orion NRA/USAS-50 target. Stores the cropped images in the images/output folder.
-
-    Args:
-        image (cv2 image): [description]
-    """    
-    main_label.config(text="Cropping image...") # Update the main label
-    check_output_dir() # Make sure the output directory exists
-
-    # Height and width are set once and used for all bulls
-    # The height and width are determined by the size of the image multipled by a ratio,
-    # allowing slight deviations in printer resolution to be ignored
-    h=int((400/3507)*image.shape[0])
-    w=int((400/2550)*image.shape[1])
-
-    y=int((425/3507)*image.shape[0])
-    x=int((1070/2550)*image.shape[1])
-    crop1 = image[y:y+h, x:x+w]
-
-    y=int((425/3507)*image.shape[0])
-    x=int((1920/2550)*image.shape[1])
-    crop2 = image[y:y+h, x:x+w]
-
-    y=int((1175/3507)*image.shape[0])
-    x=int((1920/2550)*image.shape[1])
-
-    crop3 = image[y:y+h, x:x+w]
-
-    y=int((1925/3507)*image.shape[0])
-    x=int((1920/2550)*image.shape[1])
-
-    crop4 = image[y:y+h, x:x+w]
-
-    y=int((2680/3507)*image.shape[0])
-    x=int((1920/2550)*image.shape[1])
-
-    crop5 = image[y:y+h, x:x+w]
-
-    y=int((2680/3507)*image.shape[0])
-    x=int((1070/2550)*image.shape[1])
-
-    crop6 = image[y:y+h, x:x+w]
-
-    y=int((420/3507)*image.shape[0])
-    x=int((225/2550)*image.shape[1])
-
-    crop7 = image[y:y+h, x:x+w]
-
-    y=int((1175/3507)*image.shape[0])
-    x=int((225/2550)*image.shape[1])
-
-    crop8 = image[y:y+h, x:x+w]
-
-    y=int((1925/3507)*image.shape[0])
-    x=int((225/2550)*image.shape[1])
-
-    crop9 = image[y:y+h, x:x+w]
-
-    y=int((2680/3507)*image.shape[0])
-    x=int((225/2550)*image.shape[1])
-
-    crop10 = image[y:y+h, x:x+w]
-
-    # Save the cropped images
-    cv2.imwrite("images/output/top-mid.jpg", crop1)
-    cv2.imwrite("images/output/top-right.jpg", crop2)
-    cv2.imwrite("images/output/upper-right.jpg", crop3)
-    cv2.imwrite("images/output/lower-right.jpg", crop4)
-    cv2.imwrite("images/output/bottom-right.jpg", crop5)
-    cv2.imwrite("images/output/bottom-mid.jpg", crop6)
-    cv2.imwrite("images/output/top-left.jpg", crop7)
-    cv2.imwrite("images/output/upper-left.jpg", crop8)
-    cv2.imwrite("images/output/lower-left.jpg", crop9)
-    cv2.imwrite("images/output/bottom-left.jpg", crop10)
-
-    if use_bubbles_var.get() and (tab_control.index("current") == 1 or tab_control.index("current") == 2):
-        main_label.config(text="Setting name from bubbles...")
-        set_name_from_bubbles(image)
-
-    main_label.config(text="Cropped image") # Update the main label
-
-# Crop image for an Orion target
-def crop_conventional(image):
-    """Crops the given image for an Orion 50ft Conventional target. Stores the cropped images in the images/output folder.
-
-    Args:
-        image (cv2 image): [description]
-    """    
-    main_label.config(text="Cropping image...") # Update the main label
-    check_output_dir() # Make sure the output directory exists
-
-    ratio_height = 3507
-    ratio_width = 2550
-
-    # Height and width are set once and used for all bulls
-    # The height and width are determined by the size of the image multipled by a ratio,
-    # allowing slight deviations in printer resolution to be ignored
-    bull_size = 600
-    h=int((bull_size/ratio_height)*image.shape[0])
-    w=int((bull_size/ratio_width)*image.shape[1])
-
-    # Positions as below
-    # (LeftX, TopY) (MidX, TopY) (RightX, TopY)
-    # (LeftX, UpperY) (RightX, UpperY)
-    # (LeftX, LowerY) (RightX, LowerY)
-    # (LeftX, BottomY) (MidX, BottomY) (RightX, BottomY)
-
-    leftX = 115
-    midX = 965
-    rightX = 1805
-
-    topY = 355
-    upperY = 1090
-    lowerY = 1850
-    bottomY = 2600
-
-    y=int((topY/ratio_height)*image.shape[0])
-    x=int((midX/ratio_width)*image.shape[1])
-    crop1 = image[y:y+h, x:x+w]
-
-    y=int((topY/ratio_height)*image.shape[0])
-    x=int((rightX/ratio_width)*image.shape[1])
-    crop2 = image[y:y+h, x:x+w]
-
-    y=int((upperY/ratio_height)*image.shape[0])
-    x=int((rightX/ratio_width)*image.shape[1])
-
-    crop3 = image[y:y+h, x:x+w]
-
-    y=int((lowerY/ratio_height)*image.shape[0])
-    x=int((rightX/ratio_width)*image.shape[1])
-
-    crop4 = image[y:y+h, x:x+w]
-
-    y=int((bottomY/ratio_height)*image.shape[0])
-    x=int((rightX/ratio_width)*image.shape[1])
-
-    crop5 = image[y:y+h, x:x+w]
-
-    y=int((bottomY/ratio_height)*image.shape[0])
-    x=int((midX/ratio_width)*image.shape[1])
-
-    crop6 = image[y:y+h, x:x+w]
-
-    y=int((topY/ratio_height)*image.shape[0])
-    x=int((leftX/ratio_width)*image.shape[1])
-
-    crop7 = image[y:y+h, x:x+w]
-
-    y=int((upperY/ratio_height)*image.shape[0])
-    x=int((leftX/ratio_width)*image.shape[1])
-
-    crop8 = image[y:y+h, x:x+w]
-
-    y=int((lowerY/ratio_height)*image.shape[0])
-    x=int((leftX/ratio_width)*image.shape[1])
-
-    crop9 = image[y:y+h, x:x+w]
-
-    y=int((bottomY/ratio_height)*image.shape[0])
-    x=int((leftX/ratio_width)*image.shape[1])
-
-    crop10 = image[y:y+h, x:x+w]
-
-    # Save the cropped images
-    cv2.imwrite("images/output/top-mid.jpg", crop1)
-    cv2.imwrite("images/output/top-right.jpg", crop2)
-    cv2.imwrite("images/output/upper-right.jpg", crop3)
-    cv2.imwrite("images/output/lower-right.jpg", crop4)
-    cv2.imwrite("images/output/bottom-right.jpg", crop5)
-    cv2.imwrite("images/output/bottom-mid.jpg", crop6)
-    cv2.imwrite("images/output/top-left.jpg", crop7)
-    cv2.imwrite("images/output/upper-left.jpg", crop8)
-    cv2.imwrite("images/output/lower-left.jpg", crop9)
-    cv2.imwrite("images/output/bottom-left.jpg", crop10)
-
-    if use_bubbles_var.get() and (tab_control.index("current") == 1 or tab_control.index("current") == 2):
-        main_label.config(text="Setting name from bubbles...")
-        set_name_from_bubbles(image)
-
-    main_label.config(text="Cropped image") # Update the main label
-
-# Crop image for right side of the target and start analysis process
-def crop_right(image):
-    """Crops the given image for the right side of an NRA A-17 target. Stores the cropped images in the images/output folder.
-
-    Args:
-        image (cv2 image): [description]
-    """ 
-    main_label.config(text="Cropping right image...") # Update main label
-
-    check_output_dir() # Make sure that output directory exists
-
-    #region Crop the image
-    # if dpi_var.get() == 2:
-    #     dsize = (2550, 3507)
-    #     image = cv2.resize(image, dsize, interpolation = cv2.INTER_LINEAR)
-
-    y=int((275/3507)*image.shape[0])
-    x=int((720/2550)*image.shape[1])
-    h=int((580/3507)*image.shape[0])
-    w=int((580/2550)*image.shape[1])
-    crop1 = image[y:y+h, x:x+w]
-
-    y=int((275/3507)*image.shape[0])
-    x=int((1760/2550)*image.shape[1])
-    h=int((580/3507)*image.shape[0])
-    w=int((580/2550)*image.shape[1])
-    crop2 = image[y:y+h, x:x+w]
-
-    y=int((1070/3507)*image.shape[0])
-    x=int((1760/2550)*image.shape[1])
-    h=int((580/3507)*image.shape[0])
-    w=int((580/2550)*image.shape[1])
-    crop3 = image[y:y+h, x:x+w]
-
-    y=int((1880/3507)*image.shape[0])
-    x=int((1760/2550)*image.shape[1])
-    h=int((580/3507)*image.shape[0])
-    w=int((580/2550)*image.shape[1])
-    crop4 = image[y:y+h, x:x+w]
-
-    y=int((2680/3507)*image.shape[0])
-    x=int((1760/2550)*image.shape[1])
-    h=int((580/3507)*image.shape[0])
-    w=int((580/2550)*image.shape[1])
-    crop5 = image[y:y+h, x:x+w]
-
-    y=int((2680/3507)*image.shape[0])
-    x=int((720/2550)*image.shape[1])
-    h=int((580/3507)*image.shape[0])
-    w=int((580/2550)*image.shape[1])
-    crop6 = image[y:y+h, x:x+w]
-    #endregion
-
-    # Save the cropped sections
-    cv2.imwrite("images/output/top-mid.jpg", crop1)
-    cv2.imwrite("images/output/top-right.jpg", crop2)
-    cv2.imwrite("images/output/upper-right.jpg", crop3)
-    cv2.imwrite("images/output/lower-right.jpg", crop4)
-    cv2.imwrite("images/output/bottom-right.jpg", crop5)
-    cv2.imwrite("images/output/bottom-mid.jpg", crop6)
-
-    main_label.config(text="Cropped right image") # Update the main label
-
-# Crop image for left side of the target and start analysis process
-def crop_left(image):
-    """Crops the given image for the left side of an NRA A-17 target, which includes flipping the image. Stores the cropped images in the images/output folder.
-
-    Args:
-        image (cv2 image): [description]
-    """ 
-    main_label.config(text="Cropping left image...") # Update main label
-
-    check_output_dir() # Make sure that output directory exists
-
-    # Flips the image vertically and horizontally before cropping
-    verticalFlippedImage = cv2.flip(image, -1)
-    cv2.imwrite("images/output/vertical-flipped.jpg", verticalFlippedImage)
-
-    #region Crop each image
-    # if dpi_var.get() == 2:
-    #     dsize = (2550, 3507)
-    #     verticalFlippedImage = cv2.resize(verticalFlippedImage, dsize, interpolation = cv2.INTER_LINEAR)
-
-    ratio_height = 3507
-    ratio_width = 2550
-
-    bull_size = 580
-    h=int((bull_size/ratio_height)*image.shape[0])
-    w=int((bull_size/ratio_width)*image.shape[1])
-
-    leftX = 185
-
-    y=int((240/ratio_height)*image.shape[0])
-    x=int((leftX/ratio_width)*image.shape[1])
-    crop2 = verticalFlippedImage[y:y+h, x:x+w]
-
-    y=int((1040/ratio_height)*image.shape[0])
-    x=int((leftX/ratio_width)*image.shape[1])
-    crop3 = verticalFlippedImage[y:y+h, x:x+w]
-
-    y=int((1840/ratio_height)*image.shape[0])
-    x=int((leftX/ratio_width)*image.shape[1])
-    crop4 = verticalFlippedImage[y:y+h, x:x+w]
-
-    y=int((2645/ratio_height)*image.shape[0])
-    x=int((leftX/ratio_width)*image.shape[1])
-    crop5 = verticalFlippedImage[y:y+h, x:x+w]
-    #endregion
-
-    # Save the cropped sections
-    cv2.imwrite("images/output/top-left.jpg", crop2)
-    cv2.imwrite("images/output/upper-left.jpg", crop3)
-    cv2.imwrite("images/output/lower-left.jpg", crop4)
-    cv2.imwrite("images/output/bottom-left.jpg", crop5)
-
-    main_label.config(text="Cropped image") # Update the main label
 
 # Crops the image based on the given target_type and saves the bulls to images/output
 def crop_image(image, target_type):
@@ -637,7 +248,7 @@ def crop_image(image, target_type):
 
         crop4 = image[y:y+h, x:x+w]
 
-        y=int((lowerY/ratio_height)*image.shape[0])
+        y=int((bottomY/ratio_height)*image.shape[0])
         x=int((rightX/ratio_width)*image.shape[1])
 
         crop5 = image[y:y+h, x:x+w]
@@ -646,6 +257,14 @@ def crop_image(image, target_type):
         x=int((midX/ratio_width)*image.shape[1])
 
         crop6 = image[y:y+h, x:x+w]
+
+        # NOTE: STUFF BELOW IS STRANGE
+        # crop7 represents the top-left corner of the bull
+        # and the following go DOWN the left side
+        # now this is illogical, but apparently I do it
+        # throughout the program and is a leftover from
+        # the left/right cropping of NRA targets
+        # Therefore, I'm just going to leave it as is
 
         y=int((topY/ratio_height)*image.shape[0])
         x=int((leftX/ratio_width)*image.shape[1])
@@ -662,7 +281,7 @@ def crop_image(image, target_type):
 
         crop9 = image[y:y+h, x:x+w]
 
-        y=int((lowerY/ratio_height)*image.shape[0])
+        y=int((bottomY/ratio_height)*image.shape[0])
         x=int((leftX/ratio_width)*image.shape[1])
 
         crop10 = image[y:y+h, x:x+w]
