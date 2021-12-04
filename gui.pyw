@@ -214,7 +214,7 @@ def crop_image(image, target_type):
             topY = 425
             upperY = 1175
             lowerY = 1925
-            lowerY = 2680
+            bottomY = 2680
 
         # Set positions for Orion 50ft conventional targets
         if target_type == TargetTypes.ORION_50FT_CONVENTIONAL:
@@ -1037,6 +1037,26 @@ def load_names_config():
 
 # No update_names_config here because I haven't implemented GUI names editing yet
 
+# ----------------------------- Barcode functions ---------------------------- #
+
+# Cursed code that doesn't exist
+def crop_barcode(image):
+    ratio_height = 3507
+    ratio_width = 2550
+    
+    h=int((300/ratio_height)*image.shape[0])
+    w=int((420/ratio_width)*image.shape[1])
+
+    y=int((0/ratio_height)*image.shape[0])
+    x=int((65/ratio_width)*image.shape[1])
+    crop = image[y:y+h, x:x+w]
+
+    return crop
+
+def read_barcode(image):
+    barcode = cv2.barcode_BarcodeDetector()
+    ok, decoded_info, decoded_type, corners = barcode.detectAndDecode(image)
+
 # -------------------------- Miscellaneous functions ------------------------- #
 
 # Delete all files in the /data and /images/output folders
@@ -1231,7 +1251,7 @@ def show_trends():
     load_csv_button = ttk.Button(trends_window, text="Load CSV (for graph)", command=showTrendGraph)
     load_csv_button.pack(padx=10, pady=0)
 
-# ------------------------------ Teams funtions ------------------------------ #
+# ------------------------------ Teams functions ------------------------------ #
 
 # Open teams editor window
 def open_teams_window():
