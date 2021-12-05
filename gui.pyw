@@ -308,7 +308,7 @@ def crop_image(image, target_type):
     # Get name from bubbles if enabled
     if use_bubbles_var.get() and (tab_control.index("current") == 1 or tab_control.index("current") == 2):
         main_label.config(text="Setting name from bubbles...")
-        set_name_from_bubbles(image)
+        set_name_from_bubbles(image, target_type)
     
     main_label.config(text="Cropped image") # Update the main label
 
@@ -828,7 +828,7 @@ def set_info_from_today():
 # ----------------------------- Bubbles functions ---------------------------- #
 
 # Set shooter name from initials on Orion targets
-def set_name_from_bubbles(image):
+def set_name_from_bubbles(image, target_type):
     check_output_dir()
 
     DEFAULT_RADIUS = 15
@@ -886,6 +886,9 @@ def set_name_from_bubbles(image):
         # A B C D E F G H I J K L M on top row
         # N O P Q R S T U V W X Y Z on bottom row
 
+        # Default positions for Orion USAS-50 targets
+        # Positions are represented as such:
+        # index: (minPos, maxPos)
         letter_x_positions = {
             0: (60,100),
             1: (105, 140),
@@ -906,6 +909,29 @@ def set_name_from_bubbles(image):
             0: (95,135),
             1: (145, 185),
         }
+
+        # Sligtly different positions for Orion 50ft conventional targets
+        if target_type == TargetTypes.ORION_50FT_CONVENTIONAL:
+            letter_x_positions = {
+            0: (50,90),
+            1: (95, 130),
+            2: (135, 170),
+            3: (180, 215),
+            4: (220, 260),
+            5: (265, 295),
+            6: (300, 340),
+            7: (345, 385),
+            8: (390, 425),
+            9: (430, 465),
+            10: (470, 510),
+            11: (515, 550),
+            12: (555, 590)
+            }
+
+            y_positions = {
+                0: (125,165),
+                1: (175, 210),
+            }
 
         letter_key = None
         for key, value in letter_x_positions.items():
@@ -981,8 +1007,6 @@ def set_name_from_bubbles(image):
             #print(letter)
 
     cv2.imwrite("images/output/bubbles.jpg", output)
-
-    #print(letters)
 
     def initals_to_name(letter_list):
         letters = sorted(letter_list) # Sort the given list of letters
@@ -3092,8 +3116,8 @@ open_folder_conventional_button.grid(row=0, column=2, padx=5, pady=5)
 
 #TODO: fix position for bubbles on new 50ft conventional targets
 
-# use_bubbles_checkbutton = ttk.Checkbutton(orion50ft_buttons_frame, text='Name from bubbles', style='Switch.TCheckbutton', variable=use_bubbles_var, onvalue=True, offvalue=False, command=update_config)
-# use_bubbles_checkbutton.grid(column=3, row=0, padx=5, pady=5)
+use_bubbles_checkbutton = ttk.Checkbutton(orion50ft_buttons_frame, text='Name from bubbles', style='Switch.TCheckbutton', variable=use_bubbles_var, onvalue=True, offvalue=False, command=update_config)
+use_bubbles_checkbutton.grid(column=3, row=0, padx=5, pady=5)
 #endregion
 
 #region Canvases for target previews
