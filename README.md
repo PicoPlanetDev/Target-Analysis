@@ -2,29 +2,31 @@
 
 An automated computer target scoring system
 
-Currently, the target analysis Python script allows you to automatically:
+Currently, the Target Analysis system allows you to automatically:
 - Score a target
   - NRA A-17
-  - NRA/USAS-50 Orion
-  - NRA/USAS-50 Orion scored as NRA A-17
-- Automatic naming
+  - NRA/USAS-50 Orion (can also score as NRA A-17)
+  - Orion 50ft Conventional
+- Automatic target naming
   - From filename
   - Using today's date
   - Using initals bubbled in on NRA/USAS-50 Orion target
   - Or, custom name and date
 - Batch scoring of all targets in folder
-- Save data to Excel-ready CSV files
+- Save data to Excel-compatible CSV files
 - Show most and least missed bulls
 - Show single shooter trends across a range of dates
 
 ## Creator
 
-Created by Sigmond Kukla for the Mt. Lebanon Rifle Team in 2021. Project started in May 2021, currently in active development.
+Created by Sigmond Kukla for the Mt. Lebanon Rifle Team in 2021. Project started in May 2021, still in active development.
 
 ## License
 Please see [LICENSE.md](https://github.com/PicoPlanetDev/Target-Analysis/blob/main/LICENSE.md) for license information. This work is published under exclusive copyright to the developer.
 
-## Comparison to hand scoring
+## Comparison to human scoring
+I don't think that it is fair to think of the system as "accurate" or not, because it is just a set of if statements - does the shot touch both rings? nope, just the inside? if so, it scores an X. Instead I look for reliablility, where the system will consistently score a shot the same each time. Similarly, the only way to judge this reliablility is to compare it to a human scorer, but even that is not perfect. Explanation below:
+
 On average, Target Analysis scores $\frac{1}{2}$ point harsher per target than a human scorer, due to human bias towards the shooter as documented [here](https://www.orionscoringsystem.com/orion/SupportFaq.aspx?FaqID=75). However, statistically, the system is $\frac{1}{10}$ more likely to score a doubtful shot as an X. In testing, the Target Analysis system reaches a higher statistical accuracy than the Orion scoring system.
 
 ![Excel Spreadsheet](https://github.com/PicoPlanetDev/Target-Analysis/blob/main/help/accuracy-vs-hand-scored.png?raw=true)
