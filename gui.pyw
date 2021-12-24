@@ -1627,7 +1627,7 @@ def open_settings():
     settings_label1 = ttk.Label(settings_top_frame, text="Settings", font='bold')
     settings_label1.pack(side=TOP)
     # Warning label
-    settings_label2 = ttk.Label(settings_top_frame, text="⚠️ Change these only if the software does not work properly ⚠️")
+    settings_label2 = ttk.Label(settings_top_frame, text="Change these only if the software does not work properly!")
     settings_label2.pack(side=TOP)
     # Separator
     label_separator = ttk.Separator(settings_top_frame, orient=HORIZONTAL)
