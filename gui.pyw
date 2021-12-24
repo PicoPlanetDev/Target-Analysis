@@ -560,7 +560,7 @@ def show_folder(path):
 # Open file with default viewer
 def open_file(file):
     main_label.config(text="Opening file " + str(file)) # Update the main label
-    os.system("start " + file) # Run a system command to open the file using the default viewer (should work on any operating system)
+    os.system(file) # Run a system command to open the file using the default viewer (should work on any operating system)
 
 # Ensure that an image/output directory is available to save images
 def check_output_dir():
@@ -1431,7 +1431,7 @@ def open_teams_window():
     team1_x_count_label = ttk.Label(team1_results_frame, text="Please load scores")
     team1_x_count_label.grid(row=1, column=1, padx=10, pady=10)
 
-    team1_open_csv_button = ttk.Button(team1_results_frame, text="Open CSV", command=lambda: open_file("data/team1.csv"))
+    team1_open_csv_button = ttk.Button(team1_results_frame, text="Open CSV", command=lambda: open_file('"' + os.getcwd() + "/data/team1.csv"  + '"'))
     team1_open_csv_button.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
     #endregion
 
@@ -1443,7 +1443,7 @@ def open_teams_window():
     team2_x_count_label = ttk.Label(team2_results_frame, text="Please load scores")
     team2_x_count_label.grid(row=1, column=1, padx=10, pady=10)
 
-    team2_open_csv_button = ttk.Button(team2_results_frame, text="Open CSV", command=lambda: open_file("data/team2.csv"))
+    team2_open_csv_button = ttk.Button(team2_results_frame, text="Open CSV", command=lambda: open_file('"' + os.getcwd() + "/data/team2.csv"  + '"'))
     team2_open_csv_button.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
     #endregion
 
