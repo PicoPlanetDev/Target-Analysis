@@ -2054,9 +2054,10 @@ def analyze_image(image):
     seven = 20.750/outer
     eight = 12.270/outer
     nine = 3.810/outer
-
-    spindle_radius = 2.83
-    outer_spindle_radius = 4.5
+    # TODO: Implement the outer scoring spindle for all compatible targets
+    # TODO: Determine the actual size of the outer spindle
+    spindle_radius = 2.83 # Technically 2.835mm based on averages
+    outer_spindle_radius = 4.5 # Technically 4.5025mm
     #endregion
 
     # Hold local dropped points and x count variables
