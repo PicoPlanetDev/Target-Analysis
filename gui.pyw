@@ -346,7 +346,8 @@ def scan_image():
     image_name = create_image_name() # Create the image name
 
     working_dir = os.getcwd() # Store the current working directory
-    command = '"' + working_dir + '\\assets\wia-cmd-scanner.exe" /w 0 /h 0 /dpi 300 /color RGB /format JPG /output ' + '"' + working_dir + '\images\\' + image_name + '"' # Create the command to run the scanner
+    # Scanning uses WINDOWS ONLY wia-cmd-scanner.exe from https://github.com/nagimov/wia-cmd-scanner
+    command = '"' + working_dir + '\\assets\wia-cmd-scanner\wia-cmd-scanner.exe" /w 0 /h 0 /dpi 300 /color RGB /format JPG /output ' + '"' + working_dir + '\images\\' + image_name + '"' # Create the command to run the scanner
     # os.system doesn't work for multiple quoted commands therefore we use call to run the command
     os.system('call ' + command)
     main_label.config(text="Image scanned as " + image_name) # Update the main label
