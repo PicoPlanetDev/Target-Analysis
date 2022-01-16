@@ -92,6 +92,42 @@ def load_image(target_type):
 
     crop_image(image, target_type) # Crop the image to prepare for analysis
 
+# Get image from scanner
+def scan_image():
+    # The scanner needs to scan an image to a specific file name. To maintain compatibility with Target Analysis, create a file name based on what is entered in the UI.
+    def create_image_name():
+        # Create a dictionary to convert the full month name to 3 letters
+        months = {
+            'January': 'jan', 
+            'February': 'feb',
+            'March': 'mar',
+            'April': 'apr',
+            'May': 'may',
+            'June': 'jun',
+            'July': 'jul',
+            'August': 'aug',
+            'September': 'sep',
+            'October': 'oct',
+            'November': 'nov',
+            'December': 'dec',
+        }
+        # Use a try-except to alert the user if the date is invalid
+        try: month = months[month_var.get()] # Get the month as a 3 letter string
+        except:
+            main_label.config(text="Error: Invalid month entered")
+            print("Error: Invalid month entered")
+            month = 'err'
+        return day_var.get() + month + year_var.get() + name_var.get() + target_num_var.get() + ".jpg" # Create the image name
+    
+    image_name = create_image_name() # Create the image name
+
+    working_dir = os.getcwd() # Store the current working directory
+    command = '"' + working_dir + '\\assets\wia-cmd-scanner.exe" /w 0 /h 0 /dpi 300 /color RGB /format JPG /output ' + '"' + working_dir + '\images\\' + image_name + '"' # Create the command to run the scanner
+    # os.system doesn't work for multiple quoted commands therefore we use call to run the command
+    os.system('call ' + command)
+    main_label.config(text="Image scanned as " + image_name) # Update the main label
+    # The image is now stored in the images folder, where it can now be loaded
+
 # --------------------------- Crop image functions --------------------------- #
 
 # Crop the image based on the given target_type and saves the bulls to images/output
@@ -793,7 +829,8 @@ def set_info_from_file(file):
         'sep': 'September', 
         'oct': 'October', 
         'nov': 'November', 
-        'dec': 'December'}
+        'dec': 'December'
+    }
     
     # Replace the 3 letter month with the full name using the dictionary
     for short, full in months.items():
@@ -2941,6 +2978,7 @@ filemenu.add_command(label="Show in Explorer", command=lambda: show_folder(os.ge
 filemenu.add_command(label="Show Output", command=show_output, state=DISABLED)
 filemenu.add_command(label="Show Trends", command=show_trends)
 filemenu.add_command(label="Teams", command=open_teams_window)
+filemenu.add_command(label="Scan Image", command=scan_image)
 #filemenu.add_command(label="(Experimental) Load Outdoor", command=load_image_outdoor)
 filemenu.add_separator()
 filemenu.add_command(label="Settings", command=open_settings)
