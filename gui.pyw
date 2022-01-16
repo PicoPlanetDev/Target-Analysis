@@ -356,7 +356,9 @@ def scan_image():
 
 def scan_process(target_type):
     image_name = scan_image() # Scan and save an image, getting the image name
-    load_image(target_type, '"' + os.getcwd() + "\\" + image_name + '"') # Load the image
+    path = '"' + os.getcwd() + "\\" + image_name + '"'
+    print(path)
+    load_image(target_type, path) # Load the image
     analyze_target(target_type) # Analyze the image
 
 
