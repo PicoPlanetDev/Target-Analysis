@@ -45,11 +45,12 @@ from enum import Enum
 # --------------------------- Load image functions --------------------------- #
 
 # Load an image for any target type
-def load_image(target_type):
+def load_image(target_type, image_selector="ask"):
     """Prompts the user to select an image from their computer, adds it to the preview, and calls the appropriate function to crop the image
 
     Args:
         target_type (TargetType): The type of target to load the image for
+        image_selector (str): The image to load. If "ask" is passed, the user will be prompted to select an image.
     """
 
     #region Type-specific changes
@@ -67,7 +68,8 @@ def load_image(target_type):
 
     canvas.delete("all") # Clear the left canvas in case it already has an image
 
-    image_file = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
+    if image_selector == "ask": image_file = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
+    else: image_file = image_selector # Use the image passed in
     image = cv2.imread(image_file) # Load the image for OpenCV image
 
     # If the user wants to use information from the file name, do so
@@ -91,42 +93,6 @@ def load_image(target_type):
     root.minsize(550,540) # Increase the window size to accomodate the image
 
     crop_image(image, target_type) # Crop the image to prepare for analysis
-
-# Get image from scanner
-def scan_image():
-    # The scanner needs to scan an image to a specific file name. To maintain compatibility with Target Analysis, create a file name based on what is entered in the UI.
-    def create_image_name():
-        # Create a dictionary to convert the full month name to 3 letters
-        months = {
-            'January': 'jan', 
-            'February': 'feb',
-            'March': 'mar',
-            'April': 'apr',
-            'May': 'may',
-            'June': 'jun',
-            'July': 'jul',
-            'August': 'aug',
-            'September': 'sep',
-            'October': 'oct',
-            'November': 'nov',
-            'December': 'dec',
-        }
-        # Use a try-except to alert the user if the date is invalid
-        try: month = months[month_var.get()] # Get the month as a 3 letter string
-        except:
-            main_label.config(text="Error: Invalid month entered")
-            print("Error: Invalid month entered")
-            month = 'err'
-        return day_var.get() + month + year_var.get() + name_var.get() + target_num_var.get() + ".jpg" # Create the image name
-    
-    image_name = create_image_name() # Create the image name
-
-    working_dir = os.getcwd() # Store the current working directory
-    command = '"' + working_dir + '\\assets\wia-cmd-scanner.exe" /w 0 /h 0 /dpi 300 /color RGB /format JPG /output ' + '"' + working_dir + '\images\\' + image_name + '"' # Create the command to run the scanner
-    # os.system doesn't work for multiple quoted commands therefore we use call to run the command
-    os.system('call ' + command)
-    main_label.config(text="Image scanned as " + image_name) # Update the main label
-    # The image is now stored in the images folder, where it can now be loaded
 
 # --------------------------- Crop image functions --------------------------- #
 
@@ -347,6 +313,51 @@ def crop_image(image, target_type):
         set_name_from_bubbles(image, target_type)
     
     main_label.config(text="Cropped image") # Update the main label
+
+# --------------------------- Scan image functions --------------------------- #
+
+# Get image from scanner
+def scan_image():
+    # The scanner needs to scan an image to a specific file name. To maintain compatibility with Target Analysis, create a file name based on what is entered in the UI.
+    def create_image_name():
+        # Create a dictionary to convert the full month name to 3 letters
+        months = {
+            'January': 'jan', 
+            'February': 'feb',
+            'March': 'mar',
+            'April': 'apr',
+            'May': 'may',
+            'June': 'jun',
+            'July': 'jul',
+            'August': 'aug',
+            'September': 'sep',
+            'October': 'oct',
+            'November': 'nov',
+            'December': 'dec',
+        }
+        # Use a try-except to alert the user if the date is invalid
+        try: month = months[month_var.get()] # Get the month as a 3 letter string
+        except:
+            main_label.config(text="Error: Invalid month entered")
+            print("Error: Invalid month entered")
+            month = 'err'
+        return day_var.get() + month + year_var.get() + name_var.get() + target_num_var.get() + ".jpg" # Create the image name
+    
+    image_name = create_image_name() # Create the image name
+
+    working_dir = os.getcwd() # Store the current working directory
+    command = '"' + working_dir + '\\assets\wia-cmd-scanner.exe" /w 0 /h 0 /dpi 300 /color RGB /format JPG /output ' + '"' + working_dir + '\images\\' + image_name + '"' # Create the command to run the scanner
+    # os.system doesn't work for multiple quoted commands therefore we use call to run the command
+    os.system('call ' + command)
+    main_label.config(text="Image scanned as " + image_name) # Update the main label
+    # The image is now stored in the images folder, where it can now be loaded.
+    return image_name
+
+def scan_process(target_type):
+    image_name = scan_image() # Scan and save an image, getting the image name
+    load_image(target_type, '"' + os.getcwd() + "\\" + image_name + '"') # Load the image
+    analyze_target(target_type) # Analyze the image
+
 
 # -------------------- Target processing control functions ------------------- #
 
@@ -3136,6 +3147,9 @@ analyze_orion_target_button.grid(row=0, column=1, padx=5, pady=5)
 open_folder_orion_target_button = ttk.Button(orion_tab_upper_buttons_frame, text = "Open folder", command=lambda: open_folder(TargetTypes.ORION_USAS_50))
 open_folder_orion_target_button.grid(row=0, column=2, padx=5, pady=5)
 
+scan_process_orion_target_button = ttk.Button(orion_tab_upper_buttons_frame, text = "Scan", command=lambda: scan_process(TargetTypes.ORION_USAS_50))
+scan_process_orion_target_button.grid(row=0, column=3, padx=5, pady=5)
+
 score_as_nra_checkbutton = ttk.Checkbutton(orion_tab_lower_buttons_frame, text='Score as NRA A-17 target', style='Switch.TCheckbutton', variable=score_as_nra_var, onvalue=True, offvalue=False)
 score_as_nra_checkbutton.grid(column=0, row=0, padx=5, pady=5)
 
@@ -3153,10 +3167,13 @@ analyze_50ft_conventional_target_button.grid(row=0, column=1, padx=5, pady=5)
 open_folder_conventional_button = ttk.Button(orion50ft_buttons_frame, text = "Open folder", command=lambda: open_folder(ScoringTypes.ORION_50FT_CONVENTIONAL))
 open_folder_conventional_button.grid(row=0, column=2, padx=5, pady=5)
 
+scan_process_conventional_target_button = ttk.Button(orion50ft_buttons_frame, text = "Scan", command=lambda: scan_process(TargetTypes.ORION_50FT_CONVENTIONAL))
+scan_process_conventional_target_button.grid(row=0, column=3, padx=5, pady=5)
+
 #TODO: fix position for bubbles on new 50ft conventional targets
 
 use_bubbles_checkbutton = ttk.Checkbutton(orion50ft_buttons_frame, text='Name from bubbles', style='Switch.TCheckbutton', variable=use_bubbles_var, onvalue=True, offvalue=False, command=update_config)
-use_bubbles_checkbutton.grid(column=3, row=0, padx=5, pady=5)
+use_bubbles_checkbutton.grid(column=0, row=1, padx=5, pady=5, columnspan=4)
 #endregion
 
 #region Canvases for target previews
