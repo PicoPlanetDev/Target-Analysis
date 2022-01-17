@@ -85,8 +85,7 @@ def load_image(target_type, image_selector="ask"):
         canvas.grid(row = 0, column = 1) # Refresh the canvas, placing it in the correct column
     
     global target_preview # Images must be stored globally to be show on the canvas
-    #target_preview = ImageTk.PhotoImage(Image.open(image_file).resize((230, 350), Image.ANTIALIAS)) # Store the image as a tkinter photo image and resize it
-    target_preview = ImageTk.PhotoImage(Image.fromarray(image).resize((230,350), Image.ANTIALIAS)) # Image.fromarray() should convert the cv2 numpy array to a PIL image
+    target_preview = ImageTk.PhotoImage(Image.open(image_file).resize((230, 350), Image.ANTIALIAS)) # Store the image as a tkinter photo image and resize it
     canvas.create_image(0, 0, anchor="nw", image=target_preview) # Place the image on the canvas
 
     main_label.config(text="Image loaded") # Update the main label
@@ -357,7 +356,7 @@ def scan_image():
 
 def scan_process(target_type):
     image_name = scan_image() # Scan and save an image, getting the image name
-    path = '"' + os.getcwd() + "\\" + image_name + '"'
+    path = '"' + os.getcwd() + "\\images\\" + image_name + '"'
     print(path)
     load_image(target_type, path) # Load the image
     analyze_target(target_type) # Analyze the image
