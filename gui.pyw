@@ -378,15 +378,15 @@ def analyze_target(target_type):
 
     # Create and store a name for the target output file
     global csv_name
-    csv_name = "data/data-" + name_var.get() + day_var.get() + month_var.get() + year_var.get() + target_num_var.get() + ".csv"
+    csv_name = "data-" + name_var.get() + day_var.get() + month_var.get() + year_var.get() + target_num_var.get() + ".csv"
 
     # If the CSV file already exists, delete it
-    if os.path.exists(str(os.getcwd()) +"/" + csv_name):
+    if os.path.exists(os.path.join(os.getcwd(), "data\\", csv_name)):
         print("CSV already exists. Removing old version")
-        os.remove(os.getcwd() + "/" + csv_name)
+        os.remove(os.path.join(os.getcwd(), "data\\", csv_name))
     
     # Create the CSV file template
-    with open(csv_name, 'x', newline="") as csvfile:
+    with open(os.path.join("data\\", csv_name), 'x', newline="") as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         filewriter.writerow(["Image", "Dropped", "X", "hole_x", "hole_y", "Distance", "hole_ratio_x", "hole_ratio_y"])
         csvfile.close()
@@ -443,7 +443,7 @@ def analyze_target(target_type):
     x_count = 0
 
     # Update the score and x count from the saved target CSV file
-    with open(csv_name) as csv_file:
+    with open(os.path.join("data\\", csv_name)) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         line_count = 0
         for row in csv_reader:
@@ -463,7 +463,7 @@ def analyze_target(target_type):
                 csvfile.close()
 
     if enable_teams_var.get():
-        teams_csv_path = "data/" + active_team_var.get() + ".csv"
+        teams_csv_path = os.path.join("data\\", active_team_var.get() + ".csv")
         with open(teams_csv_path, 'a', newline="") as csvfile:
                 filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                 filewriter.writerow([name_var.get(), day_var.get() + " " + month_var.get() + " " + year_var.get(), target_num_var.get(), score, x_count])
@@ -510,7 +510,7 @@ def show_output():
 
     #region Create buttons and info at the top
     # Create a button to open the target CSV file
-    open_target_csv_button = ttk.Button(output_top_frame, text="Open target CSV", command=lambda: open_file('"' + os.getcwd() + "/" + csv_name + '"'))
+    open_target_csv_button = ttk.Button(output_top_frame, text="Open target CSV", command=lambda: open_file(os.path.join(os.getcwd(), "data\\" + csv_name)))
     open_target_csv_button.grid(row=0, column=0)
     output_top_frame.grid_columnconfigure(0, weight=1)
     
@@ -520,7 +520,7 @@ def show_output():
     output_top_frame.grid_columnconfigure(1, weight=1)
 
     # Create a button to open the global data CSV file
-    open_data_csv_button = ttk.Button(output_top_frame, text="Open data CSV", command=lambda: open_file('"' + os.getcwd() + "/data/data.csv" + '"'))
+    open_data_csv_button = ttk.Button(output_top_frame, text="Open data CSV", command=lambda: open_file(os.path.join(os.getcwd(), "data\\", "data.csv")))
     open_data_csv_button.grid(row=0, column=2)
     output_top_frame.grid_columnconfigure(2, weight=1)
     #endregion
@@ -2251,7 +2251,7 @@ def analyze_image(image):
 
                 global csv_name
 
-                with open(csv_name, 'a', newline="") as csvfile:
+                with open(os.path.join("data\\", csv_name), 'a', newline="") as csvfile:
                     filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                     filewriter.writerow([image, dropped_points, x_count, hole_x, hole_y, distance, hole_ratio_x, hole_ratio_y])
                     csvfile.close()
@@ -2482,7 +2482,7 @@ def analyze_orion_image(image):
 
                 global csv_name
 
-                with open(csv_name, 'a', newline="") as csvfile:
+                with open(os.path.join("data\\", csv_name), 'a', newline="") as csvfile:
                     filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                     filewriter.writerow([image, dropped_points, x_count, hole_x, hole_y, distance, hole_ratio_x, hole_ratio_y])
                     csvfile.close()
@@ -2694,7 +2694,7 @@ def analyze_orion_image_nra_scoring(image):
 
                 global csv_name
 
-                with open(csv_name, 'a', newline="") as csvfile:
+                with open(os.path.join("data\\", csv_name), 'a', newline="") as csvfile:
                     filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                     filewriter.writerow([image, dropped_points, x_count, hole_x, hole_y, distance, hole_ratio_x, hole_ratio_y])
                     csvfile.close()
@@ -2860,7 +2860,7 @@ def analyze_50ft_conventional(image):
 
                 global csv_name
 
-                with open(csv_name, 'a', newline="") as csvfile:
+                with open(os.path.join("data\\", csv_name), 'a', newline="") as csvfile:
                     filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                     filewriter.writerow([image, dropped_points, x_count, hole_x, hole_y, distance, hole_ratio_x, hole_ratio_y])
                     csvfile.close()
