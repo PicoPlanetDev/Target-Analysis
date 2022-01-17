@@ -2986,36 +2986,29 @@ if not os.path.isfile("names.ini"): create_names_config()
 #endregion
 
 #region Menubar
-menubar = tk.Menu(root)
+menubar = tk.Menu(root) # Create the menubar
 
-filemenu = tk.Menu(menubar, tearoff=0)
-#filemenu.add_command(label="Load left image", command=load_image_left)
-#filemenu.add_command(label="Load right image", command=load_image_right)
-#filemenu.add_command(label="Load single image", command=load_image_single)
-#filemenu.add_command(label="Analyze target", command=analyze_target)
-#filemenu.add_command(label="Open Folder", command=open_folder)
+filemenu = tk.Menu(menubar, tearoff=0) # Create the file menu
 filemenu.add_command(label="Show in Explorer", command=lambda: show_folder(os.getcwd()))
-filemenu.add_command(label="Show Output", command=show_output, state=DISABLED)
-filemenu.add_command(label="Show Trends", command=show_trends)
+filemenu.add_command(label="Show output", command=show_output, state=DISABLED)
+filemenu.add_command(label="Show trends", command=show_trends)
 filemenu.add_command(label="Teams", command=open_teams_window)
-filemenu.add_command(label="Scan Image", command=scan_image)
-#filemenu.add_command(label="(Experimental) Load Outdoor", command=load_image_outdoor)
+filemenu.add_command(label="Scan image", command=scan_image)
 filemenu.add_separator()
 filemenu.add_command(label="Settings", command=open_settings)
 filemenu.add_separator()
 filemenu.add_command(label="Clear data", command=clear_data)
 filemenu.add_separator()
 filemenu.add_command(label="Exit", command=root.quit)
-#filemenu.add_command(label="Analysis Window", command=open_analysis_window)
-menubar.add_cascade(label="File", menu=filemenu)
+menubar.add_cascade(label="File", menu=filemenu) # Add the file menu to the menubar
 
-helpmenu = tk.Menu(menubar, tearoff=0)
+helpmenu = tk.Menu(menubar, tearoff=0) # Create the help menu
 helpmenu.add_command(label="README", command=lambda: open_file(os.path.abspath("README.md")))
 helpmenu.add_command(label="Scanning diagram", command=lambda: open_file(os.path.abspath("help/scanner-digital.png")))
 helpmenu.add_command(label="Accuracy screenshot", command=lambda: open_file(os.path.abspath("help/accuracy-vs-hand-scored.png")))
-menubar.add_cascade(label="Help", menu=helpmenu)
+menubar.add_cascade(label="Help", menu=helpmenu) # Add the help menu to the menubar
 
-root.config(menu=menubar)
+root.config(menu=menubar) # Add the menubar to the root window
 #endregion
 
 #region Set up frames
@@ -3030,14 +3023,15 @@ options_frame.pack(side=tk.TOP, padx=7.5, pady=7.5)
 # Notebook allows for a tabbed view of the different target types
 tab_control = ttk.Notebook(root)
 
+# Tabs for the different target types
 tab0_indoor = ttk.Frame(tab_control)
 tab1_orion = ttk.Frame(tab_control)
 tab3_orion50ftconventional = ttk.Frame(tab_control)
 
+# Add the tabs to the notebook and pack it
 tab_control.add(tab0_indoor, text ='NRA A-17')
 tab_control.add(tab1_orion, text ='Orion USAS-50')
 tab_control.add(tab3_orion50ftconventional, text ='Orion 50ft conventional')
-
 tab_control.pack(side=tk.TOP, fill=BOTH, padx=10, pady=10)
 
 # Buttons frames are a child of the tabs
@@ -3120,6 +3114,9 @@ refresh_team_options()
 #endregion
 
 #region NRA A-17 tab
+# Layout:
+# [Select left image] [Analyze target] [Select right image] [Open folder]
+
 left_image_button = ttk.Button(buttons_frame, text = "Select left image", command=lambda: load_image(TargetTypes.NRA_LEFT))
 left_image_button.grid(row=0, column=0, padx=5, pady=5)
 
@@ -3131,9 +3128,20 @@ right_image_button.grid(row=0, column=2, padx=5, pady=5)
 
 open_folder_nra_button = ttk.Button(buttons_frame, text = "Open folder", command=lambda: open_folder(ScoringTypes.NRA))
 open_folder_nra_button.grid(row=0, column=3, padx=5, pady=5)
+
+# NRA tab canvases
+left_canvas = tk.Canvas(bottom_frame, width=230,height=300)
+left_canvas.grid(row = 0, column = 0, padx=5, pady=5)
+
+right_canvas = tk.Canvas(bottom_frame, width=230,height=300)
+right_canvas.grid(row = 0, column = 1, padx=5, pady=5)
 #endregion
 
-#region Orion tab
+#region Orion NRA/USAS-50 tab
+# Layout:
+# [Select image] [Analyze target] [Open folder] [Scan]
+# (--o) Score as NRA A-17 target (--o) Name from bubbles
+
 def on_load_image_orion_button_pressed():
     if score_as_nra_var.get(): load_image(TargetTypes.ORION_USAS_50_NRA_SCORING)
     else: load_image(TargetTypes.ORION_USAS_50)
@@ -3164,9 +3172,17 @@ score_as_nra_checkbutton.grid(column=0, row=0, padx=5, pady=5)
 
 use_bubbles_checkbutton = ttk.Checkbutton(orion_tab_lower_buttons_frame, text='Name from bubbles', style='Switch.TCheckbutton', variable=use_bubbles_var, onvalue=True, offvalue=False, command=update_config)
 use_bubbles_checkbutton.grid(column=1, row=0, padx=5, pady=5)
+
+# Orion tab canvas
+orion_single_canvas = tk.Canvas(orion_bottom_frame, width=230,height=300)
+orion_single_canvas.grid(row = 0, column = 0)
 #endregion
 
 #region Orion 50ft conventional tab
+# Layout:
+# [Select image] [Analyze target] [Open folder] [Scan]
+#           (--o) Name from bubbles
+
 load_image_conventional_button = ttk.Button(orion50ft_buttons_frame, text = "Select image", command=lambda: load_image(TargetTypes.ORION_50FT_CONVENTIONAL))
 load_image_conventional_button.grid(row=0, column=0, padx=5, pady=5)
 
@@ -3183,19 +3199,6 @@ scan_process_conventional_target_button.grid(row=0, column=3, padx=5, pady=5)
 
 use_bubbles_checkbutton = ttk.Checkbutton(orion50ft_buttons_frame, text='Name from bubbles', style='Switch.TCheckbutton', variable=use_bubbles_var, onvalue=True, offvalue=False, command=update_config)
 use_bubbles_checkbutton.grid(column=0, row=1, padx=5, pady=5, columnspan=4)
-#endregion
-
-#region Canvases for target previews
-# NRA tab canvases
-left_canvas = tk.Canvas(bottom_frame, width=230,height=300)
-left_canvas.grid(row = 0, column = 0, padx=5, pady=5)
-
-right_canvas = tk.Canvas(bottom_frame, width=230,height=300)
-right_canvas.grid(row = 0, column = 1, padx=5, pady=5)
-
-# Orion tab canvas
-orion_single_canvas = tk.Canvas(orion_bottom_frame, width=230,height=300)
-orion_single_canvas.grid(row = 0, column = 0)
 
 # Orion 50ft conventional canvas
 orion_50ft_conventional_canvas = tk.Canvas(orion50ft_bottom_frame, width=230,height=300)
