@@ -3008,9 +3008,9 @@ filemenu.add_command(label="Exit", command=root.quit)
 menubar.add_cascade(label="File", menu=filemenu)
 
 helpmenu = tk.Menu(menubar, tearoff=0)
-helpmenu.add_command(label="README", command=lambda: open_file('"' + os.getcwd() + "/README.md" + '"'))
-helpmenu.add_command(label="Scanning diagram", command=lambda: open_file('"' + os.getcwd() + "/help/" + "scanner-digital.png" + '"'))
-helpmenu.add_command(label="Accuracy screenshot", command=lambda: open_file('"' + os.getcwd() + "/help/" + "accuracy-vs-hand-scored.png" + '"'))
+helpmenu.add_command(label="README", command=lambda: open_file(os.path.abspath("README.md")))
+helpmenu.add_command(label="Scanning diagram", command=lambda: open_file(os.path.abspath("help/scanner-digital.png")))
+helpmenu.add_command(label="Accuracy screenshot", command=lambda: open_file(os.path.abspath("help/accuracy-vs-hand-scored.png")))
 menubar.add_cascade(label="Help", menu=helpmenu)
 
 root.config(menu=menubar)
