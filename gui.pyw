@@ -72,7 +72,6 @@ def load_image(target_type, image_selector="ask"):
 
     if image_selector == "ask": image_file = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
     else: image_file = image_selector # Use the image passed in
-    print(type(image_file))
     image = cv2.imread(image_file) # Load the image for OpenCV image
 
     # If the user wants to use information from the file name, do so
@@ -350,7 +349,8 @@ def scan_image():
 
     working_dir = os.getcwd() # Store the current working directory
     # Scanning uses WINDOWS ONLY wia-cmd-scanner.exe from https://github.com/nagimov/wia-cmd-scanner
-    command = '"' + working_dir + '\\assets\wia-cmd-scanner\wia-cmd-scanner.exe" /w 0 /h 0 /dpi 300 /color RGB /format JPG /output ' + '"' + working_dir + '\images\\' + image_name + '"' # Create the command to run the scanner
+    #command = '"' + working_dir + '\\assets\wia-cmd-scanner\wia-cmd-scanner.exe" /w 0 /h 0 /dpi 300 /color RGB /format JPG /output ' + '"' + working_dir + '\images\\' + image_name + '"' # Create the command to run the scanner
+    command = os.path.join(os.getcwd(), 'assets\wia-cmd-scanner\wia-cmd-scanner.exe') + ' /w 0 /h 0 /dpi 300 /color RGB /format JPG /output ' + os.path.join(os.getcwd(), 'images\\' + image_name) # Create the command to run the scanner
     # os.system doesn't work for multiple quoted commands therefore we use call to run the command
     os.system('call ' + command)
     main_label.config(text="Image scanned as " + image_name) # Update the main label
@@ -361,7 +361,6 @@ def scan_process(target_type):
     main_label.config(text="Scanning image...") # Update the main label
     image_name = scan_image() # Scan and save an image, getting the image name
     path = os.path.join(os.getcwd(), "images", image_name) # Get the path to the image
-    print(path)
     load_image(target_type, path) # Load the image
     analyze_target(target_type) # Analyze the image
 
