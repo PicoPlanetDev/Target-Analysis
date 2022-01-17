@@ -320,9 +320,10 @@ def crop_image(image, target_type):
 
 # Get image from scanner
 def scan_image():
-    # The scanner needs to scan an image to a specific file name. To maintain compatibility with Target Analysis, create a file name based on what is entered in the UI.
     def create_image_name():
-        # Create a dictionary to convert the full month name to 3 letters
+        '''Generates a file name compatible with Target Analysis based on the current options'''
+        # Create a dictionary to convert the full month name to 3 letters, reverse of the dictionary used in set_info_from_file
+        # TODO: Create a function that handles both scenarios
         months = {
             'January': 'jan', 
             'February': 'feb',
@@ -347,17 +348,18 @@ def scan_image():
     
     image_name = create_image_name() # Create the image name
 
-    working_dir = os.getcwd() # Store the current working directory
     # Scanning uses WINDOWS ONLY wia-cmd-scanner.exe from https://github.com/nagimov/wia-cmd-scanner
-    #command = '"' + working_dir + '\\assets\wia-cmd-scanner\wia-cmd-scanner.exe" /w 0 /h 0 /dpi 300 /color RGB /format JPG /output ' + '"' + working_dir + '\images\\' + image_name + '"' # Create the command to run the scanner
-    command = os.path.join(os.getcwd(), 'assets\wia-cmd-scanner\wia-cmd-scanner.exe') + ' /w 0 /h 0 /dpi 300 /color RGB /format JPG /output ' + os.path.join(os.getcwd(), 'images\\' + image_name) # Create the command to run the scanner
-    # os.system doesn't work for multiple quoted commands therefore we use call to run the command
-    os.system('call ' + command)
+    command = os.path.abspath('assets\wia-cmd-scanner\wia-cmd-scanner.exe') + ' /w 0 /h 0 /dpi 300 /color RGB /format JPG /output ' + os.path.abspath(os.path.join('images\\' + image_name)) # Create the command to run the scanner
+    os.system('call ' + command) # os.system doesn't work for multiple quoted commands therefore we use call to run the command
     main_label.config(text="Image scanned as " + image_name) # Update the main label
-    # The image is now stored in the images folder, where it can now be loaded.
-    return image_name
+    return image_name # Return the image name to call the load function on it
 
 def scan_process(target_type):
+    """Scans an image, loads and crops it, and analyzes the target
+
+    Args:
+        target_type (TargetTypes): What target type the scanned image is
+    """    
     main_label.config(text="Scanning image...") # Update the main label
     image_name = scan_image() # Scan and save an image, getting the image name
     path = os.path.join(os.getcwd(), "images", image_name) # Get the path to the image
