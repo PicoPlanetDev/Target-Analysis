@@ -39,6 +39,8 @@ import matplotlib.pyplot as plt
 import matplotlib
 from configparser import ConfigParser
 from enum import Enum
+
+from pip import main
 #import traceback # For debugging - Usage: traceback.print_stack()
 #endregion
 
@@ -355,6 +357,7 @@ def scan_image():
     return image_name
 
 def scan_process(target_type):
+    main_label.config(text="Scanning image...") # Update the main label
     image_name = scan_image() # Scan and save an image, getting the image name
     path = '"' + os.getcwd() + "\\images\\" + image_name + '"'
     print(path)
