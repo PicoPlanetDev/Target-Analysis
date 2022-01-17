@@ -72,6 +72,7 @@ def load_image(target_type, image_selector="ask"):
 
     if image_selector == "ask": image_file = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
     else: image_file = image_selector # Use the image passed in
+    print(type(image_file))
     image = cv2.imread(image_file) # Load the image for OpenCV image
 
     # If the user wants to use information from the file name, do so
@@ -359,7 +360,7 @@ def scan_image():
 def scan_process(target_type):
     main_label.config(text="Scanning image...") # Update the main label
     image_name = scan_image() # Scan and save an image, getting the image name
-    path = '"' + os.getcwd() + "\\images\\" + image_name + '"'
+    path = os.path.join(os.getcwd(), "images", image_name) # Get the path to the image
     print(path)
     load_image(target_type, path) # Load the image
     analyze_target(target_type) # Analyze the image
