@@ -147,6 +147,9 @@ images/*
 !26jan2021300dpi1.jpeg
 !26jan2021600dpi1.jpeg
 
+!images/05dec2021conventionaltest1.jpg
+!images/26jan2021oriontest1.jpeg
+
 # exclude all data
 data/*
 
