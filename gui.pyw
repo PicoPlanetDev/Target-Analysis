@@ -2722,8 +2722,8 @@ def analyze_50ft_conventional(image):
     eight = 12.270/outer
     nine = 3.810/outer
 
-    spindle_radius = 2.83
-    outer_spindle_radius = 4.5
+    spindle_radius = 2.835
+    outer_spindle_radius = 4.5025
     #endregion
 
     # Hold local dropped points and x count variables
@@ -2857,6 +2857,33 @@ def analyze_50ft_conventional(image):
                     print("4")
                     cv2.putText(output, "4", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
                     dropped_points += 4
+
+                # # Touching X but not 0
+                # if distance + outer_spindle_radius < pixel_eight and distance - outer_spindle_radius < pixel_nine:
+                #     print("X")
+                #     cv2.putText(output, "X", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                #     x_count += 1
+                # # Touching X and 0
+                # if distance + outer_spindle_radius > pixel_eight and distance - outer_spindle_radius < pixel_nine:
+                #     print("0")
+                #     cv2.putText(output, "0", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                # # Not touching X but touching 0 --> scores as a 1
+                # if distance - outer_spindle_radius > pixel_nine and distance + outer_spindle_radius < pixel_seven:
+                #     print("1")
+                #     cv2.putText(output, "1", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                #     dropped_points += 1
+                # if distance - outer_spindle_radius > pixel_eight and distance + outer_spindle_radius < pixel_six:
+                #     print("2")
+                #     cv2.putText(output, "2", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                #     dropped_points += 2
+                # if distance - outer_spindle_radius > pixel_seven and distance + outer_spindle_radius < pixel_five:
+                #     print("3")
+                #     cv2.putText(output, "3", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                #     dropped_points += 3
+                # if distance - outer_spindle_radius > pixel_six and distance + outer_spindle_radius < pixel_outer:
+                #     print("4")
+                #     cv2.putText(output, "4", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                #     dropped_points += 4
 
                 hole_ratio_x = (hole_x-a) / pixel_outer
                 hole_ratio_y = (hole_y-a) / pixel_outer
