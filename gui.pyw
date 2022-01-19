@@ -354,6 +354,7 @@ def scan_image():
     main_label.config(text="Image scanned as " + image_name) # Update the main label
     return image_name # Return the image name to call the load function on it
 
+# Scan and save image, load, crop, and analyze the target
 def scan_process(target_type):
     """Scans an image, loads and crops it, and analyzes the target
 
@@ -3191,7 +3192,7 @@ analyze_orion_target_button.grid(row=0, column=1, padx=5, pady=5)
 open_folder_orion_target_button = ttk.Button(orion_tab_upper_buttons_frame, text = "Open folder", command=lambda: open_folder(TargetTypes.ORION_USAS_50))
 open_folder_orion_target_button.grid(row=0, column=2, padx=5, pady=5)
 
-scan_process_orion_target_button = ttk.Button(orion_tab_upper_buttons_frame, text = "Scan", command=lambda: scan_process(TargetTypes.ORION_USAS_50))
+scan_process_orion_target_button = ttk.Button(orion_tab_upper_buttons_frame, text = "Scan", command=lambda: scan_image())
 scan_process_orion_target_button.grid(row=0, column=3, padx=5, pady=5)
 
 score_as_nra_checkbutton = ttk.Checkbutton(orion_tab_lower_buttons_frame, text='Score as NRA A-17 target', style='Switch.TCheckbutton', variable=score_as_nra_var, onvalue=True, offvalue=False)
@@ -3219,7 +3220,7 @@ analyze_50ft_conventional_target_button.grid(row=0, column=1, padx=5, pady=5)
 open_folder_conventional_button = ttk.Button(orion50ft_buttons_frame, text = "Open folder", command=lambda: open_folder(ScoringTypes.ORION_50FT_CONVENTIONAL))
 open_folder_conventional_button.grid(row=0, column=2, padx=5, pady=5)
 
-scan_process_conventional_target_button = ttk.Button(orion50ft_buttons_frame, text = "Scan", command=lambda: scan_process(TargetTypes.ORION_50FT_CONVENTIONAL))
+scan_process_conventional_target_button = ttk.Button(orion50ft_buttons_frame, text = "Scan", command=lambda: scan_image())
 scan_process_conventional_target_button.grid(row=0, column=3, padx=5, pady=5)
 
 #TODO: fix position for bubbles on new 50ft conventional targets
