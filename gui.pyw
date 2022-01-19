@@ -349,7 +349,7 @@ def scan_image():
     image_name = create_image_name() # Create the image name
 
     # Scanning uses WINDOWS ONLY wia-cmd-scanner.exe from https://github.com/nagimov/wia-cmd-scanner
-    command = os.path.abspath('assets\wia-cmd-scanner\wia-cmd-scanner.exe') + ' /w 0 /h 0 /dpi 300 /color RGB /format JPG /output ' + os.path.abspath(os.path.join('images\\' + image_name)) # Create the command to run the scanner
+    command = '"' + os.path.abspath('assets\wia-cmd-scanner\wia-cmd-scanner.exe') + '"' + ' /w 0 /h 0 /dpi 300 /color RGB /format JPG /output "' + os.path.abspath(os.path.join('images\\' + image_name) + '"') # Create the command to run the scanner
     os.system('call ' + command) # os.system doesn't work for multiple quoted commands therefore we use call to run the command
     main_label.config(text="Image scanned as " + image_name) # Update the main label
     return image_name # Return the image name to call the load function on it
