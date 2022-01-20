@@ -3186,8 +3186,8 @@ def on_analyze_target_orion_button_pressed():
     else: analyze_target(ScoringTypes.ORION_USAS_50)
 
 def on_scan_orion_button_pressed():
-    if score_as_nra_var.get(): scan_process(ScoringTypes.ORION_USAS_50_NRA_SCORING)
-    else: scan_process(ScoringTypes.ORION_USAS_50)
+    if score_as_nra_var.get(): scan_process(TargetTypes.ORION_USAS_50_NRA_SCORING)
+    else: scan_process(TargetTypes.ORION_USAS_50)
 
 orion_tab_upper_buttons_frame = ttk.Frame(orion_buttons_frame)
 orion_tab_lower_buttons_frame = ttk.Frame(orion_buttons_frame)
