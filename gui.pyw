@@ -368,6 +368,8 @@ def scan_process(target_type):
     # Again, really dumb that I haven't combined the enums yet. So I have to do a hacky thing to convert to the scoring type
     if target_type == TargetTypes.ORION_USAS_50:
         scoring_type = ScoringTypes.ORION_USAS_50
+    elif target_type == TargetTypes.ORION_USAS_50_NRA_SCORING:
+        scoring_type = ScoringTypes.ORION_USAS_50_NRA_SCORING
     elif target_type == TargetTypes.ORION_50FT_CONVENTIONAL:
         scoring_type = ScoringTypes.ORION_50FT_CONVENTIONAL
     analyze_target(scoring_type) # Analyze the image
@@ -3183,6 +3185,10 @@ def on_analyze_target_orion_button_pressed():
     if score_as_nra_var.get(): analyze_target(ScoringTypes.ORION_USAS_50_NRA_SCORING)
     else: analyze_target(ScoringTypes.ORION_USAS_50)
 
+def on_scan_orion_button_pressed():
+    if score_as_nra_var.get(): scan_process(ScoringTypes.ORION_USAS_50_NRA_SCORING)
+    else: scan_process(ScoringTypes.ORION_USAS_50)
+
 orion_tab_upper_buttons_frame = ttk.Frame(orion_buttons_frame)
 orion_tab_lower_buttons_frame = ttk.Frame(orion_buttons_frame)
 orion_tab_upper_buttons_frame.pack()
@@ -3197,7 +3203,7 @@ analyze_orion_target_button.grid(row=0, column=1, padx=5, pady=5)
 open_folder_orion_target_button = ttk.Button(orion_tab_upper_buttons_frame, text = "Open folder", command=lambda: open_folder(TargetTypes.ORION_USAS_50))
 open_folder_orion_target_button.grid(row=0, column=2, padx=5, pady=5)
 
-scan_process_orion_target_button = ttk.Button(orion_tab_upper_buttons_frame, text = "Scan", command=lambda: scan_process(TargetTypes.ORION_USAS_50))
+scan_process_orion_target_button = ttk.Button(orion_tab_upper_buttons_frame, text = "Scan", command=lambda: on_scan_orion_button_pressed())
 scan_process_orion_target_button.grid(row=0, column=3, padx=5, pady=5)
 
 score_as_nra_checkbutton = ttk.Checkbutton(orion_tab_lower_buttons_frame, text='Score as NRA A-17 target', style='Switch.TCheckbutton', variable=score_as_nra_var, onvalue=True, offvalue=False)
