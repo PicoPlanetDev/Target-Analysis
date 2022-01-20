@@ -365,7 +365,12 @@ def scan_process(target_type):
     image_name = scan_image() # Scan and save an image, getting the image name
     path = os.path.join(os.getcwd(), "images", image_name) # Get the path to the image
     load_image(target_type, path) # Load the image
-    analyze_target(target_type) # Analyze the image
+    # Again, really dumb that I haven't combined the enums yet. So I have to do a hacky thing to convert to the scoring type
+    if target_type == TargetTypes.ORION_USAS_50:
+        scoring_type = ScoringTypes.ORION_USAS_50
+    elif target_type == TargetTypes.ORION_50FT_CONVENTIONAL:
+        scoring_type = ScoringTypes.ORION_50FT_CONVENTIONAL
+    analyze_target(scoring_type) # Analyze the image
 
 
 # -------------------- Target processing control functions ------------------- #
