@@ -23,6 +23,7 @@
 #endregion
 
 #region Import libraries
+from dis import dis
 from tkinter.constants import BOTH, BOTTOM, DISABLED, HORIZONTAL, LEFT, NORMAL, NSEW, RIDGE, RIGHT, TOP, X
 from tkinter.font import BOLD
 import cv2
@@ -386,6 +387,9 @@ def analyze_target(target_type):
     """    
     main_label.config(text="Analyzing target...") # Update main label
 
+    global current_target_type
+    current_target_type = target_type # Set the current target type
+
     # Create and store a name for the target output file
     global csv_name
     csv_name = "data-" + name_var.get() + day_var.get() + month_var.get() + year_var.get() + target_num_var.get() + ".csv"
@@ -395,11 +399,18 @@ def analyze_target(target_type):
         print("CSV already exists. Removing old version")
         os.remove(os.path.join(os.getcwd(), "data\\", csv_name))
     
-    # Create the CSV file template
-    with open(os.path.join("data\\", csv_name), 'x', newline="") as csvfile:
-        filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        filewriter.writerow(["Image", "Dropped", "X", "hole_x", "hole_y", "Distance", "hole_ratio_x", "hole_ratio_y"])
-        csvfile.close()
+    if target_type == ScoringTypes.ORION_USAS_50:
+        # Create the CSV file template
+        with open(os.path.join("data\\", csv_name), 'x', newline="") as csvfile:
+            filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            filewriter.writerow(["Image", "Score", "Decimal", "hole_x", "hole_y", "Distance", "hole_ratio_x", "hole_ratio_y"])
+            csvfile.close()
+    else:
+        # Create the CSV file template
+        with open(os.path.join("data\\", csv_name), 'x', newline="") as csvfile:
+            filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            filewriter.writerow(["Image", "Dropped", "X", "hole_x", "hole_y", "Distance", "hole_ratio_x", "hole_ratio_y"])
+            csvfile.close()
 
     # Analyze each cropped image
     if target_type == ScoringTypes.NRA:
@@ -452,16 +463,18 @@ def analyze_target(target_type):
     score = 100
     x_count = 0
 
+    if target_type == ScoringTypes.ORION_USAS_50: score = 0
+
     # Update the score and x count from the saved target CSV file
     with open(os.path.join("data\\", csv_name)) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         line_count = 0
         for row in csv_reader:
             if line_count != 0:
-                score -= int(row[1])
-                x_count += int(row[2])
+                if target_type == ScoringTypes.ORION_USAS_50: score += int(row[1])
+                x_count += int(row[2]) # x_count stores X count for all targets except Orion USAS 50, where it stores the decimal score
             line_count += 1
-    
+
     # If a global data CSV doesn't exist, create it
     if not os.path.exists(str(os.getcwd()) +"/data/data.csv"):
         create_csv()
@@ -494,7 +507,7 @@ def analyze_target(target_type):
             open_analysis_window()
         elif show_output_when_finished_var.get():
             show_output() # Otherwise, show the output now that analysis has finished
-
+            
 # Show an overview of the target with the score and x count
 def show_output():
     """Shows the most recently saved results of the analysis in a new window."""
@@ -525,7 +538,10 @@ def show_output():
     output_top_frame.grid_columnconfigure(0, weight=1)
     
     # Create a label for the score
-    score_label = ttk.Label(output_top_frame, text=str(score) + "-" + str(x_count) + "X", font='bold')
+    global current_target_type
+    if current_target_type == ScoringTypes.ORION_USAS_50: score_label_text = str(score) + "." + str(x_count)
+    else: score_label_text = str(score) + "-" + str(x_count) + "X"
+    score_label = ttk.Label(output_top_frame, text=score_label_text, font='bold')
     score_label.grid(row=0, column=1)
     output_top_frame.grid_columnconfigure(1, weight=1)
 
@@ -2298,13 +2314,9 @@ def analyze_orion_image(image):
     # nine = 4.37/outer
     # ten = 1.01/outer
 
-    inner_spindle_radius = 2.83
-    outer_spindle_radius = 4.49
+    inner_spindle_radius = 2.835
+    outer_spindle_radius = 4.5025
     #endregion
-
-    # Hold local dropped points and x count variables
-    dropped_points = 0
-    x_count = 0
 
     img = cv2.imread(image) # Read in the image for OpenCV
     output = img.copy() # Create a copy of the image to draw on
@@ -2460,33 +2472,43 @@ def analyze_orion_image(image):
                 # print("pixel_seven: " + str(pixel_seven))
                 #print("hole_radius: " + str(hole_radius))
 
-                if distance-outer_spindle_radius <= pixel_ten or distance+outer_spindle_radius <= pixel_eight:
-                    print("X")
-                    cv2.putText(output, "X", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                    x_count += 1
-                else:
-                    if distance+outer_spindle_radius <= pixel_seven:
-                        print("0")
-                        cv2.putText(output, "0", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                    else:
-                        if distance+outer_spindle_radius <= pixel_six:
-                            print("1")
-                            cv2.putText(output, "1", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                            dropped_points += 1
-                        else:
-                            if distance+outer_spindle_radius <= pixel_five:
-                                print("2")
-                                cv2.putText(output, "2", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                                dropped_points += 2
-                            else:
-                                if distance+outer_spindle_radius <= pixel_four:
-                                    print("3")
-                                    cv2.putText(output, "3", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
-                                    dropped_points += 3
-                                else:
-                                    print("Score more than 4 or low confidence: CHECK MANUALLY")
-                                    main_label.config(text="Bull " + str(image) + " low confidence")
-                                    
+                step = outer_spindle_radius / 10               
+                multiplier = 1
+                while distance >= multiplier * step: multiplier += 1
+                ones = 10 - (multiplier // 10)
+                decimal = 10 - (multiplier % 10)
+                #print(multiplier, ones, decimal)
+                string_score = str(ones) + "." + str(decimal)
+                cv2.putText(output, string_score, (int(hole_x-100),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+
+                #region old
+                # if distance-outer_spindle_radius <= pixel_ten or distance+outer_spindle_radius <= pixel_eight:
+                #     print("X")
+                #     cv2.putText(output, "X", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                #     x_count += 1
+                # else:
+                #     if distance+outer_spindle_radius <= pixel_seven:
+                #         print("0")
+                #         cv2.putText(output, "0", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                #     else:
+                #         if distance+outer_spindle_radius <= pixel_six:
+                #             print("1")
+                #             cv2.putText(output, "1", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                #             dropped_points += 1
+                #         else:
+                #             if distance+outer_spindle_radius <= pixel_five:
+                #                 print("2")
+                #                 cv2.putText(output, "2", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                #                 dropped_points += 2
+                #             else:
+                #                 if distance+outer_spindle_radius <= pixel_four:
+                #                     print("3")
+                #                     cv2.putText(output, "3", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                #                     dropped_points += 3
+                #                 else:
+                #                     print("Score more than 4 or low confidence: CHECK MANUALLY")
+                #                     main_label.config(text="Bull " + str(image) + " low confidence")
+                #endregion
 
                 hole_ratio_x = (hole_x-a) / pixel_outer
                 hole_ratio_y = (hole_y-a) / pixel_outer
@@ -2495,7 +2517,7 @@ def analyze_orion_image(image):
 
                 with open(os.path.join("data\\", csv_name), 'a', newline="") as csvfile:
                     filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-                    filewriter.writerow([image, dropped_points, x_count, hole_x, hole_y, distance, hole_ratio_x, hole_ratio_y])
+                    filewriter.writerow([image, ones, decimal, hole_x, hole_y, distance, hole_ratio_x, hole_ratio_y])
                     csvfile.close()
     #endregion
 
