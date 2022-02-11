@@ -379,7 +379,7 @@ def scan_process(target_type):
 # -------------------- Target processing control functions ------------------- #
 
 # Run the analyze_image function for every image that has been cropped out
-def analyze_target(target_type):
+def analyze_target(target_type): 
     """Runs the appropriate analyze_image function for every image that has been cropped and saved.
 
     Args:
@@ -471,9 +471,21 @@ def analyze_target(target_type):
         line_count = 0
         for row in csv_reader:
             if line_count != 0:
-                if target_type == ScoringTypes.ORION_USAS_50: score += int(row[1])
-                x_count += int(row[2]) # x_count stores X count for all targets except Orion USAS 50, where it stores the decimal score
+                if target_type == ScoringTypes.ORION_USAS_50:
+                    score += int(row[1])
+                    if int(row[1]) == 10:
+                        x_count += int(row[2])
+                else:
+                    score -= int(row[1])
+                    x_count += int(row[2])
             line_count += 1
+
+    if target_type == ScoringTypes.ORION_USAS_50:
+        if score == 100:
+            score += (x_count % 100) // 10
+            x_count = x_count % 10
+        else:
+            x_count = x_count % 10
 
     # If a global data CSV doesn't exist, create it
     if not os.path.exists(str(os.getcwd()) +"/data/data.csv"):
@@ -2477,6 +2489,7 @@ def analyze_orion_image(image):
                 while distance >= multiplier * step: multiplier += 1
                 ones = 10 - (multiplier // 10)
                 decimal = 10 - (multiplier % 10)
+                if decimal == 10: decimal == 9 # Just in case
                 #print(multiplier, ones, decimal)
                 string_score = str(ones) + "." + str(decimal)
                 cv2.putText(output, string_score, (int(hole_x-100),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
