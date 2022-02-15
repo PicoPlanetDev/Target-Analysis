@@ -1151,7 +1151,7 @@ def load_names_config():
 
 # ----------------------------- Barcode functions ---------------------------- #
 
-# Cursed code that doesn't exist
+# Crop the image to the barcode area
 def crop_barcode(image):
     ratio_height = 3507
     ratio_width = 2550
@@ -1165,6 +1165,7 @@ def crop_barcode(image):
 
     return crop
 
+# Cursed code that doesn't exist
 def read_barcode(image):
     barcode = cv2.barcode_BarcodeDetector()
     ok, decoded_info, decoded_type, corners = barcode.detectAndDecode(image)
