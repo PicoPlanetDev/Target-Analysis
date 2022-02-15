@@ -13,7 +13,7 @@ block_cipher = None
 
 
 a = Analysis(['gui.pyw'],
-             pathex=['D:\\Libraries\\Documents\\GitHub\\Target-Analysis - Copy'],
+             pathex=['D:\\Libraries\\Documents\\GitHub\\Target-Analysis-Build\\Target-Analysis'],
              binaries=[],
              datas=[
                  ("assets/*.png", "assets"),
