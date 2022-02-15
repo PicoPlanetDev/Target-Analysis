@@ -473,19 +473,14 @@ def analyze_target(target_type):
             if line_count != 0:
                 if target_type == ScoringTypes.ORION_USAS_50:
                     score += int(row[1])
-                    if int(row[1]) == 10:
-                        x_count += int(row[2])
+                    score += int(row[2]) / 10
                 else:
                     score -= int(row[1])
                     x_count += int(row[2])
             line_count += 1
 
-    if target_type == ScoringTypes.ORION_USAS_50:
-        if score == 100:
-            score += (x_count % 100) // 10
-            x_count = x_count % 10
-        else:
-            x_count = x_count % 10
+    # Round the score to the nearest decimal place to avoid floating point error
+    score = round(score, 1)
 
     # If a global data CSV doesn't exist, create it
     if not os.path.exists(str(os.getcwd()) +"/data/data.csv"):
@@ -551,7 +546,7 @@ def show_output():
     
     # Create a label for the score
     global current_target_type
-    if current_target_type == ScoringTypes.ORION_USAS_50: score_label_text = str(score) + "." + str(x_count)
+    if current_target_type == ScoringTypes.ORION_USAS_50: score_label_text = str(score)
     else: score_label_text = str(score) + "-" + str(x_count) + "X"
     score_label = ttk.Label(output_top_frame, text=score_label_text, font='bold')
     score_label.grid(row=0, column=1)
