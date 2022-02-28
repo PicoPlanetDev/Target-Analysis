@@ -23,7 +23,6 @@
 #endregion
 
 #region Import libraries
-from dis import dis
 from tkinter.constants import BOTH, BOTTOM, DISABLED, HORIZONTAL, LEFT, NORMAL, NSEW, RIDGE, RIGHT, TOP, X
 from tkinter.font import BOLD
 import cv2
@@ -40,8 +39,6 @@ import matplotlib.pyplot as plt
 import matplotlib
 from configparser import ConfigParser
 from enum import Enum
-
-from pip import main
 #import traceback # For debugging - Usage: traceback.print_stack()
 #endregion
 
