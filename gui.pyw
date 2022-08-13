@@ -197,8 +197,10 @@ def crop_image(image, target_type):
     # Crop Orion target
     if target_type == TargetTypes.ORION_USAS_50 or target_type == TargetTypes.ORION_USAS_50_NRA_SCORING or target_type == TargetTypes.ORION_50FT_CONVENTIONAL:
         # Pixel measurements were taken from 300dpi targets, so use the same ratio where necessary
-        ratio_height = 3507
+        ratio_height = 3507 - scanner_crop_pixels.get() # The height of the scan minus the scanner crop (so only the target is left)
         ratio_width = 2550
+
+        bottom_removed = image[0:ratio_height, 0:ratio_width] # Remove the bottom of the image
         
         # Set positions for Orion NRA/USAS-50 targets
         if target_type == TargetTypes.ORION_USAS_50 or target_type == TargetTypes.ORION_USAS_50_NRA_SCORING:
@@ -236,36 +238,36 @@ def crop_image(image, target_type):
             lowerY = 1850
             bottomY = 2600
         
-        h=int((bull_size/ratio_height)*image.shape[0])
-        w=int((bull_size/ratio_width)*image.shape[1])
+        h=int((bull_size/ratio_height)*bottom_removed.shape[0])
+        w=int((bull_size/ratio_width)*bottom_removed.shape[1])
 
-        y=int((topY/ratio_height)*image.shape[0])
-        x=int((midX/ratio_width)*image.shape[1])
-        crop1 = image[y:y+h, x:x+w]
+        y=int((topY/ratio_height)*bottom_removed.shape[0])
+        x=int((midX/ratio_width)*bottom_removed.shape[1])
+        crop1 = bottom_removed[y:y+h, x:x+w]
 
-        y=int((topY/ratio_height)*image.shape[0])
-        x=int((rightX/ratio_width)*image.shape[1])
-        crop2 = image[y:y+h, x:x+w]
+        y=int((topY/ratio_height)*bottom_removed.shape[0])
+        x=int((rightX/ratio_width)*bottom_removed.shape[1])
+        crop2 = bottom_removed[y:y+h, x:x+w]
 
-        y=int((upperY/ratio_height)*image.shape[0])
-        x=int((rightX/ratio_width)*image.shape[1])
+        y=int((upperY/ratio_height)*bottom_removed.shape[0])
+        x=int((rightX/ratio_width)*bottom_removed.shape[1])
 
-        crop3 = image[y:y+h, x:x+w]
+        crop3 = bottom_removed[y:y+h, x:x+w]
 
-        y=int((lowerY/ratio_height)*image.shape[0])
-        x=int((rightX/ratio_width)*image.shape[1])
+        y=int((lowerY/ratio_height)*bottom_removed.shape[0])
+        x=int((rightX/ratio_width)*bottom_removed.shape[1])
 
-        crop4 = image[y:y+h, x:x+w]
+        crop4 = bottom_removed[y:y+h, x:x+w]
 
-        y=int((bottomY/ratio_height)*image.shape[0])
-        x=int((rightX/ratio_width)*image.shape[1])
+        y=int((bottomY/ratio_height)*bottom_removed.shape[0])
+        x=int((rightX/ratio_width)*bottom_removed.shape[1])
 
-        crop5 = image[y:y+h, x:x+w]
+        crop5 = bottom_removed[y:y+h, x:x+w]
 
-        y=int((bottomY/ratio_height)*image.shape[0])
-        x=int((midX/ratio_width)*image.shape[1])
+        y=int((bottomY/ratio_height)*bottom_removed.shape[0])
+        x=int((midX/ratio_width)*bottom_removed.shape[1])
 
-        crop6 = image[y:y+h, x:x+w]
+        crop6 = bottom_removed[y:y+h, x:x+w]
 
         # NOTE: STUFF BELOW IS STRANGE
         # crop7 represents the top-left corner of the bull
@@ -275,25 +277,25 @@ def crop_image(image, target_type):
         # the left/right cropping of NRA targets
         # Therefore, I'm just going to leave it as is
 
-        y=int((topY/ratio_height)*image.shape[0])
-        x=int((leftX/ratio_width)*image.shape[1])
+        y=int((topY/ratio_height)*bottom_removed.shape[0])
+        x=int((leftX/ratio_width)*bottom_removed.shape[1])
 
-        crop7 = image[y:y+h, x:x+w]
+        crop7 = bottom_removed[y:y+h, x:x+w]
 
-        y=int((upperY/ratio_height)*image.shape[0])
-        x=int((leftX/ratio_width)*image.shape[1])
+        y=int((upperY/ratio_height)*bottom_removed.shape[0])
+        x=int((leftX/ratio_width)*bottom_removed.shape[1])
 
-        crop8 = image[y:y+h, x:x+w]
+        crop8 = bottom_removed[y:y+h, x:x+w]
 
-        y=int((lowerY/ratio_height)*image.shape[0])
-        x=int((leftX/ratio_width)*image.shape[1])
+        y=int((lowerY/ratio_height)*bottom_removed.shape[0])
+        x=int((leftX/ratio_width)*bottom_removed.shape[1])
 
-        crop9 = image[y:y+h, x:x+w]
+        crop9 = bottom_removed[y:y+h, x:x+w]
 
-        y=int((bottomY/ratio_height)*image.shape[0])
-        x=int((leftX/ratio_width)*image.shape[1])
+        y=int((bottomY/ratio_height)*bottom_removed.shape[0])
+        x=int((leftX/ratio_width)*bottom_removed.shape[1])
 
-        crop10 = image[y:y+h, x:x+w]
+        crop10 = bottom_removed[y:y+h, x:x+w]
 
         # Save the cropped images
         cv2.imwrite("images/output/top-mid.jpg", crop1)
@@ -3056,7 +3058,7 @@ orion50ftconventional_max_hole_radius = tk.IntVar(root, 40)
 #endregion
 
 #region Scanner settings
-scanner_crop_pixels = tk.IntVar(root, 15)
+scanner_crop_pixels = tk.IntVar(root, 210)
 #endregion
 
 # Check for a config file. If it exists, load the values from it. Otherwise, create a config file frome the defaults.
