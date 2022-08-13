@@ -85,7 +85,7 @@ def load_image(target_type, image_selector="ask"):
         canvas.grid(row = 0, column = 1) # Refresh the canvas, placing it in the correct column
     
     global target_preview # Images must be stored globally to be show on the canvas
-    target_preview = ImageTk.PhotoImage(Image.open(image_file).resize((230, 350), Image.ANTIALIAS)) # Store the image as a tkinter photo image and resize it
+    target_preview = ImageTk.PhotoImage(Image.open(image_file).resize((230, 350), Image.Resampling.LANCZOS)) # Store the image as a tkinter photo image and resize it
     canvas.create_image(0, 0, anchor="nw", image=target_preview) # Place the image on the canvas
 
     main_label.config(text="Image loaded") # Update the main label
@@ -560,70 +560,70 @@ def show_output():
     top_left_canvas.grid(row = 0, column = 0)
 
     global top_left_output
-    top_left_output = ImageTk.PhotoImage(Image.open("images/output/top-left.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    top_left_output = ImageTk.PhotoImage(Image.open("images/output/top-left.jpg-output.jpg").resize((170, 170), Image.Resampling.LANCZOS))
     top_left_canvas.create_image(0, 0, anchor="nw", image=top_left_output)
 
     upper_left_canvas = tk.Canvas(output_bottom_frame, width=170,height=170)
     upper_left_canvas.grid(row = 1, column = 0)
 
     global upper_left_output
-    upper_left_output = ImageTk.PhotoImage(Image.open("images/output/upper-left.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    upper_left_output = ImageTk.PhotoImage(Image.open("images/output/upper-left.jpg-output.jpg").resize((170, 170), Image.Resampling.LANCZOS))
     upper_left_canvas.create_image(0, 0, anchor="nw", image=upper_left_output)
 
     lower_left_canvas = tk.Canvas(output_bottom_frame, width=170,height=170)
     lower_left_canvas.grid(row = 2, column = 0)
 
     global lower_left_output
-    lower_left_output = ImageTk.PhotoImage(Image.open("images/output/lower-left.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    lower_left_output = ImageTk.PhotoImage(Image.open("images/output/lower-left.jpg-output.jpg").resize((170, 170), Image.Resampling.LANCZOS))
     lower_left_canvas.create_image(0, 0, anchor="nw", image=lower_left_output)
 
     bottom_left_canvas = tk.Canvas(output_bottom_frame, width=170,height=170)
     bottom_left_canvas.grid(row = 3, column = 0)
 
     global bottom_left_output
-    bottom_left_output = ImageTk.PhotoImage(Image.open("images/output/bottom-left.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    bottom_left_output = ImageTk.PhotoImage(Image.open("images/output/bottom-left.jpg-output.jpg").resize((170, 170), Image.Resampling.LANCZOS))
     bottom_left_canvas.create_image(0, 0, anchor="nw", image=bottom_left_output)
 
     top_mid_canvas = tk.Canvas(output_bottom_frame, width=170,height=170)
     top_mid_canvas.grid(row = 0, column = 1)
 
     global top_mid_output
-    top_mid_output = ImageTk.PhotoImage(Image.open("images/output/top-mid.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    top_mid_output = ImageTk.PhotoImage(Image.open("images/output/top-mid.jpg-output.jpg").resize((170, 170), Image.Resampling.LANCZOS))
     top_mid_canvas.create_image(0, 0, anchor="nw", image=top_mid_output)
 
     bottom_mid_canvas = tk.Canvas(output_bottom_frame, width=170,height=170)
     bottom_mid_canvas.grid(row = 3, column = 1)
 
     global bottom_mid_output
-    bottom_mid_output = ImageTk.PhotoImage(Image.open("images/output/bottom-mid.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    bottom_mid_output = ImageTk.PhotoImage(Image.open("images/output/bottom-mid.jpg-output.jpg").resize((170, 170), Image.Resampling.LANCZOS))
     bottom_mid_canvas.create_image(0, 0, anchor="nw", image=bottom_mid_output)
 
     top_right_canvas = tk.Canvas(output_bottom_frame, width=170,height=170)
     top_right_canvas.grid(row = 0, column = 2)
 
     global top_right_output
-    top_right_output = ImageTk.PhotoImage(Image.open("images/output/top-right.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    top_right_output = ImageTk.PhotoImage(Image.open("images/output/top-right.jpg-output.jpg").resize((170, 170), Image.Resampling.LANCZOS))
     top_right_canvas.create_image(0, 0, anchor="nw", image=top_right_output)
 
     upper_right_canvas = tk.Canvas(output_bottom_frame, width=170,height=170)
     upper_right_canvas.grid(row = 1, column = 2)
 
     global upper_right_output
-    upper_right_output = ImageTk.PhotoImage(Image.open("images/output/upper-right.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    upper_right_output = ImageTk.PhotoImage(Image.open("images/output/upper-right.jpg-output.jpg").resize((170, 170), Image.Resampling.LANCZOS))
     upper_right_canvas.create_image(0, 0, anchor="nw", image=upper_right_output)
 
     lower_right_canvas = tk.Canvas(output_bottom_frame, width=170,height=170)
     lower_right_canvas.grid(row = 2, column = 2)
 
     global lower_right_output
-    lower_right_output = ImageTk.PhotoImage(Image.open("images/output/lower-right.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    lower_right_output = ImageTk.PhotoImage(Image.open("images/output/lower-right.jpg-output.jpg").resize((170, 170), Image.Resampling.LANCZOS))
     lower_right_canvas.create_image(0, 0, anchor="nw", image=lower_right_output)
 
     bottom_right_canvas = tk.Canvas(output_bottom_frame, width=170,height=170)
     bottom_right_canvas.grid(row = 3, column = 2)
 
     global bottom_right_output
-    bottom_right_output = ImageTk.PhotoImage(Image.open("images/output/bottom-right.jpg-output.jpg").resize((170, 170), Image.ANTIALIAS))
+    bottom_right_output = ImageTk.PhotoImage(Image.open("images/output/bottom-right.jpg-output.jpg").resize((170, 170), Image.Resampling.LANCZOS))
     bottom_right_canvas.create_image(0, 0, anchor="nw", image=bottom_right_output)
     #endregion
 
@@ -667,7 +667,7 @@ def open_analysis_window():
         for file in os.listdir("images/output"):
             # Output images are saved as such: <original image name>-output.png
             if file.endswith("output.jpg"):
-                output_images.append(ImageTk.PhotoImage(Image.open("images/output/" + file).resize((600, 600), Image.ANTIALIAS))) # Load the image as a tkinter photo image and add it to the list
+                output_images.append(ImageTk.PhotoImage(Image.open("images/output/" + file).resize((600, 600), Image.Resampling.LANCZOS))) # Load the image as a tkinter photo image and add it to the list
                 output_image_names.append(file) # Add the image name to the list
         
         # Prepare image names lists for use by ordering them in a clockwise fashion, starting with the top middle target image.
