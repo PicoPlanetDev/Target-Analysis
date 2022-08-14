@@ -1696,14 +1696,14 @@ def open_settings():
     settingstab3orionDPI2 = ttk.Frame(settings_tab_control)
     settingstab5orion50ft = ttk.Frame(settings_tab_control)
     settingstab4names = ttk.Frame(settings_tab_control)
-    settingstab5scanner = ttk.Frame(settings_tab_control)
+    # settingstab5scanner = ttk.Frame(settings_tab_control)
 
     settings_tab_control.add(settingstab1nraa17, text ='NRA A-17')
     settings_tab_control.add(settingstab2orion, text ='NRA/USAS-50 Orion 300dpi')
     settings_tab_control.add(settingstab3orionDPI2, text ='NRA/USAS-50 Orion 600dpi')
     settings_tab_control.add(settingstab5orion50ft, text ='Orion 50ft Conventional')
     settings_tab_control.add(settingstab4names, text ='Names')
-    settings_tab_control.add(settingstab5scanner, text ='Scanner')
+    # settings_tab_control.add(settingstab5scanner, text ='Scanner')
 
     settings_tab_control.pack(side=TOP, fill=X, padx=10, pady=5)
 
@@ -1962,12 +1962,12 @@ def open_settings():
     #endregion
 
     #region Create scanner widgets
-    scanner_label = ttk.Label(settingstab5scanner, text="Scanner Settings", font=BOLD)
-    scanner_label.grid(row=0, column=0, columnspan=2)
-    scanner_crop_pixels_label = ttk.Label(settingstab5scanner, text="Crop bottom pixels")
-    scanner_crop_pixels_label.grid(row=1, column=0)
-    scanner_crop_pixels_entry = ttk.Entry(settingstab5scanner, textvariable=scanner_crop_pixels)
-    scanner_crop_pixels_entry.grid(row=1, column=1)
+    # scanner_label = ttk.Label(settingstab5scanner, text="Scanner Settings", font=BOLD)
+    # scanner_label.grid(row=0, column=0, columnspan=2)
+    # scanner_crop_pixels_label = ttk.Label(settingstab5scanner, text="Crop bottom pixels")
+    # scanner_crop_pixels_label.grid(row=1, column=0)
+    # scanner_crop_pixels_entry = ttk.Entry(settingstab5scanner, textvariable=scanner_crop_pixels)
+    # scanner_crop_pixels_entry.grid(row=1, column=1)
 
     #endregion
 
@@ -2029,7 +2029,7 @@ def update_settings_from_config(file):
     orion50ftconventional_max_hole_radius.set(config.getint("50ftconventional", "50ftconventional_max_hole_radius"))
 
     # Scanner
-    scanner_crop_pixels.set(config.getint("scanner", "scanner_crop_pixels"))
+    # scanner_crop_pixels.set(config.getint("scanner", "scanner_crop_pixels"))
 
 # Save settings to config file
 def create_default_config(file):
@@ -2094,7 +2094,7 @@ def create_default_config(file):
     # Add the scanner section to the config file
     config.add_section('scanner')
     # Settings for the scanner
-    config.set('scanner', 'scanner_crop_pixels', str(scanner_crop_pixels.get()))
+    # config.set('scanner', 'scanner_crop_pixels', str(scanner_crop_pixels.get()))
 
     # Write the changes to the config file
     with open(file, 'w') as f:
@@ -2148,7 +2148,7 @@ def update_config():
     config.set('nra', '50ftconventional_max_contour_area', str(orion50ftconventional_max_contour_area.get()))
     config.set('nra', '50ftconventional_max_hole_radius', str(orion50ftconventional_max_hole_radius.get()))
     # Continue updating the settings for the scanner section
-    config.set('scanner', 'scanner_crop_pixels', str(scanner_crop_pixels.get()))
+    # config.set('scanner', 'scanner_crop_pixels', str(scanner_crop_pixels.get()))
 
     # Write the changes to the config file
     with open('config.ini', 'w') as f:
@@ -3063,7 +3063,7 @@ orion50ftconventional_max_hole_radius = tk.IntVar(root, 40)
 #endregion
 
 #region Scanner settings
-scanner_crop_pixels = tk.IntVar(root, 210)
+# scanner_crop_pixels = tk.IntVar(root, 210)
 #endregion
 
 # Check for a config file. If it exists, load the values from it. Otherwise, create a config file frome the defaults.
