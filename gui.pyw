@@ -197,10 +197,13 @@ def crop_image(image, target_type):
     # Crop Orion target
     if target_type == TargetTypes.ORION_USAS_50 or target_type == TargetTypes.ORION_USAS_50_NRA_SCORING or target_type == TargetTypes.ORION_50FT_CONVENTIONAL:
         # Pixel measurements were taken from 300dpi targets, so use the same ratio where necessary
-        ratio_height = 3507 - scanner_crop_pixels.get() # The height of the scan minus the scanner crop (so only the target is left)
-        ratio_width = 2550
+        ratio_height = 3299
+        ratio_width = 2544
 
-        bottom_removed = image[0:ratio_height, 0:ratio_width] # Remove the bottom of the image
+        height_to_width_ratio = ratio_height / ratio_width
+
+        bottom_removed = image[0:image.shape[0]*height_to_width_ratio, 0:image.shape[1]] # Remove the bottom of the image, keeping proportional height
+        # cv2.imwrite("images/output/bottom-removed.jpg", bottom_removed) # for debugging
         
         # Set positions for Orion NRA/USAS-50 targets
         if target_type == TargetTypes.ORION_USAS_50 or target_type == TargetTypes.ORION_USAS_50_NRA_SCORING:
@@ -238,15 +241,18 @@ def crop_image(image, target_type):
             lowerY = 1850
             bottomY = 2600
         
+        # Set the same height and width for all cropped images
         h=int((bull_size/ratio_height)*bottom_removed.shape[0])
         w=int((bull_size/ratio_width)*bottom_removed.shape[1])
 
         y=int((topY/ratio_height)*bottom_removed.shape[0])
         x=int((midX/ratio_width)*bottom_removed.shape[1])
+
         crop1 = bottom_removed[y:y+h, x:x+w]
 
         y=int((topY/ratio_height)*bottom_removed.shape[0])
         x=int((rightX/ratio_width)*bottom_removed.shape[1])
+
         crop2 = bottom_removed[y:y+h, x:x+w]
 
         y=int((upperY/ratio_height)*bottom_removed.shape[0])
@@ -256,7 +262,6 @@ def crop_image(image, target_type):
 
         y=int((lowerY/ratio_height)*bottom_removed.shape[0])
         x=int((rightX/ratio_width)*bottom_removed.shape[1])
-
         crop4 = bottom_removed[y:y+h, x:x+w]
 
         y=int((bottomY/ratio_height)*bottom_removed.shape[0])
