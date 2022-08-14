@@ -202,7 +202,7 @@ def crop_image(image, target_type):
 
         height_to_width_ratio = ratio_height / ratio_width
 
-        bottom_removed = image[0:image.shape[0]*height_to_width_ratio, 0:image.shape[1]] # Remove the bottom of the image, keeping proportional height
+        bottom_removed = image[0:int(image.shape[0]*height_to_width_ratio), 0:image.shape[1]] # Remove the bottom of the image, keeping proportional height
         # cv2.imwrite("images/output/bottom-removed.jpg", bottom_removed) # for debugging
         
         # Set positions for Orion NRA/USAS-50 targets
