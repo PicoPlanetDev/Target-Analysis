@@ -897,7 +897,8 @@ def set_info_from_file(file):
     # However, Orion targets use only one scan so that space can hold the shooter's name
     # This is a kind of hacky way to determine if this is an Orion target
     if tab_control.index("current") == 1 or tab_control.index("current") == 2:
-        name_var.set(filename[9:-6])
+        # 01jan2022sigmond1.jpeg -> sigmond
+        name_var.set(filename_without_extension[9:-1])
 
     # Update the main label
     main_label.config(text="Set date to: " + month_var.get() + " " + day_var.get() + ", " + year_var.get() + " and target number " + target_num_var.get())
@@ -1677,6 +1678,9 @@ def open_settings():
     settings_dark_mode_frame = ttk.Frame(settings_window)
     settings_dark_mode_frame.pack(side=TOP, fill=X, padx=5)
 
+    settings_capitalize_frame = ttk.Frame(settings_window)
+    settings_capitalize_frame.pack(side=TOP, fill=X, padx=5)
+
     settings_global_separator = ttk.Separator(settings_window, orient=HORIZONTAL)
     settings_global_separator.pack(side=TOP, fill=X, pady=5)
 
@@ -1694,14 +1698,12 @@ def open_settings():
     settingstab3orionDPI2 = ttk.Frame(settings_tab_control)
     settingstab5orion50ft = ttk.Frame(settings_tab_control)
     settingstab4names = ttk.Frame(settings_tab_control)
-    # settingstab5scanner = ttk.Frame(settings_tab_control)
 
     settings_tab_control.add(settingstab1nraa17, text ='NRA A-17')
     settings_tab_control.add(settingstab2orion, text ='NRA/USAS-50 Orion 300dpi')
     settings_tab_control.add(settingstab3orionDPI2, text ='NRA/USAS-50 Orion 600dpi')
     settings_tab_control.add(settingstab5orion50ft, text ='Orion 50ft Conventional')
     settings_tab_control.add(settingstab4names, text ='Names')
-    # settings_tab_control.add(settingstab5scanner, text ='Scanner')
 
     settings_tab_control.pack(side=TOP, fill=X, padx=10, pady=5)
 
@@ -1752,6 +1754,10 @@ def open_settings():
     global dark_mode_var
     dark_mode_checkbutton = ttk.Checkbutton(settings_dark_mode_frame, text='Use dark theme', style='Switch.TCheckbutton', variable=dark_mode_var, onvalue=True, offvalue=False, command=update_dark_mode)
     dark_mode_checkbutton.grid(column=0, row=0)
+
+    # Auto capitalize names switch
+    capitalize_names_checkbutton = ttk.Checkbutton(settings_capitalize_frame, text='Auto capitalize names', style='Switch.TCheckbutton', variable=capitalize_names_var, onvalue=True, offvalue=False)
+    capitalize_names_checkbutton.grid(column=0, row=0)
     #endregion
 
     #region Create NRA A-17 widgets
@@ -1985,6 +1991,7 @@ def update_settings_from_config(file):
     show_output_when_finished_var.set(config.getboolean("settings", "show_output_when_finished"))
     individual_output_type_var.set(config.get('settings', 'individual_output_type'))
     use_file_info_var.set(config.getboolean("settings", "use_file_info"))
+    capitalize_names_var.set(config.getboolean("settings", "capitalize_names"))
     update_dark_mode() # Apply the dark mode setting
 
     # Continue setting variables for the Orion targets
@@ -2025,9 +2032,6 @@ def update_settings_from_config(file):
     orion50ftconventional_max_contour_area.set(config.getint("50ftconventional", "50ftconventional_max_contour_area"))
     orion50ftconventional_max_hole_radius.set(config.getint("50ftconventional", "50ftconventional_max_hole_radius"))
 
-# Scanner
-# scanner_crop_pixels.set(config.getint("scanner", "scanner_crop_pixels"))
-
 # Save settings to config file
 def create_default_config(file):
     # Create a config parser
@@ -2043,6 +2047,7 @@ def create_default_config(file):
     config.set('settings', 'show_output_when_finished', str(show_output_when_finished_var.get()))
     config.set('settings', 'individual_output_type', str(individual_output_type_var.get()))
     config.set('settings', 'use_file_info', str(use_file_info_var.get()))
+    config.set('settings', 'capitalize_names', str(capitalize_names_var.get()))
 
     # Add the orion section to the config file
     config.add_section('orion')
@@ -2088,11 +2093,6 @@ def create_default_config(file):
     config.set('50ftconventional', '50ftconventional_max_contour_area', str(orion50ftconventional_max_contour_area.get()))
     config.set('50ftconventional', '50ftconventional_max_hole_radius', str(orion50ftconventional_max_hole_radius.get()))
 
-    # Add the scanner section to the config file
-    config.add_section('scanner')
-    # Settings for the scanner
-    # config.set('scanner', 'scanner_crop_pixels', str(scanner_crop_pixels.get()))
-
     # Write the changes to the config file
     with open(file, 'w') as f:
         config.write(f)
@@ -2109,6 +2109,7 @@ def update_config():
     config.set('settings', 'show_output_when_finished', str(show_output_when_finished_var.get()))
     config.set('settings', 'individual_output_type', str(individual_output_type_var.get()))
     config.set('settings', 'use_file_info', str(use_file_info_var.get()))
+    config.set('settings', "capitalize_names", str(capitalize_names_var.get()))
     # Continue updating the settings for the Orion section
     config.set('orion', 'orion_kernel_size_dpi1', str(orion_kernel_size_dpi1.get()))
     config.set('orion', 'orion_kernel_size_dpi2', str(orion_kernel_size_dpi2.get()))
@@ -2144,8 +2145,6 @@ def update_config():
     config.set('nra', '50ftconventional_min_contour_area', str(orion50ftconventional_min_contour_area.get()))
     config.set('nra', '50ftconventional_max_contour_area', str(orion50ftconventional_max_contour_area.get()))
     config.set('nra', '50ftconventional_max_hole_radius', str(orion50ftconventional_max_hole_radius.get()))
-    # Continue updating the settings for the scanner section
-    # config.set('scanner', 'scanner_crop_pixels', str(scanner_crop_pixels.get()))
 
     # Write the changes to the config file
     with open('config.ini', 'w') as f:
@@ -3011,6 +3010,9 @@ use_bubbles_var = tk.BooleanVar(root, False)
 is_opening_folder = False
 score_as_nra_var = tk.BooleanVar(root, False)
 
+# Auto capitalize the first letter of the file name
+capitalize_names_var = tk.BooleanVar(root, True)
+
 # Teams
 enable_teams_var = tk.BooleanVar(root, False)
 team1_name_var = tk.StringVar(root, "Team 1")
@@ -3056,10 +3058,6 @@ nramax_hole_radius = tk.IntVar(root, 40)
 orion50ftconventional_min_contour_area = tk.IntVar(root, 200)
 orion50ftconventional_max_contour_area = tk.IntVar(root, 5000)
 orion50ftconventional_max_hole_radius = tk.IntVar(root, 40)
-#endregion
-
-#region Scanner settings
-# scanner_crop_pixels = tk.IntVar(root, 210)
 #endregion
 
 # Check for a config file. If it exists, load the values from it. Otherwise, create a config file frome the defaults.
