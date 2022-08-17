@@ -863,11 +863,11 @@ def set_info_from_file(file):
     
     filename_without_extension = os.path.splitext(filename)[0] # get the filename without the extension
 
-    day_var.set(filename[0:2]) # Set the day
+    day_var.set(filename_without_extension[0:2]) # Set the day
 
-    year_var.set(filename[5:9]) # Set the year
+    year_var.set(filename_without_extension[5:9]) # Set the year
 
-    month = filename[2:5] # Get the month
+    month = filename_without_extension[2:5] # Get the month
 
     # Create a dictionary to convert the 3 letter month month to a full name
     months = {
