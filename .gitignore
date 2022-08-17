@@ -130,31 +130,23 @@ images/**
 # all data
 data/**
 
-# exclude all images
+# exclude all images and output data
 images/*
-
-# but keep folder
-!images/.gitkeep
-
-# and keep output
-!images/output/.gitkeep
-
-!images/03jan2021left1.jpeg
-!images/03jan2021right1.jpeg
-
-!images/03jan2021left1600dpi.jpeg
-!images/03jan2021right1600dpi.jpeg
-!26jan2021300dpi1.jpeg
-!26jan2021600dpi1.jpeg
-
-!images/05dec2021conventionaltest1.jpg
-!images/26jan2021oriontest1.jpeg
-
-# exclude all data
 data/*
 
-# but keep folder
+# but keep folder structure using .gitkeep files
+!images/.gitkeep
+!images/output/.gitkeep
 !data/.gitkeep
+
+# Keep some test images
+# NRA A-17
+!images/03jan2021left1.jpeg
+!images/03jan2021right1.jpeg
+# Orion USAS-50
+!images/26jan2021oriontest1.jpeg
+# Orion 50ft Conventional
+!images/05dec2021conventionaltest1.jpg
 
 # exclude VS code workspaces
 .code-workspace
