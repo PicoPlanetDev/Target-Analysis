@@ -48,7 +48,9 @@ Python 3 and the following Python packages must be installed:
 - numpy
 - matplotlib
 
-Python and pip must first be installed on your Linux machine You can install the required packages by using the following command: ```$ pip install -r requirements.txt```
+Python and pip must first be installed on your Linux machine You can install the required packages by using the following command: `$ pip install -r requirements.txt`
+
+Then, `$ git clone https://github.com/PicoPlanetDev/Target-Analysis` `cd` into the `TargetAnalysis-main` folder, and run `$ python gui.py`.s
 
 ## Other installation notes
 **If you are upgrading from a previous version of Target Analysis:** Please make sure to back up your old config file and names file in a separate directory
