@@ -47,7 +47,6 @@ Python 3 and the following Python packages must be installed:
 - pillow
 - numpy
 - matplotlib
-- ttkthemes
 
 Python and pip must first be installed on your Linux machine You can install the required packages by using the following command: ```$ pip install -r requirements.txt```
 
@@ -263,10 +262,10 @@ Thanks for using Target Analysis!
 ############################################################
 ## Target Analysis                                        ##
 ############################################################
-## Copyright (c) 2021 Sigmond Kukla, All Rights Reserved  ##
+## Copyright (c) 2022 Sigmond Kukla, All Rights Reserved  ##
 ############################################################
 ## Author: Sigmond Kukla                                  ##
-## Copyright: Copyright 2021, Sigmond Kukla               ##
+## Copyright: Copyright 2022, Sigmond Kukla               ##
 ## The Target Analysis system does not include a license. ##
 ## This means that this work is under exclusive           ##
 ## copyright by the developer (Sigmond Kukla) alone.      ##

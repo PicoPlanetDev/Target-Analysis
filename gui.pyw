@@ -5,10 +5,10 @@
 ############################################################
 ## Target Analysis                                        ##
 ############################################################
-## Copyright (c) 2021 Sigmond Kukla, All Rights Reserved  ##
+## Copyright (c) 2022 Sigmond Kukla, All Rights Reserved  ##
 ############################################################
 ## Author: Sigmond Kukla                                  ##
-## Copyright: Copyright 2021, Sigmond Kukla               ##
+## Copyright: Copyright 2022, Sigmond Kukla               ##
 ## The Target Analysis system does not include a license. ##
 ## This means that this work is under exclusive           ##
 ## copyright by the developer (Sigmond Kukla) alone.      ##
