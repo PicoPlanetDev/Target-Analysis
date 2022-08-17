@@ -328,7 +328,6 @@ def scan_image():
     def create_image_name():
         '''Generates a file name compatible with Target Analysis based on the current options'''
         # Create a dictionary to convert the full month name to 3 letters, reverse of the dictionary used in set_info_from_file
-        # TODO: Create a function that handles both scenarios
         months = {
             'January': 'jan', 
             'February': 'feb',
@@ -641,10 +640,9 @@ def show_folder(path):
     Args:
         path (str): where to navigate to in explorer
     """
-    # TODO: Make this work on any operating system 
     print("Opening folder: " + path)
     main_label.config(text="Opening folder... ONLY WORKS ON WINDOWS")
-    # TODO: Check if this works with spaces in the path
+    # TODO: Change to pathlib
     os.system("explorer " + os.path.realpath(path)) # Run a system command to open the folder using Explorer (Windows only)
     main_label.config(text="Working directory opened in Explorer") # Update the main label
 
@@ -1751,7 +1749,6 @@ def open_settings():
     individual_output_type_check_button_settings.grid(column=0, row=0)
 
     # Dark mode switch
-    # TODO: Figure out why dark mode makes labels more padded
     global dark_mode_var
     dark_mode_checkbutton = ttk.Checkbutton(settings_dark_mode_frame, text='Use dark theme', style='Switch.TCheckbutton', variable=dark_mode_var, onvalue=True, offvalue=False, command=update_dark_mode)
     dark_mode_checkbutton.grid(column=0, row=0)
@@ -1948,7 +1945,7 @@ def open_settings():
 
     #region Create names
     # Frame is named 'settingstab4names'
-    # TODO: Add built in support for editing names file
+    # notTODOrightnow: Add built in support for editing names file
     names_label = ttk.Label(settingstab4names, text="Initials to Names mapping", font=BOLD)
     names_label.pack(padx=5, pady=5, fill=X)
     description_label = ttk.Label(settingstab4names, text="Initials and Names are stored in an INI file which must be manually edited.")
@@ -2028,8 +2025,8 @@ def update_settings_from_config(file):
     orion50ftconventional_max_contour_area.set(config.getint("50ftconventional", "50ftconventional_max_contour_area"))
     orion50ftconventional_max_hole_radius.set(config.getint("50ftconventional", "50ftconventional_max_hole_radius"))
 
-    # Scanner
-    # scanner_crop_pixels.set(config.getint("scanner", "scanner_crop_pixels"))
+# Scanner
+# scanner_crop_pixels.set(config.getint("scanner", "scanner_crop_pixels"))
 
 # Save settings to config file
 def create_default_config(file):
@@ -2169,8 +2166,7 @@ def analyze_image(image):
     seven = 20.750/outer
     eight = 12.270/outer
     nine = 3.810/outer
-    # TODO: Implement the outer scoring spindle for all compatible targets
-    # TODO: Determine the actual size of the outer spindle
+
     spindle_radius = 2.83 # Technically 2.835mm based on averages
     outer_spindle_radius = 4.5 # Technically 4.5025mm
     #endregion
@@ -2983,7 +2979,7 @@ class TargetTypes(Enum):
     ORION_USAS_50_NRA_SCORING = 'orion-usas50-nrascoring'
     ORION_50FT_CONVENTIONAL = 'orion-50ft-conventional'
 
-# TODO: Replace the separate TargetTypes and ScoringTypes with an optional left and right parameter
+# TODOlater: Replace the separate TargetTypes and ScoringTypes with an optional left and right parameter
 class ScoringTypes(Enum):
     NRA = 'nra-a17'
     ORION_USAS_50 = 'orion-usas-50'
@@ -3294,8 +3290,6 @@ open_folder_conventional_button.grid(row=0, column=2, padx=5, pady=5)
 
 scan_process_conventional_target_button = ttk.Button(orion50ft_buttons_frame, text = "Scan", command=lambda: scan_process(TargetTypes.ORION_50FT_CONVENTIONAL))
 scan_process_conventional_target_button.grid(row=0, column=3, padx=5, pady=5)
-
-#TODO: fix position for bubbles on new 50ft conventional targets
 
 use_bubbles_checkbutton = ttk.Checkbutton(orion50ft_buttons_frame, text='Name from bubbles', style='Switch.TCheckbutton', variable=use_bubbles_var, onvalue=True, offvalue=False, command=update_config)
 use_bubbles_checkbutton.grid(column=0, row=1, padx=5, pady=5, columnspan=4)
