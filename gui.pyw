@@ -3055,7 +3055,7 @@ nramax_hole_radius = tk.IntVar(root, 40)
 #endregion
 
 #region Fine tuning settings for Orion 50ft conventional targets
-orion50ftconventional_min_contour_area = tk.IntVar(root, 200)
+orion50ftconventional_min_contour_area = tk.IntVar(root, 1000)
 orion50ftconventional_max_contour_area = tk.IntVar(root, 5000)
 orion50ftconventional_max_hole_radius = tk.IntVar(root, 40)
 #endregion
