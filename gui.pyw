@@ -1655,8 +1655,8 @@ def open_settings():
     #region Create settings window
     settings_window = tk.Toplevel(root)
     settings_window.title("Target Analysis")
-    settings_window.minsize(width=800, height=640)
-    settings_window.geometry("800x640")
+    settings_window.minsize(width=800, height=670)
+    settings_window.geometry("800x670")
     settings_window.tk.call('wm', 'iconphoto', settings_window._w, tk.PhotoImage(file='assets/icon.png'))
     #endregion
 
