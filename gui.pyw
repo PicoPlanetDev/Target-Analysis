@@ -202,9 +202,39 @@ def crop_image(image, target_type):
 
         height_to_width_ratio = ratio_height / ratio_width
 
-        bottom_removed = image[0:int(image.shape[0]*height_to_width_ratio), 0:image.shape[1]] # Remove the bottom of the image, keeping proportional height
-        # cv2.imwrite("images/output/bottom-removed.jpg", bottom_removed) # for debugging
+        bottom_removed = image[0:int(image.shape[1]*height_to_width_ratio), 0:image.shape[1]] # Remove the bottom of the image, keeping proportional height
+        cv2.imwrite("images/output/bottom-removed.jpg", bottom_removed) # for debugging
         
+        #region Crop image to only include the bubble zones
+        h=int((250/ratio_height)*bottom_removed.shape[0])
+        w=int((1135/ratio_width)*bottom_removed.shape[1])
+        y=0
+        x=int((1415/ratio_width)*image.shape[1])
+        bubbles_crop = image[y:y+h, x:x+w]
+
+        def image_resize(image, width=None, height=None, inter=cv2.INTER_AREA):
+            """
+            image (cv2 image): image to be resized
+            width (int): width of resized image, None for automatic
+            height (int): height of resized image, None for automatic
+            inter (cv2 interpolation): interpolation method
+            """
+            dim = None
+            (h, w) = image.shape[:2]
+            if width is None and height is None:
+                return image
+            if width is None:
+                r = height / float(h)
+                dim = (int(w * r), height)
+            else:
+                r = width / float(w)
+                dim = (width, int(h * r))
+            resized = cv2.resize(image, dim, interpolation=inter)
+            return resized
+
+        bubbles_crop = image_resize(bubbles_crop, width=1135, height=250) # Resize image to fit the coordinate system that the algorithm uses later
+        #endregion
+
         # Set positions for Orion NRA/USAS-50 targets
         if target_type == TargetTypes.ORION_USAS_50 or target_type == TargetTypes.ORION_USAS_50_NRA_SCORING:
             bull_size = 400
@@ -303,6 +333,7 @@ def crop_image(image, target_type):
         crop10 = bottom_removed[y:y+h, x:x+w]
 
         # Save the cropped images
+        cv2.imwrite("images/output/bubbles.jpg", bubbles_crop)
         cv2.imwrite("images/output/top-mid.jpg", crop1)
         cv2.imwrite("images/output/top-right.jpg", crop2)
         cv2.imwrite("images/output/upper-right.jpg", crop3)
@@ -317,7 +348,7 @@ def crop_image(image, target_type):
     # Get name from bubbles if enabled
     if use_bubbles_var.get() and (tab_control.index("current") == 1 or tab_control.index("current") == 2):
         main_label.config(text="Setting name from bubbles...")
-        set_name_from_bubbles(image, target_type)
+        set_name_from_bubbles(target_type)
     
     main_label.config(text="Cropped image") # Update the main label
 
@@ -642,7 +673,6 @@ def show_folder(path):
     """
     print("Opening folder: " + path)
     main_label.config(text="Opening folder... ONLY WORKS ON WINDOWS")
-    # TODO: Change to pathlib
     os.system("explorer " + os.path.realpath(path)) # Run a system command to open the folder using Explorer (Windows only)
     main_label.config(text="Working directory opened in Explorer") # Update the main label
 
@@ -921,47 +951,53 @@ def set_info_from_today():
 # ----------------------------- Bubbles functions ---------------------------- #
 
 # Set shooter name from initials on Orion targets
-def set_name_from_bubbles(image, target_type):
+def set_name_from_bubbles(target_type):
     check_output_dir()
 
     DEFAULT_RADIUS = 15
 
-    #region Crop image to only include the bubble zones
-    h=int((250/3507)*image.shape[0])
-    w=int((1135/2550)*image.shape[1])
-    y=0
-    x=int((1415/2550)*image.shape[1])
-    crop = image[y:y+h, x:x+w]
-
-    def image_resize(image, width=None, height=None, inter=cv2.INTER_AREA):
-        """
-        image (cv2 image): image to be resized
-        width (int): width of resized image, None for automatic
-        height (int): height of resized image, None for automatic
-        inter (cv2 interpolation): interpolation method
-        """
-        dim = None
-        (h, w) = image.shape[:2]
-        if width is None and height is None:
-            return image
-        if width is None:
-            r = height / float(h)
-            dim = (int(w * r), height)
-        else:
-            r = width / float(w)
-            dim = (width, int(h * r))
-        resized = cv2.resize(image, dim, interpolation=inter)
-        return resized
-
-    crop = image_resize(crop, width=1135, height=250) # Resize image to fit the coordinate system that the algorithm uses later
-    output = crop.copy() # Make a copy for later
-    #endregion
+    crop = cv2.imread("images/output/bubbles.jpg")
+    output = crop.copy()
 
     #region Preprocess the image for circle detection
     gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
     thresh = cv2.threshold(gray, 190, 255, cv2.THRESH_BINARY)[1]
     opening = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, np.ones((7, 7), np.uint8))
     #endregion
+
+    def draw_debug_lines(output):
+        letter_x_positions = {
+            0: (51, 93),
+            1: (93, 135),
+            2: (135, 177),
+            3: (177, 219),
+            4: (219, 261),
+            5: (261, 303),
+            6: (303, 345),
+            7: (345, 387),
+            8: (387, 429),
+            9: (429, 471),
+            10: (471, 513),
+            11: (513, 555),
+            12: (555, 597)
+        }
+
+        y_positions = {
+            0: (120,170),
+            1: (170, 220),
+        }
+
+        for value in letter_x_positions.values():
+            for x in value:
+                output = cv2.line(output, (x, 0), (x, 250), (0, 0, 255), 1)
+        
+        for value in y_positions.values():
+            for y in value:
+                output = cv2.line(output, (0, y), (1135, y), (0, 0, 255), 1)
+
+        return output
+
+    output = draw_debug_lines(output)
 
     #region Identify circles in the image
     circles = cv2.HoughCircles(opening, cv2.HOUGH_GRADIENT, 1, 10, param1=30, param2=20, minRadius=10, maxRadius=50) # Detect circles
@@ -973,6 +1009,7 @@ def set_name_from_bubbles(image, target_type):
         cv2.circle(image, (a, b), r, (0, 255, 0), 2)
         cv2.circle(image, (a, b), 1, (0, 0, 255), 2)
 
+
     # Based on coordinates of the circle, return a capital letter A-Z
     def classify_letter(x, y):
         # Letters 
@@ -982,25 +1019,67 @@ def set_name_from_bubbles(image, target_type):
         # Default positions for Orion USAS-50 targets
         # Positions are represented as such:
         # index: (minPos, maxPos)
+
+        #region OLD POSITIONS
+        # letter_x_positions = {
+        #     0: (52,92),
+        #     1: (94, 140),
+        #     2: (145, 180),
+        #     3: (190, 225),
+        #     4: (230, 270),
+        #     5: (275, 305),
+        #     6: (310, 350),
+        #     7: (355, 395),
+        #     8: (400, 435),
+        #     9: (440, 475),
+        #     10: (480, 520),
+        #     11: (525, 560),
+        #     12: (565, 600)
+        # }
+
+        # y_positions = {
+        #     0: (95,135),
+        #     1: (145, 185),
+        # }
+        #endregion
+
+        #region New position generator
+        # starting = 51
+        # padding = 8
+        # width = 34
+
+        # current = starting
+        # dic = {}
+
+        # for i in range(0,13):
+        #     print(i)
+        #     next = current + width + padding
+        #     dic[i] = (current, next)
+        #     current = next
+
+        # print(dic)
+        #endregion
+
+        # NEW POSITIONS
         letter_x_positions = {
-            0: (60,100),
-            1: (105, 140),
-            2: (145, 180),
-            3: (190, 225),
-            4: (230, 270),
-            5: (275, 305),
-            6: (310, 350),
-            7: (355, 395),
-            8: (400, 435),
-            9: (440, 475),
-            10: (480, 520),
-            11: (525, 560),
-            12: (565, 600)
+            0: (51, 93),
+            1: (93, 135),
+            2: (135, 177),
+            3: (177, 219),
+            4: (219, 261),
+            5: (261, 303),
+            6: (303, 345),
+            7: (345, 387),
+            8: (387, 429),
+            9: (429, 471),
+            10: (471, 513),
+            11: (513, 555),
+            12: (555, 597)
         }
 
         y_positions = {
-            0: (95,135),
-            1: (145, 185),
+            0: (120,170),
+            1: (170, 220),
         }
 
         # Sligtly different positions for Orion 50ft conventional targets
@@ -1028,12 +1107,12 @@ def set_name_from_bubbles(image, target_type):
 
         letter_key = None
         for key, value in letter_x_positions.items():
-            if(value[0] <= x and x <= value[1]):
+            if(value[0] <= x and x < value[1]):
                 letter_key = key
         
         y_position_key = None
         for key, value in y_positions.items():
-            if(value[0] <= y and y <= value[1]):
+            if(value[0] <= y and y < value[1]):
                 y_position_key = key
         
         if(letter_key is None or y_position_key is None):
@@ -1953,7 +2032,6 @@ def open_settings():
 
     #region Create names
     # Frame is named 'settingstab4names'
-    # notTODOrightnow: Add built in support for editing names file
     names_label = ttk.Label(settingstab4names, text="Initials to Names mapping", font=BOLD)
     names_label.pack(padx=5, pady=5, fill=X)
     description_label = ttk.Label(settingstab4names, text="Initials and Names are stored in an INI file which must be manually edited.")
@@ -2970,7 +3048,6 @@ def analyze_50ft_conventional(image):
 # Scoring types simply has the NRA definition
 # TargetTypes is used for load image and crop image
 # While ScoringTypes is used for scoring images and opening a folder
-# See TODO below for more info
 #endregion
 
 class TargetTypes(Enum):
@@ -2980,7 +3057,6 @@ class TargetTypes(Enum):
     ORION_USAS_50_NRA_SCORING = 'orion-usas50-nrascoring'
     ORION_50FT_CONVENTIONAL = 'orion-50ft-conventional'
 
-# TODOlater: Replace the separate TargetTypes and ScoringTypes with an optional left and right parameter
 class ScoringTypes(Enum):
     NRA = 'nra-a17'
     ORION_USAS_50 = 'orion-usas-50'
