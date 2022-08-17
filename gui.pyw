@@ -961,7 +961,7 @@ def set_name_from_bubbles(target_type):
 
     #region Preprocess the image for circle detection
     gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
-    thresh = cv2.threshold(gray, 190, 255, cv2.THRESH_BINARY)[1]
+    thresh = cv2.threshold(gray, 170, 255, cv2.THRESH_BINARY)[1]
     opening = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, np.ones((7, 7), np.uint8))
     #endregion
 
@@ -1008,7 +1008,6 @@ def set_name_from_bubbles(target_type):
     def draw_circle_points(image, a, b, r):
         cv2.circle(image, (a, b), r, (0, 255, 0), 2)
         cv2.circle(image, (a, b), 1, (0, 0, 255), 2)
-
 
     # Based on coordinates of the circle, return a capital letter A-Z
     def classify_letter(x, y):
