@@ -898,7 +898,9 @@ def set_info_from_file(file):
     # This is a kind of hacky way to determine if this is an Orion target
     if tab_control.index("current") == 1 or tab_control.index("current") == 2:
         # 01jan2022sigmond1.jpeg -> sigmond
-        name_var.set(filename_without_extension[9:-1])
+        name = filename_without_extension[9:-1]
+        if capitalize_names_var.get(): name = name.title() # Capitalize the name if the user wants it capitalized
+        name_var.set(name)
 
     # Update the main label
     main_label.config(text="Set date to: " + month_var.get() + " " + day_var.get() + ", " + year_var.get() + " and target number " + target_num_var.get())
