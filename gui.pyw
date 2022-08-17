@@ -965,84 +965,7 @@ def set_name_from_bubbles(target_type):
     opening = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, np.ones((5, 5), np.uint8))
     #endregion
 
-    def draw_debug_lines(output):
-        letter_x_positions = {
-            0: (51, 93),
-            1: (93, 135),
-            2: (135, 177),
-            3: (177, 219),
-            4: (219, 261),
-            5: (261, 303),
-            6: (303, 345),
-            7: (345, 387),
-            8: (387, 429),
-            9: (429, 471),
-            10: (471, 513),
-            11: (513, 555),
-            12: (555, 597)
-        }
-
-        y_positions = {
-            0: (120,170),
-            1: (170, 220),
-        }
-
-        for value in letter_x_positions.values():
-            for x in value:
-                output = cv2.line(output, (x, 0), (x, 250), (0, 0, 255), 1)
-        
-        for value in y_positions.values():
-            for y in value:
-                output = cv2.line(output, (0, y), (1135, y), (0, 0, 255), 1)
-
-        return output
-
-    output = draw_debug_lines(output)
-
-    #region Identify circles in the image
-    circles = cv2.HoughCircles(opening, cv2.HOUGH_GRADIENT, 1, 10, param1=30, param2=20, minRadius=10, maxRadius=50) # Detect circles
-    circles = np.uint16(np.around(circles)) # Dunno what this does but it works
-    #endregion
-
-    # Draw circle and center of circle on image
-    def draw_circle_points(image, a, b, r):
-        cv2.circle(image, (a, b), r, (0, 255, 0), 2)
-        cv2.circle(image, (a, b), 1, (0, 0, 255), 2)
-
-    # Based on coordinates of the circle, return a capital letter A-Z
-    def classify_letter(x, y):
-        # Letters 
-        # A B C D E F G H I J K L M on top row
-        # N O P Q R S T U V W X Y Z on bottom row
-
-        # Default positions for Orion USAS-50 targets
-        # Positions are represented as such:
-        # index: (minPos, maxPos)
-
-        #region OLD POSITIONS
-        # letter_x_positions = {
-        #     0: (52,92),
-        #     1: (94, 140),
-        #     2: (145, 180),
-        #     3: (190, 225),
-        #     4: (230, 270),
-        #     5: (275, 305),
-        #     6: (310, 350),
-        #     7: (355, 395),
-        #     8: (400, 435),
-        #     9: (440, 475),
-        #     10: (480, 520),
-        #     11: (525, 560),
-        #     12: (565, 600)
-        # }
-
-        # y_positions = {
-        #     0: (95,135),
-        #     1: (145, 185),
-        # }
-        #endregion
-
-        #region New position generator
+    #region Position generator
         # starting = 51
         # padding = 8
         # width = 34
@@ -1057,10 +980,9 @@ def set_name_from_bubbles(target_type):
         #     current = next
 
         # print(dic)
-        #endregion
+    #endregion
 
-        # NEW POSITIONS
-        letter_x_positions = {
+    columns = {
             0: (51, 93),
             1: (93, 135),
             2: (135, 177),
@@ -1076,42 +998,77 @@ def set_name_from_bubbles(target_type):
             12: (555, 597)
         }
 
-        y_positions = {
-            0: (120,170),
-            1: (170, 220),
-        }
+    rows = {
+        0: (120,170),
+        1: (170, 220),
+    }
 
-        # Sligtly different positions for Orion 50ft conventional targets
-        if target_type == TargetTypes.ORION_50FT_CONVENTIONAL:
-            letter_x_positions = {
-            0: (50,90),
-            1: (95, 130),
-            2: (135, 170),
-            3: (180, 215),
-            4: (220, 260),
-            5: (265, 295),
-            6: (300, 340),
-            7: (345, 385),
-            8: (390, 425),
-            9: (430, 465),
-            10: (470, 510),
-            11: (515, 550),
-            12: (555, 590)
-            }
+    # Create offsets for the columns and rows if necessary
+    x_offset = 0
+    y_offset = 0
+    if target_type == TargetTypes.ORION_USAS_50 or target_type == TargetTypes.ORION_USAS_50_NRA_SCORING:
+        x_offset = 7
+        y_offset = -32
 
-            y_positions = {
-                0: (125,165),
-                1: (175, 210),
-            }
+    def draw_debug_lines(output, columns, rows):
+        for value in columns.values():
+            for x in value:
+                output = cv2.line(output, (x + x_offset, 0), (x + x_offset, 250), (0, 0, 255), 1)
+        
+        for value in rows.values():
+            for y in value:
+                output = cv2.line(output, (0, y + y_offset), (1135, y + y_offset), (0, 0, 255), 1)
+
+        return output
+
+    output = draw_debug_lines(output, columns, rows)
+
+    def get_boxes(columns, rows):
+        boxes = []
+        for y in rows.values():
+            for x in columns.values():
+                boxes.append((x[0] + x_offset, y[0] + y_offset, x[1] + x_offset, y[1] + y_offset))
+        return boxes
+    
+    boxes = get_boxes(columns, rows)
+
+    def get_filled_boxes(boxes, opening, output):
+        filled_boxes = []
+        for box in boxes:
+            average = np.mean(opening[box[1]:box[3], box[0]:box[2]])
+            output = cv2.putText(output, str(int(average)), (box[0], box[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA)
+            # print(average)
+            if average < 160:
+                filled_boxes.append(box)
+        return filled_boxes
+    
+    filled_boxes = get_filled_boxes(boxes, opening, output)
+
+    def get_box_centers(filled_boxes):
+        centers = []
+        for box in filled_boxes:
+            centers.append((int((box[0] + box[2]) / 2), int((box[1] + box[3]) / 2)))
+        return centers
+
+    centers = get_box_centers(filled_boxes)
+
+    # Based on coordinates of the circle, return a capital letter A-Z
+    def classify_letter(x, y, columns, rows, x_offset, y_offset):
+        # Letters 
+        # A B C D E F G H I J K L M on top row
+        # N O P Q R S T U V W X Y Z on bottom row
+
+        # Positions are represented as such:
+        # index: (minPos, maxPos)
 
         letter_key = None
-        for key, value in letter_x_positions.items():
-            if(value[0] <= x and x < value[1]):
+        for key, value in columns.items():
+            if(value[0] <= (x - x_offset) and (x - x_offset) < value[1]):
                 letter_key = key
         
         y_position_key = None
-        for key, value in y_positions.items():
-            if(value[0] <= y and y < value[1]):
+        for key, value in rows.items():
+            if(value[0] <= (y - y_offset) and (y - y_offset) < value[1]):
                 y_position_key = key
         
         if(letter_key is None or y_position_key is None):
@@ -1150,32 +1107,14 @@ def set_name_from_bubbles(target_type):
         letter = letters_dictionary[both_rows_key]
         return letter
 
-    # Check if region around point is filled
-    def check_if_filled(x, y, r):
-        check_points_x = range(x-r, x+r)
-        check_points_y = range(y-r, y+r)
-        values = []
-        # Scanning a square around the circle
-        for x in check_points_x:
-            for y in check_points_y:
-                values.append(thresh[y][x])
-        total = sum(values) / len(values) # Average the values in this square
-        if total <= 100: return True # If the average is closer to black
-        return False
-
     letters = []
 
-    for pt in circles[0, :]:
-        a, b, r = pt[0], pt[1], pt[2]
-        draw_circle_points(output, a, b, r)
-
-        if check_if_filled(a, b, DEFAULT_RADIUS):
-            letter = classify_letter(a, b)
-            # Optionally put the detected letter on the image
-            if letter is not None:
-                cv2.putText(output, letter, (a, b), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+    for (x,y) in centers:
+        letter = classify_letter(x, y, columns, rows, x_offset, y_offset)
+        # Put the detected letter on the image
+        if letter is not None:
+            cv2.putText(output, letter, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
             letters.append(letter)
-            #print(letter)
 
     cv2.imwrite("images/output/bubbles.jpg", output)
 
