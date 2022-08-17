@@ -962,7 +962,7 @@ def set_name_from_bubbles(target_type):
     #region Preprocess the image for circle detection
     gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
     thresh = cv2.threshold(gray, 170, 255, cv2.THRESH_BINARY)[1]
-    opening = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, np.ones((7, 7), np.uint8))
+    opening = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, np.ones((5, 5), np.uint8))
     #endregion
 
     def draw_debug_lines(output):
@@ -1155,12 +1155,12 @@ def set_name_from_bubbles(target_type):
         check_points_x = range(x-r, x+r)
         check_points_y = range(y-r, y+r)
         values = []
+        # Scanning a square around the circle
         for x in check_points_x:
             for y in check_points_y:
                 values.append(thresh[y][x])
-        total = sum(values) / len(values)
-        if total <= 100:
-            return True
+        total = sum(values) / len(values) # Average the values in this square
+        if total <= 100: return True # If the average is closer to black
         return False
 
     letters = []
