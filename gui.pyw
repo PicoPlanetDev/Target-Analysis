@@ -77,7 +77,7 @@ def load_image(target_type, image_selector="ask"):
     # If the user wants to use information from the file name, do so
     if use_file_info_var.get():
         try: set_info_from_file(image_file)
-        except: pass
+        except ValueError as e: print(e)
 
     if (target_type == TargetTypes.NRA_LEFT or
             target_type == TargetTypes.ORION_USAS_50 or
@@ -971,6 +971,7 @@ def set_info_from_file(file):
     Args:
         file (Path): pathlib Path to the opened file
     """    
+    file = pathlib.Path(file) # Convert the file to a pathlib Path
     filename_without_extension = str(file.stem).lower() # get the filename without the extension
 
     # Backup all of the current metadata in case the file was improperly named
