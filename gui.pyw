@@ -39,6 +39,8 @@ import matplotlib.pyplot as plt
 import matplotlib
 from configparser import ConfigParser
 from enum import Enum
+import pathlib
+import subprocess
 #import traceback # For debugging - Usage: traceback.print_stack()
 #endregion
 
@@ -384,8 +386,15 @@ def scan_image():
     image_name = create_image_name() # Create the image name
 
     # Scanning uses WINDOWS ONLY wia-cmd-scanner.exe from https://github.com/nagimov/wia-cmd-scanner
-    command = '"' + os.path.abspath('assets\wia-cmd-scanner\wia-cmd-scanner.exe') + '"' + ' /w 0 /h 0 /dpi 300 /color RGB /format JPG /output "' + os.path.abspath(os.path.join('images\\' + image_name) + '"') # Create the command to run the scanner
-    os.system('call ' + command) # os.system doesn't work for multiple quoted commands therefore we use call to run the command
+    subprocess.run([
+        pathlib.Path('assets\wia-cmd-scanner\wia-cmd-scanner.exe'), 
+        '/w', '0', 
+        '/h', '0', 
+        '/dpi', '300', 
+        '/color', 'RGB', 
+        '/format', 'JPG', 
+        '/output', pathlib.Path('images',image_name)
+    ])
     main_label.config(text="Image scanned as " + image_name) # Update the main label
     return image_name # Return the image name to call the load function on it
 
@@ -398,7 +407,7 @@ def scan_process(target_type):
     """    
     main_label.config(text="Scanning image...") # Update the main label
     image_name = scan_image() # Scan and save an image, getting the image name
-    path = os.path.join(os.getcwd(), "images", image_name) # Get the path to the image
+    path = pathlib.Path("images", image_name) # Get the path to the image
     load_image(target_type, path) # Load the image
     # Again, really dumb that I haven't combined the enums yet. So I have to do a hacky thing to convert to the scoring type
     if target_type == TargetTypes.ORION_USAS_50:
@@ -426,25 +435,26 @@ def analyze_target(target_type):
 
     # Create and store a name for the target output file
     global csv_name
-    csv_name = "data-" + name_var.get() + day_var.get() + month_var.get() + year_var.get() + target_num_var.get() + ".csv"
+    csv_name = f"data-{name_var.get()}{day_var.get()}{month_var.get()}{year_var.get()}{target_num_var.get()}.csv"
 
     # If the CSV file already exists, delete it
-    if os.path.exists(os.path.join(os.getcwd(), "data\\", csv_name)):
+    csv_path = pathlib.Path("data", csv_name)
+    if csv_path.exists():
         print("CSV already exists. Removing old version")
-        os.remove(os.path.join(os.getcwd(), "data\\", csv_name))
+        os.remove(csv_path)
     
-    if target_type == ScoringTypes.ORION_USAS_50:
-        # Create the CSV file template
-        with open(os.path.join("data\\", csv_name), 'x', newline="") as csvfile:
-            filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+    
+    # Create the CSV file template
+    with open(csv_path, 'x', newline="") as csvfile:
+        filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+
+        # label it differently if its a decimal target
+        if target_type == ScoringTypes.ORION_USAS_50:
             filewriter.writerow(["Image", "Score", "Decimal", "hole_x", "hole_y", "Distance", "hole_ratio_x", "hole_ratio_y"])
-            csvfile.close()
-    else:
-        # Create the CSV file template
-        with open(os.path.join("data\\", csv_name), 'x', newline="") as csvfile:
-            filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        else:
             filewriter.writerow(["Image", "Dropped", "X", "hole_x", "hole_y", "Distance", "hole_ratio_x", "hole_ratio_y"])
-            csvfile.close()
+        
+        csvfile.close()
 
     # Analyze each cropped image
     if target_type == ScoringTypes.NRA:
@@ -500,7 +510,7 @@ def analyze_target(target_type):
     if target_type == ScoringTypes.ORION_USAS_50: score = 0
 
     # Update the score and x count from the saved target CSV file
-    with open(os.path.join("data\\", csv_name)) as csv_file:
+    with open(csv_path) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         line_count = 0
         for row in csv_reader:
@@ -517,8 +527,7 @@ def analyze_target(target_type):
     score = round(score, 1)
 
     # If a global data CSV doesn't exist, create it
-    if not os.path.exists(str(os.getcwd()) +"/data/data.csv"):
-        create_csv()
+    if not pathlib.Path('data/data.csv').exists(): create_csv()
 
     # Save the target's basic info to the global data CSV
     with open("data/data.csv", 'a', newline="") as csvfile:
@@ -527,7 +536,7 @@ def analyze_target(target_type):
                 csvfile.close()
 
     if enable_teams_var.get():
-        teams_csv_path = os.path.join("data\\", active_team_var.get() + ".csv")
+        teams_csv_path = pathlib.Path(f"data/{active_team_var.get()}.csv")
         with open(teams_csv_path, 'a', newline="") as csvfile:
                 filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                 filewriter.writerow([name_var.get(), day_var.get() + " " + month_var.get() + " " + year_var.get(), target_num_var.get(), score, x_count])
@@ -540,6 +549,7 @@ def analyze_target(target_type):
     # Counting starts at zero.
     filemenu.entryconfigure(1, state=NORMAL)
     
+    # If scanning a single target, show the analysis window
     if not is_opening_folder:
         if individual_output_type_var.get() == "tkinter":
             # If the user uses the new analysis window, open it
@@ -574,7 +584,7 @@ def show_output():
 
     #region Create buttons and info at the top
     # Create a button to open the target CSV file
-    open_target_csv_button = ttk.Button(output_top_frame, text="Open target CSV", command=lambda: open_file(os.path.join(os.getcwd(), "data\\" + csv_name)))
+    open_target_csv_button = ttk.Button(output_top_frame, text="Open target CSV", command=lambda: open_file(pathlib.Path('data', csv_name)))
     open_target_csv_button.grid(row=0, column=0)
     output_top_frame.grid_columnconfigure(0, weight=1)
     
@@ -587,7 +597,7 @@ def show_output():
     output_top_frame.grid_columnconfigure(1, weight=1)
 
     # Create a button to open the global data CSV file
-    open_data_csv_button = ttk.Button(output_top_frame, text="Open data CSV", command=lambda: open_file(os.path.join(os.getcwd(), "data\\", "data.csv")))
+    open_data_csv_button = ttk.Button(output_top_frame, text="Open data CSV", command=lambda: open_file(pathlib.Path('data', 'data.csv')))
     open_data_csv_button.grid(row=0, column=2)
     output_top_frame.grid_columnconfigure(2, weight=1)
     #endregion
@@ -671,23 +681,25 @@ def show_folder(path):
     Args:
         path (str): where to navigate to in explorer
     """
-    print("Opening folder: " + path)
+    print(f"Opening folder: {str(path)}")
     main_label.config(text="Opening folder... ONLY WORKS ON WINDOWS")
-    os.system("explorer " + os.path.realpath(path)) # Run a system command to open the folder using Explorer (Windows only)
+    subprocess.run(["explorer", pathlib.Path(path)]) # Run a system command to open the folder using Explorer (Windows only)
     main_label.config(text="Working directory opened in Explorer") # Update the main label
 
 # Open file with default viewer
-def open_file(file):
-    main_label.config(text="Opening file " + str(file)) # Update the main label
-    os.system(file) # Run a system command to open the file using the default viewer (should work on any operating system)
+def open_file(path):
+    """Opens the file with the default viewer
+    
+    Args:
+        path (str or pathlib.Path): path to the file to open
+    """
+    main_label.config(text="Opening file " + str(path)) # Update the main label
+    subprocess.run([pathlib.Path(path)], shell=True) # Run a system command to open the file using the default viewer (should work on any operating system)
 
 # Ensure that an image/output directory is available to save images
 def check_output_dir():
-    path = os.getcwd() + "/images/output" # Store the path to the output directory
-    # If the output directory does not exist, create it
-    if os.path.isdir(path) == False:
-        os.mkdir(path)
-    # Otherwise, nothing needs to be done
+    path = pathlib.Path('images/output')
+    if not path.exists(): os.mkdir(path)
 
 # Show tkinter based image viewer for the analysis
 def open_analysis_window():
@@ -699,11 +711,11 @@ def open_analysis_window():
         output_images = []
         output_image_names = []
         # os.listdir returns a list of the files in the directory
-        for file in os.listdir("images/output"):
+        for file in pathlib.Path("images/output").iterdir():
             # Output images are saved as such: <original image name>-output.png
-            if file.endswith("output.jpg"):
-                output_images.append(ImageTk.PhotoImage(Image.open("images/output/" + file).resize((600, 600), Image.Resampling.LANCZOS))) # Load the image as a tkinter photo image and add it to the list
-                output_image_names.append(file) # Add the image name to the list
+            if file.name == "output.jpg":
+                output_images.append(ImageTk.PhotoImage(Image.open(file).resize((600, 600), Image.Resampling.LANCZOS))) # Load the image as a tkinter photo image and add it to the list
+                output_image_names.append(file.name) # Add the image name to the list
         
         # Prepare image names lists for use by ordering them in a clockwise fashion, starting with the top middle target image.
         # Define the correct order for the list
@@ -846,23 +858,21 @@ def open_folder(scoring_type):
     show_output_when_finished_backup = show_output_when_finished_var.get()
     show_output_when_finished_var.set(False)
     main_label.config(text="Opening folder... This could take a while") # Update the main label
-    folder = filedialog.askdirectory() # Get the folder to open
-
-    nra_file_num = 0 # Keep track of how many files have been opened
+    folder = pathlib.Path(filedialog.askdirectory()) # Get the folder to open
 
     # os.listdir() returns a list of all files in the folder
-    for file in os.listdir(folder):
+    for file in folder.iterdir():
         # Ignore files that are not images
-        if file.endswith(".jpeg") or file.endswith(".jpg"):
-            path = folder + "/" + file # Get the path to the file
+        if file.suffix == ".jpeg" or file.suffix == ".jpg":
+            # TODO: Decouple from file info when opening folder
             set_info_from_file(file) # Set the info from the file (correct naming is important for this operation)
-            file_image = cv2.imread(path) # Open the image
+            file_image = cv2.imread(str(file)) # Open the image
 
             if scoring_type == ScoringTypes.NRA:
                 # Check if the image is a left or right image
-                if "left" in file:
+                if "left" in file.name:
                     crop_image(file_image, TargetTypes.NRA_LEFT)
-                elif "right" in file:
+                elif "right" in file.name:
                     crop_image(file_image, TargetTypes.NRA_RIGHT)
                 file_num += 1 # Increment the file number
                 # For every two files opened, analyze the target
@@ -871,27 +881,33 @@ def open_folder(scoring_type):
                 if file_num == 2:
                     analyze_target(ScoringTypes.NRA)
                     file_num = 0 # Reset the file number and continue
-            elif scoring_type == ScoringTypes.ORION_USAS_50:
-                crop_image(file_image, TargetTypes.ORION_USAS_50)
-                analyze_target(ScoringTypes.ORION_USAS_50)
-            elif scoring_type == ScoringTypes.ORION_USAS_50_NRA_SCORING:
-                crop_image(file_image, TargetTypes.ORION_USAS_50_NRA_SCORING)
-                analyze_target(ScoringTypes.ORION_USAS_50_NRA_SCORING)
-            elif scoring_type == ScoringTypes.ORION_50FT_CONVENTIONAL:
-                crop_image(file_image, TargetTypes.ORION_50FT_CONVENTIONAL)
-                analyze_target(ScoringTypes.ORION_50FT_CONVENTIONAL)
+            else:
+                # For orion targets that only have one image, just crop that single image
+                if scoring_type == ScoringTypes.ORION_USAS_50:
+                    crop_image(file_image, TargetTypes.ORION_USAS_50)
+
+                elif scoring_type == ScoringTypes.ORION_USAS_50_NRA_SCORING:
+                    crop_image(file_image, TargetTypes.ORION_USAS_50_NRA_SCORING)
+
+                elif scoring_type == ScoringTypes.ORION_50FT_CONVENTIONAL:
+                    crop_image(file_image, TargetTypes.ORION_50FT_CONVENTIONAL)
+                
+                analyze_target(scoring_type)
 
     show_output_when_finished_var.set(show_output_when_finished_backup) # Revert the show_output_when_finished_var to its original value
     is_opening_folder = False # Keep track of whether or not the folder is being opened
-    show_folder(os.getcwd() + "\data") # Open the data folder in Explorer
+    show_folder(pathlib.Path("data").resolve()) # Open the data folder in Explorer
 
 # ---------------------------- File info funtions ---------------------------- #
 
 # Set target metadata by parsing the file name
 def set_info_from_file(file):
-    filename = os.path.basename(file) # Get the filename alone in case it is given a full path
-    
-    filename_without_extension = os.path.splitext(filename)[0] # get the filename without the extension
+    """Sets the target metadata by parsing the file name
+
+    Args:
+        file (Path): pathlib Path to the opened file
+    """    
+    filename_without_extension = file.stem # get the filename without the extension
 
     day_var.set(filename_without_extension[0:2]) # Set the day
 
@@ -933,7 +949,7 @@ def set_info_from_file(file):
         name_var.set(name)
 
     # Update the main label
-    main_label.config(text="Set date to: " + month_var.get() + " " + day_var.get() + ", " + year_var.get() + " and target number " + target_num_var.get())
+    main_label.config(text=f"Set date to: {month_var.get()} {day_var.get()}, {year_var.get()}  and target number {target_num_var.get()}")
 
 # Set target metadata from today's date with target number 1
 def set_info_from_today():
@@ -1196,21 +1212,21 @@ def read_barcode(image):
 
 # Delete all files in the /data and /images/output folders
 def clear_data():
-    path = str(os.getcwd()) + "/data" # Set the path to the data folder
+    path = pathlib.Path('data') # Set the path to the data folder
     # List all the files in the folder
-    for file in os.listdir(path):
+    for file in path.iterdir():
         # If the file is a CSV (meaning that it was probably generated by the software, delete it)
-        if file.endswith(".csv"):
-            os.remove(path + "\\" + file)
+        if file.suffix == ".csv":
+            os.remove(file)
     
-    path = str(os.getcwd()) + "/images/output" # Set the path to the images/output folder
+    path = pathlib.Path("images/output") # Set the path to the images/output folder
     # List all the files in the folder
-    for file in os.listdir(path):
+    for file in path.iterdir():
         # If the file is a JPG (meaning that it was probably generated by the software, delete it)
-        if file.endswith(".jpg") or file.endswith(".jpeg"):
-            os.remove(path + "/" + file)
+        if file.suffix == ".jpg" or file.suffix == ".jpeg":
+            os.remove(file)
 
-    main_label.config(text="/data and /images/output directories cleared") # Update the main label
+    main_label.config(text="data and images/output directories cleared") # Update the main label
 
 # Enable/disable dark mode based on the value of dark_mode_var
 def update_dark_mode():
@@ -1235,13 +1251,13 @@ def show_trends():
     def showMostMissed():
         bulls = [0,0,0,0,0,0,0,0,0,0] # Create a list of bulls to keep track of the most missed targets
 
-        folder = filedialog.askdirectory() # Get the folder to open
+        folder = pathlib.Path(filedialog.askdirectory()) # Get the folder to open
         # os.listdir() returns a list of all files in the folder
-        for file in os.listdir(folder):
+        for file in folder.iterdir():
             # Ignore files that are not target CSVs
-            if not "data.csv" in file and not ".gitkeep" in file:
+            if file.name != "data.csv" and file.name != ".gitkeep":
                 # Open the CSV file
-                with open("data/" + file) as csv_file:
+                with open(file) as csv_file:
                     csv_reader = csv.reader(csv_file, delimiter=',') # Create a CSV reader
                     line_count = 0 # Keep track of the line number
                     for row in csv_reader:
@@ -1401,7 +1417,7 @@ def open_teams_window():
         update_teams_config()
         refresh_team_options()
         if enable_teams_var.get() == True:
-            if not os.path.exists("data/team1.csv") or not os.path.exists("data/team2.csv"):
+            if not pathlib.Path("data/team1.csv").exists() or not pathlib.Path("data/team2.csv").exists():
                 create_teams_csv_files()
 
     # Load scores from teams csv files and update the UI
@@ -1425,7 +1441,7 @@ def open_teams_window():
         # Load scores from the CSV file path and put them in a list of tuples (score, x_count)
         def get_score_to_list(path):
             out_scores = []
-            with open(path) as csv_file:
+            with open(pathlib.Path(path)) as csv_file:
                 csv_reader = csv.reader(csv_file, delimiter=',')
                 line_count = 0
                 for row in csv_reader:
@@ -1542,7 +1558,7 @@ def open_teams_window():
     team1_x_count_label = ttk.Label(team1_results_frame, text="Please load scores")
     team1_x_count_label.grid(row=1, column=1, padx=10, pady=10)
 
-    team1_open_csv_button = ttk.Button(team1_results_frame, text="Open CSV", command=lambda: open_file(os.path.abspath("data/team1.csv")))
+    team1_open_csv_button = ttk.Button(team1_results_frame, text="Open CSV", command=lambda: open_file("data/team1.csv"))
     team1_open_csv_button.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
     #endregion
 
@@ -1554,7 +1570,7 @@ def open_teams_window():
     team2_x_count_label = ttk.Label(team2_results_frame, text="Please load scores")
     team2_x_count_label.grid(row=1, column=1, padx=10, pady=10)
 
-    team2_open_csv_button = ttk.Button(team2_results_frame, text="Open CSV", command=lambda: open_file(os.path.abspath("data/team2.csv")))
+    team2_open_csv_button = ttk.Button(team2_results_frame, text="Open CSV", command=lambda: open_file("data/team2.csv"))
     team2_open_csv_button.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
     #endregion
 
@@ -1663,9 +1679,8 @@ def open_settings():
         update_config()
 
     def open_names_file():
-        path = "'" + str(os.getcwd()) + '/' + 'names.ini' + "'"
-        #print(path)
-        os.system("notepad " + path)
+        path = pathlib.Path('names.ini')
+        open_file(path)
 
     main_label.config(text="Showing settings window") # Update the main label
 
@@ -2325,7 +2340,8 @@ def analyze_image(image):
 
                 global csv_name
 
-                with open(os.path.join("data\\", csv_name), 'a', newline="") as csvfile:
+                path = pathlib.Path('data', csv_name)
+                with open(path, 'a', newline="") as csvfile:
                     filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                     filewriter.writerow([image, dropped_points, x_count, hole_x, hole_y, distance, hole_ratio_x, hole_ratio_y])
                     csvfile.close()
@@ -2563,7 +2579,8 @@ def analyze_orion_image(image):
 
                 global csv_name
 
-                with open(os.path.join("data\\", csv_name), 'a', newline="") as csvfile:
+                path = pathlib.Path('data', csv_name)
+                with open(path, 'a', newline="") as csvfile:
                     filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                     filewriter.writerow([image, ones, decimal, hole_x, hole_y, distance, hole_ratio_x, hole_ratio_y])
                     csvfile.close()
@@ -2775,7 +2792,8 @@ def analyze_orion_image_nra_scoring(image):
 
                 global csv_name
 
-                with open(os.path.join("data\\", csv_name), 'a', newline="") as csvfile:
+                path = pathlib.Path('data', csv_name)
+                with open(path, 'a', newline="") as csvfile:
                     filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                     filewriter.writerow([image, dropped_points, x_count, hole_x, hole_y, distance, hole_ratio_x, hole_ratio_y])
                     csvfile.close()
@@ -2968,7 +2986,8 @@ def analyze_50ft_conventional(image):
 
                 global csv_name
 
-                with open(os.path.join("data\\", csv_name), 'a', newline="") as csvfile:
+                path = pathlib.Path('data', csv_name)
+                with open(path, 'a', newline="") as csvfile:
                     filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                     filewriter.writerow([image, dropped_points, x_count, hole_x, hole_y, distance, hole_ratio_x, hole_ratio_y])
                     csvfile.close()
@@ -3077,7 +3096,7 @@ orion50ftconventional_max_hole_radius = tk.IntVar(root, 40)
 #endregion
 
 # Check for a config file. If it exists, load the values from it. Otherwise, create a config file frome the defaults.
-if os.path.isfile("config.ini"):
+if pathlib.Path("config.ini").exists():
     # If the file exists, update settings to match the config file
     update_settings_from_config("config.ini")
 else:
@@ -3085,17 +3104,17 @@ else:
     create_default_config("config.ini")
 
 # If there is not config backup, create one now
-if not os.path.isfile("config-backup.ini"): create_default_config("config-backup.ini")    
+if not pathlib.Path("config-backup.ini").exists(): create_default_config("config-backup.ini")    
 
 # If there is not a names config, create one now
-if not os.path.isfile("names.ini"): create_names_config()
+if not pathlib.Path("names.ini").exists(): create_names_config()
 #endregion
 
 #region Menubar
 menubar = tk.Menu(root) # Create the menubar
 
 filemenu = tk.Menu(menubar, tearoff=0) # Create the file menu
-filemenu.add_command(label="Show in Explorer", command=lambda: show_folder(os.getcwd()))
+filemenu.add_command(label="Show in Explorer", command=lambda: show_folder(pathlib.Path(__file__).parent))
 filemenu.add_command(label="Show output", command=show_output, state=DISABLED)
 filemenu.add_command(label="Show trends", command=show_trends)
 filemenu.add_command(label="Teams", command=open_teams_window)
@@ -3109,9 +3128,9 @@ filemenu.add_command(label="Exit", command=root.quit)
 menubar.add_cascade(label="File", menu=filemenu) # Add the file menu to the menubar
 
 helpmenu = tk.Menu(menubar, tearoff=0) # Create the help menu
-helpmenu.add_command(label="README", command=lambda: open_file(os.path.abspath("README.md")))
-helpmenu.add_command(label="Scanning diagram", command=lambda: open_file(os.path.abspath("help/scanner-digital.png")))
-helpmenu.add_command(label="Accuracy screenshot", command=lambda: open_file(os.path.abspath("help/accuracy-vs-hand-scored.png")))
+helpmenu.add_command(label="README", command=lambda: open_file("README.md"))
+helpmenu.add_command(label="Scanning diagram", command=lambda: open_file("help/scanner-digital.png"))
+helpmenu.add_command(label="Accuracy screenshot", command=lambda: open_file("help/accuracy-vs-hand-scored.png"))
 menubar.add_cascade(label="Help", menu=helpmenu) # Add the help menu to the menubar
 
 root.config(menu=menubar) # Add the menubar to the root window
@@ -3212,7 +3231,7 @@ use_file_info_checkbutton.grid(column=5, row=0, rowspan=2, padx=5)
 # Teams frame enabled only when teams are enabled
 teams_frame = ttk.Frame(options_frame)
 # Update teams info
-if not os.path.exists("teams.ini"):
+if not pathlib.Path("teams.ini").exists():
     create_teams_config()
 load_teams_config()
 refresh_team_options()
