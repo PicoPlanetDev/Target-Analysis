@@ -1313,27 +1313,6 @@ def load_names_config():
 
 # No update_names_config here because I haven't implemented GUI names editing yet
 
-# ----------------------------- Barcode functions ---------------------------- #
-
-# Crop the image to the barcode area
-def crop_barcode(image):
-    ratio_height = 3507
-    ratio_width = 2550
-    
-    h=int((300/ratio_height)*image.shape[0])
-    w=int((420/ratio_width)*image.shape[1])
-
-    y=int((0/ratio_height)*image.shape[0])
-    x=int((65/ratio_width)*image.shape[1])
-    crop = image[y:y+h, x:x+w]
-
-    return crop
-
-# Cursed code that doesn't exist
-def read_barcode(image):
-    barcode = cv2.barcode_BarcodeDetector()
-    ok, decoded_info, decoded_type, corners = barcode.detectAndDecode(image)
-
 # -------------------------- Miscellaneous functions ------------------------- #
 
 # Delete all files in the /data and /images/output folders
