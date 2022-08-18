@@ -1792,8 +1792,8 @@ def open_settings():
     #region Create settings window
     settings_window = tk.Toplevel(root)
     settings_window.title("Target Analysis")
-    settings_window.minsize(width=800, height=690)
-    settings_window.geometry("800x690")
+    settings_window.minsize(width=800, height=720)
+    settings_window.geometry("800x720")
     settings_window.tk.call('wm', 'iconphoto', settings_window._w, tk.PhotoImage(file='assets/icon.png'))
     #endregion
 
@@ -1822,6 +1822,9 @@ def open_settings():
 
     settings_rename_frame = ttk.Frame(settings_window)
     settings_rename_frame.pack(side=TOP, fill=X, padx=5)
+
+    settings_use_today_frame = ttk.Frame(settings_window)
+    settings_use_today_frame.pack(side=TOP, fill=X, padx=5)
 
     settings_global_separator = ttk.Separator(settings_window, orient=HORIZONTAL)
     settings_global_separator.pack(side=TOP, fill=X, pady=5)
@@ -1901,9 +1904,13 @@ def open_settings():
     capitalize_names_checkbutton = ttk.Checkbutton(settings_capitalize_frame, text='Auto capitalize names', style='Switch.TCheckbutton', variable=capitalize_names_var, onvalue=True, offvalue=False)
     capitalize_names_checkbutton.grid(column=0, row=0)
 
-    # Auto capitalize names switch
+    # Rename images switch
     rename_file_checkbutton = ttk.Checkbutton(settings_rename_frame, text='Rename files when opening folder', style='Switch.TCheckbutton', variable=rename_files_var, onvalue=True, offvalue=False)
     rename_file_checkbutton.grid(column=0, row=0)
+
+    # Use today on launch switch
+    auto_use_today_checkbutton = ttk.Checkbutton(settings_use_today_frame, text="Set today's date at launch", style='Switch.TCheckbutton', variable=auto_use_today_var, onvalue=True, offvalue=False)
+    auto_use_today_checkbutton.grid(column=0, row=0)
     #endregion
 
     #region Create NRA A-17 widgets
@@ -2138,6 +2145,7 @@ def update_settings_from_config(file):
     use_file_info_var.set(config.getboolean("settings", "use_file_info"))
     capitalize_names_var.set(config.getboolean("settings", "capitalize_names"))
     rename_files_var.set(config.getboolean("settings", "rename_files"))
+    auto_use_today_var.set(config.getboolean("settings", "auto_use_today"))
     update_dark_mode() # Apply the dark mode setting
 
     # Continue setting variables for the Orion targets
@@ -2195,6 +2203,7 @@ def create_default_config(file):
     config.set('settings', 'use_file_info', str(use_file_info_var.get()))
     config.set('settings', 'capitalize_names', str(capitalize_names_var.get()))
     config.set('settings', 'rename_files', str(rename_files_var.get()))
+    config.set('settings', 'auto_use_today', str(auto_use_today_var.get()))
 
     # Add the orion section to the config file
     config.add_section('orion')
@@ -2258,6 +2267,7 @@ def update_config():
     config.set('settings', 'use_file_info', str(use_file_info_var.get()))
     config.set('settings', "capitalize_names", str(capitalize_names_var.get()))
     config.set('settings', 'rename_files', str(rename_files_var.get()))
+    config.set('settings', 'auto_use_today', str(auto_use_today_var.get()))
     # Continue updating the settings for the Orion section
     config.set('orion', 'orion_kernel_size_dpi1', str(orion_kernel_size_dpi1.get()))
     config.set('orion', 'orion_kernel_size_dpi2', str(orion_kernel_size_dpi2.get()))
@@ -3166,6 +3176,9 @@ capitalize_names_var = tk.BooleanVar(root, True)
 # Rename files when opening a folder of improperly named files
 rename_files_var = tk.BooleanVar(root, True)
 
+# Use today on launch
+auto_use_today_var = tk.BooleanVar(root, True)
+
 # Teams
 enable_teams_var = tk.BooleanVar(root, False)
 team1_name_var = tk.StringVar(root, "Team 1")
@@ -3354,6 +3367,7 @@ if not pathlib.Path("teams.ini").exists():
 load_teams_config()
 refresh_team_options()
 
+if auto_use_today_var.get(): set_info_from_today() # Set the date to today's date if the option is enabled
 #endregion
 
 #region NRA A-17 tab
