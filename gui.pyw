@@ -550,6 +550,8 @@ def analyze_target(target_type):
     # If any menu items have been added above this, make sure to recount them to get the correct index
     # Counting starts at zero.
     filemenu.entryconfigure(1, state=NORMAL)
+
+    combine_output(score, x_count)
     
     # If scanning a single target, show the analysis window
     if not is_opening_folder:
@@ -842,6 +844,61 @@ def create_csv():
         filewriter.writerow(['Name', 'Date', 'Target Number', 'Score','X']) # Write the header row
         csvfile.close() # Close the file
     main_label.config(text="Created CSV data file") # Update the main label
+
+def combine_output(score, x_count):
+    """Saves an image with all of the target data after scoring"""
+    # Create a new image with the correct size
+    new_image = Image.new('RGB', (600, 800))
+
+    # Open each image and paste it into the new image
+    top_left = Image.open("images/output/top-left.jpg-output.jpg").resize((200, 200), Image.Resampling.LANCZOS)
+    new_image.paste(top_left, (0, 0))
+
+    upper_left = Image.open("images/output/upper-left.jpg-output.jpg").resize((200, 200), Image.Resampling.LANCZOS)
+    new_image.paste(upper_left, (0, 200))
+
+    lower_left = Image.open("images/output/lower-left.jpg-output.jpg").resize((200, 200), Image.Resampling.LANCZOS)
+    new_image.paste(lower_left, (0, 400))
+
+    bottom_left = Image.open("images/output/bottom-left.jpg-output.jpg").resize((200, 200), Image.Resampling.LANCZOS)
+    new_image.paste(bottom_left, (0, 600))
+
+    top_mid = Image.open("images/output/top-mid.jpg-output.jpg").resize((200, 200), Image.Resampling.LANCZOS)
+    new_image.paste(top_mid, (200, 0))
+
+    bottom_mid = Image.open("images/output/bottom-mid.jpg-output.jpg").resize((200, 200), Image.Resampling.LANCZOS)
+    new_image.paste(bottom_mid, (200, 600))
+
+    top_right = Image.open("images/output/top-right.jpg-output.jpg").resize((200, 200), Image.Resampling.LANCZOS)
+    new_image.paste(top_right, (400, 0))
+
+    upper_right = Image.open("images/output/upper-right.jpg-output.jpg").resize((200, 200), Image.Resampling.LANCZOS)
+    new_image.paste(upper_right, (400, 200))
+
+    lower_right = Image.open("images/output/lower-right.jpg-output.jpg").resize((200, 200), Image.Resampling.LANCZOS)
+    new_image.paste(lower_right, (400, 400))
+
+    bottom_right = Image.open("images/output/bottom-right.jpg-output.jpg").resize((200, 200), Image.Resampling.LANCZOS)
+    new_image.paste(bottom_right, (400, 600))
+
+    #new_image.save("images/output/combined.jpg") # Save the image
+
+    cv2_image = cv2.cvtColor(np.array(new_image), cv2.COLOR_RGB2BGR) # Convert to cv2 image for text
+
+    # Add the score and x count to the image
+    cv2.putText(cv2_image, f"{str(score)}-", (225, 250), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+    cv2.putText(cv2_image, f"{str(x_count)}X", (315, 250), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+
+    # Add the name to the image
+    cv2.putText(cv2_image, str(name_var.get()), (225, 400), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+    # Date
+    cv2.putText(cv2_image, str(month_var.get()), (225, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+    cv2.putText(cv2_image, f"{str(day_var.get())},", (295, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+    cv2.putText(cv2_image, str(year_var.get()), (335, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+    # Target number
+    cv2.putText(cv2_image, f"Target num: {str(target_num_var.get())}", (225, 500), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+
+    cv2.imwrite("images/output/combined.jpg", cv2_image)
 
 # --------------------------- Open folder functions -------------------------- #
 
@@ -2386,31 +2443,31 @@ def analyze_image(image):
                 # Currently only scores target to a 4
                 if distance-spindle_radius < pixel_nine:
                     print("X")
-                    cv2.putText(output, "X", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    cv2.putText(output, "X", (int(hole_x-60),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255), 3)
                     x_count += 1
 
                 if distance+spindle_radius < pixel_eight and distance-spindle_radius > pixel_nine:
                     print("0")
-                    cv2.putText(output, "0", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    cv2.putText(output, "0", (int(hole_x-60),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255), 3)
 
                 if distance+spindle_radius > pixel_eight and distance+spindle_radius < pixel_seven:
                     print("1")
-                    cv2.putText(output, "1", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    cv2.putText(output, "1", (int(hole_x-60),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255), 3)
                     dropped_points += 1
 
                 if distance+spindle_radius > pixel_seven and distance+spindle_radius < pixel_six:
                     print("2")
-                    cv2.putText(output, "2", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    cv2.putText(output, "2", (int(hole_x-60),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255), 3)
                     dropped_points += 2
 
                 if distance+spindle_radius > pixel_six and distance+spindle_radius < pixel_five:
                     print("3")
-                    cv2.putText(output, "3", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    cv2.putText(output, "3", (int(hole_x-60),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255), 3)
                     dropped_points += 3
 
                 if distance+spindle_radius > pixel_five and distance+spindle_radius < pixel_outer:
                     print("4")
-                    cv2.putText(output, "4", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    cv2.putText(output, "4", (int(hole_x-60),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255), 3)
                     dropped_points += 4
 
                 hole_ratio_x = (hole_x-a) / pixel_outer
@@ -2621,7 +2678,7 @@ def analyze_orion_image(image):
                 if decimal == 10: decimal == 9 # Just in case
                 #print(multiplier, ones, decimal)
                 string_score = str(ones) + "." + str(decimal)
-                cv2.putText(output, string_score, (int(hole_x-100),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                cv2.putText(output, string_score, (int(hole_x-100),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255), 3)
 
                 #region old
                 # if distance-outer_spindle_radius <= pixel_ten or distance+outer_spindle_radius <= pixel_eight:
@@ -2837,31 +2894,31 @@ def analyze_orion_image_nra_scoring(image):
 
                 if distance-spindle_radius < pixel_nine:
                     print("X")
-                    cv2.putText(output, "X", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    cv2.putText(output, "X", (int(hole_x-60),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255), 3)
                     x_count += 1
 
                 if distance+spindle_radius < pixel_eight and distance-spindle_radius > pixel_nine:
                     print("0")
-                    cv2.putText(output, "0", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    cv2.putText(output, "0", (int(hole_x-60),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255), 3)
 
                 if distance+spindle_radius > pixel_eight and distance+spindle_radius < pixel_seven:
                     print("1")
-                    cv2.putText(output, "1", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    cv2.putText(output, "1", (int(hole_x-60),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255), 3)
                     dropped_points += 1
 
                 if distance+spindle_radius > pixel_seven and distance+spindle_radius < pixel_six:
                     print("2")
-                    cv2.putText(output, "2", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    cv2.putText(output, "2", (int(hole_x-60),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255), 3)
                     dropped_points += 2
 
                 if distance+spindle_radius > pixel_six and distance+spindle_radius < pixel_five:
                     print("3")
-                    cv2.putText(output, "3", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    cv2.putText(output, "3", (int(hole_x-60),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255), 3)
                     dropped_points += 3
 
                 if distance+spindle_radius > pixel_five and distance+spindle_radius < pixel_outer:
                     print("4")
-                    cv2.putText(output, "4", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    cv2.putText(output, "4", (int(hole_x-60),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255), 3)
                     dropped_points += 4
                                     
 
@@ -3005,31 +3062,31 @@ def analyze_50ft_conventional(image):
                 # Currently only scores target to a 4
                 if distance-spindle_radius < pixel_nine:
                     print("X")
-                    cv2.putText(output, "X", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    cv2.putText(output, "X", (int(hole_x-60),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255), 3)
                     x_count += 1
 
                 if distance+spindle_radius < pixel_eight and distance-spindle_radius > pixel_nine:
                     print("0")
-                    cv2.putText(output, "0", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    cv2.putText(output, "0", (int(hole_x-60),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255), 3)
 
                 if distance+spindle_radius > pixel_eight and distance+spindle_radius < pixel_seven:
                     print("1")
-                    cv2.putText(output, "1", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    cv2.putText(output, "1", (int(hole_x-60),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255), 3)
                     dropped_points += 1
 
                 if distance+spindle_radius > pixel_seven and distance+spindle_radius < pixel_six:
                     print("2")
-                    cv2.putText(output, "2", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    cv2.putText(output, "2", (int(hole_x-60),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255), 3)
                     dropped_points += 2
 
                 if distance+spindle_radius > pixel_six and distance+spindle_radius < pixel_five:
                     print("3")
-                    cv2.putText(output, "3", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    cv2.putText(output, "3", (int(hole_x-60),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255), 3)
                     dropped_points += 3
 
                 if distance+spindle_radius > pixel_five and distance+spindle_radius < pixel_outer:
                     print("4")
-                    cv2.putText(output, "4", (int(hole_x-50),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    cv2.putText(output, "4", (int(hole_x-60),int(hole_y)), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255), 3)
                     dropped_points += 4
 
                 # # Touching X but not 0
