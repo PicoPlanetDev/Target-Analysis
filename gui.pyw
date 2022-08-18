@@ -715,7 +715,7 @@ def open_analysis_window():
         # os.listdir returns a list of the files in the directory
         for file in pathlib.Path("images/output").iterdir():
             # Output images are saved as such: <original image name>-output.png
-            if file.name == "output.jpg":
+            if file.name.endswith("output.jpg"):
                 output_images.append(ImageTk.PhotoImage(Image.open(file).resize((600, 600), Image.Resampling.LANCZOS))) # Load the image as a tkinter photo image and add it to the list
                 output_image_names.append(file.name) # Add the image name to the list
         
@@ -908,7 +908,6 @@ def open_folder(scoring_type):
 
 # ---------------------------- File info funtions ---------------------------- #
 
-# Set target metadata by parsing the file name
 def set_info_from_file(file):
     """Sets the target metadata by parsing the file name
 
@@ -979,8 +978,8 @@ def set_info_from_file(file):
 
         raise ValueError("File was improperly named")
 
-# Set target metadata from today's date with target number 1
 def set_info_from_today():
+    """Set target metadata from today's date with target number 1"""    
     today = datetime.datetime.now() # Get today's date
 
     month_var.set(today.strftime("%B")) # Set the month from the date
