@@ -75,7 +75,9 @@ def load_image(target_type, image_selector="ask"):
     image = cv2.imread(image_file) # Load the image for OpenCV image
 
     # If the user wants to use information from the file name, do so
-    if use_file_info_var.get(): set_info_from_file(image_file)
+    if use_file_info_var.get():
+        try: set_info_from_file(image_file)
+        except: pass
 
     if (target_type == TargetTypes.NRA_LEFT or
             target_type == TargetTypes.ORION_USAS_50 or
@@ -864,8 +866,12 @@ def open_folder(scoring_type):
     for file in folder.iterdir():
         # Ignore files that are not images
         if file.suffix == ".jpeg" or file.suffix == ".jpg":
-            # TODO: Decouple from file info when opening folder
-            set_info_from_file(file) # Set the info from the file (correct naming is important for this operation)
+            try:
+                set_info_from_file(file) # Set the file info automatically (needs proper naming)
+                needs_renamed = False # If set_info_from_file() doesn't throw an exception, the file doesn't need to be renamed
+            except ValueError:
+                needs_renamed = True # Otherwise it does need to be renamed
+
             file_image = cv2.imread(str(file)) # Open the image
 
             if scoring_type == ScoringTypes.NRA:
@@ -892,6 +898,8 @@ def open_folder(scoring_type):
                 elif scoring_type == ScoringTypes.ORION_50FT_CONVENTIONAL:
                     crop_image(file_image, TargetTypes.ORION_50FT_CONVENTIONAL)
                 
+                if rename_files_var.get() and needs_renamed: rename_file(file) # If the name is improper and the user wants to rename the file
+
                 analyze_target(scoring_type)
 
     show_output_when_finished_var.set(show_output_when_finished_backup) # Revert the show_output_when_finished_var to its original value
@@ -907,7 +915,14 @@ def set_info_from_file(file):
     Args:
         file (Path): pathlib Path to the opened file
     """    
-    filename_without_extension = file.stem # get the filename without the extension
+    filename_without_extension = str(file.stem).lower() # get the filename without the extension
+
+    # Backup all of the current metadata in case the file was improperly named
+    day_var_backup = day_var.get()
+    month_var_backup = month_var.get()
+    year_var_backup = year_var.get()
+    target_num_var_backup = target_num_var.get()
+    name_var_backup = name_var.get()
 
     day_var.set(filename_without_extension[0:2]) # Set the day
 
@@ -949,7 +964,20 @@ def set_info_from_file(file):
         name_var.set(name)
 
     # Update the main label
-    main_label.config(text=f"Set date to: {month_var.get()} {day_var.get()}, {year_var.get()}  and target number {target_num_var.get()}")
+    main_label.config(text=f"Set date to: {month_var.get()} {day_var.get()}, {year_var.get()} and target number {target_num_var.get()}")
+
+    if verify_info() != "valid":
+        # If the file was improperly named, revert the metadata to its original value
+        day_var.set(day_var_backup)
+        month_var.set(month_var_backup)
+        year_var.set(year_var_backup)
+        target_num_var.set(target_num_var_backup)
+        name_var.set(name_var_backup)
+        
+        print(f"File was improperly named. Reverted to: {month_var.get()} {day_var.get()}, {year_var.get()} and target number {target_num_var.get()}")
+        main_label.config(text=f"Info reverted: File was improperly named")
+
+        raise ValueError("File was improperly named")
 
 # Set target metadata from today's date with target number 1
 def set_info_from_today():
@@ -963,6 +991,47 @@ def set_info_from_today():
 
     # Update the main label
     main_label.config(text="Set date to: " + month_var.get() + " " + day_var.get() + ", " + year_var.get() + " and target number 1")
+
+def verify_info():
+    """Checks if the data is invalid, blank, or default
+
+    Returns:
+        str: 'blank' if the data is blank or default, 'invalid' if the data is invalid, and 'valid' if the data is valid
+    """
+    # If the name is blank or default
+    if name_var.get() == "" \
+        or day_var.get() == "" \
+        or month_var.get() == "" \
+        or year_var.get() == "" \
+        or target_num_var.get() == "" \
+        or name_var.get() == "Name" \
+        or day_var.get() == "Day" \
+        or month_var.get() == "Month" \
+        or year_var.get() == "Year":
+        print("Data invalid: blank or default")
+        return "blank" # Return "blank" if the data is blank or default
+    # If any of the numbers aren't numbers
+    try:
+        int(day_var.get())
+        int(year_var.get())
+        int(target_num_var.get())
+    except ValueError:
+        return 'invalid' # Return "invalid" if the data is invalid
+    
+    # Otherwise it is probably valid
+    return 'valid'
+
+def rename_file(file):
+    """Renames the given file based on current metadata in Target Analysis.
+
+    Args:
+        file (str or pathlib.Path): File to rename
+    """
+    file = pathlib.Path(file) # Convert the file to a pathlib Path
+    new_stem = f"{day_var.get().zfill(2)}{month_var.get()[:3]}{year_var.get()}{name_var.get()}{target_num_var.get()}" # Create the new filename
+    renamed_file = file.with_stem(new_stem)
+    file.rename(renamed_file) # Create the new file path
+    print(f"Image renamed to {renamed_file}")
 
 # ----------------------------- Bubbles functions ---------------------------- #
 
@@ -1687,8 +1756,8 @@ def open_settings():
     #region Create settings window
     settings_window = tk.Toplevel(root)
     settings_window.title("Target Analysis")
-    settings_window.minsize(width=800, height=670)
-    settings_window.geometry("800x670")
+    settings_window.minsize(width=800, height=690)
+    settings_window.geometry("800x690")
     settings_window.tk.call('wm', 'iconphoto', settings_window._w, tk.PhotoImage(file='assets/icon.png'))
     #endregion
 
@@ -1714,6 +1783,9 @@ def open_settings():
 
     settings_capitalize_frame = ttk.Frame(settings_window)
     settings_capitalize_frame.pack(side=TOP, fill=X, padx=5)
+
+    settings_rename_frame = ttk.Frame(settings_window)
+    settings_rename_frame.pack(side=TOP, fill=X, padx=5)
 
     settings_global_separator = ttk.Separator(settings_window, orient=HORIZONTAL)
     settings_global_separator.pack(side=TOP, fill=X, pady=5)
@@ -1792,6 +1864,10 @@ def open_settings():
     # Auto capitalize names switch
     capitalize_names_checkbutton = ttk.Checkbutton(settings_capitalize_frame, text='Auto capitalize names', style='Switch.TCheckbutton', variable=capitalize_names_var, onvalue=True, offvalue=False)
     capitalize_names_checkbutton.grid(column=0, row=0)
+
+    # Auto capitalize names switch
+    rename_file_checkbutton = ttk.Checkbutton(settings_rename_frame, text='Rename files when opening folder', style='Switch.TCheckbutton', variable=rename_files_var, onvalue=True, offvalue=False)
+    rename_file_checkbutton.grid(column=0, row=0)
     #endregion
 
     #region Create NRA A-17 widgets
@@ -2025,6 +2101,7 @@ def update_settings_from_config(file):
     individual_output_type_var.set(config.get('settings', 'individual_output_type'))
     use_file_info_var.set(config.getboolean("settings", "use_file_info"))
     capitalize_names_var.set(config.getboolean("settings", "capitalize_names"))
+    rename_files_var.set(config.getboolean("settings", "rename_files"))
     update_dark_mode() # Apply the dark mode setting
 
     # Continue setting variables for the Orion targets
@@ -2081,6 +2158,7 @@ def create_default_config(file):
     config.set('settings', 'individual_output_type', str(individual_output_type_var.get()))
     config.set('settings', 'use_file_info', str(use_file_info_var.get()))
     config.set('settings', 'capitalize_names', str(capitalize_names_var.get()))
+    config.set('settings', 'rename_files', str(rename_files_var.get()))
 
     # Add the orion section to the config file
     config.add_section('orion')
@@ -2143,6 +2221,7 @@ def update_config():
     config.set('settings', 'individual_output_type', str(individual_output_type_var.get()))
     config.set('settings', 'use_file_info', str(use_file_info_var.get()))
     config.set('settings', "capitalize_names", str(capitalize_names_var.get()))
+    config.set('settings', 'rename_files', str(rename_files_var.get()))
     # Continue updating the settings for the Orion section
     config.set('orion', 'orion_kernel_size_dpi1', str(orion_kernel_size_dpi1.get()))
     config.set('orion', 'orion_kernel_size_dpi2', str(orion_kernel_size_dpi2.get()))
@@ -3001,7 +3080,7 @@ def analyze_50ft_conventional(image):
 # --------------------------------- Enums ------------------------------------ #
 
 #region Explanation of the enums:
-# TargetTypes has definitions for the left and right image on an NRA-A17 target.
+# TargetTypes has definitions for the left and right image on an NRA A-17 target.
 # Scoring types simply has the NRA definition
 # TargetTypes is used for load image and crop image
 # While ScoringTypes is used for scoring images and opening a folder
@@ -3047,6 +3126,9 @@ score_as_nra_var = tk.BooleanVar(root, False)
 
 # Auto capitalize the first letter of the file name
 capitalize_names_var = tk.BooleanVar(root, True)
+
+# Rename files when opening a folder of improperly named files
+rename_files_var = tk.BooleanVar(root, True)
 
 # Teams
 enable_teams_var = tk.BooleanVar(root, False)
