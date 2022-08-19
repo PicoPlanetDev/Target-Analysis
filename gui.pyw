@@ -360,7 +360,7 @@ def scan_image():
     """Uses wia-cmd-scanner to scan an image and save it to the images folder"""
     def create_image_name():
         '''Generates a file name compatible with Target Analysis based on the current options'''
-        month = month_var.get()[:3].lower() # Get the first 3 letters of the month
+        month = shorten_month(month_var.get()) # Get the first 3 letters of the month
         return day_var.get() + month + year_var.get() + name_var.get() + target_num_var.get() + ".jpg" # Create the image name
     
     image_name = create_image_name() # Create the image name
@@ -411,15 +411,19 @@ def analyze_target(target_type):
     current_target_type = target_type # Set the current target type
 
     # Create and store a name for the target output file
-    global csv_name
-    csv_name = f"data-{name_var.get()}{day_var.get()}{month_var.get()}{year_var.get()}{target_num_var.get()}.csv"
+    target_metadata = f"{name_var.get()}{day_var.get()}{shorten_month(month_var.get())}{year_var.get()}{target_num_var.get()}"
+    csv_name = f"data-{target_metadata}.csv"
+
+    # Create a folder (if necessary) for the current date's targets
+    data_folder = pathlib.Path("data", f"{day_var.get()}{shorten_month(month_var.get())}{year_var.get()}")
+    ensure_path_exists(data_folder)
 
     # If the CSV file already exists, delete it
-    csv_path = pathlib.Path("data", csv_name)
+    global csv_path
+    csv_path = pathlib.Path(data_folder, csv_name)
     if csv_path.exists():
         print("CSV already exists. Removing old version")
         os.remove(csv_path)
-    
     
     # Create the CSV file template
     with open(csv_path, 'x', newline="") as csvfile:
@@ -526,7 +530,9 @@ def analyze_target(target_type):
     # Counting starts at zero.
     filemenu.entryconfigure(1, state=NORMAL)
 
-    combine_output(score, x_count)
+    save_name = f"archive-{target_metadata}.jpg"
+    save_path = pathlib.Path(data_folder, save_name)
+    combine_output(score, x_count, save_path)
     
     # If scanning a single target, show the analysis window
     if not is_opening_folder:
@@ -562,7 +568,7 @@ def show_output():
 
     #region Create buttons and info at the top
     # Create a button to open the target CSV file
-    open_target_csv_button = ttk.Button(output_top_frame, text="Open target CSV", command=lambda: open_file(pathlib.Path('data', csv_name)))
+    open_target_csv_button = ttk.Button(output_top_frame, text="Open target CSV", command=lambda: open_file(csv_path))
     open_target_csv_button.grid(row=0, column=0)
     output_top_frame.grid_columnconfigure(0, weight=1)
     
@@ -672,7 +678,10 @@ def open_file(path):
     subprocess.run([pathlib.Path(path)], shell=True) # Run a system command to open the file using the default viewer (should work on any operating system)
 
 def ensure_path_exists(path):
-    """Checks if the given path exists, and creates it if it doesn't"""
+    """Checks if the given path exists, and creates it if it doesn't
+    
+    Args:
+        path (str or pathlib.Path): The path to check"""
     path = pathlib.Path(path)
     if not path.exists(): os.mkdir(path)
 
@@ -816,8 +825,14 @@ def create_csv():
         csvfile.close() # Close the file
     main_label.config(text="Created CSV data file") # Update the main label
 
-def combine_output(score, x_count):
-    """Saves an image with all of the target data after scoring"""
+def combine_output(score, x_count, path):
+    """Saves an image with all of the target data after scoring
+
+    Args:
+        score (float): The score of the target
+        x_count (float): The number of Xs on the target
+        path (str or pathlib.Path): The path to the target image
+    """
     # Create a new image with the correct size
     new_image = Image.new('RGB', (600, 800))
 
@@ -869,7 +884,8 @@ def combine_output(score, x_count):
     # Target number
     cv2.putText(cv2_image, f"Target num: {str(target_num_var.get())}", (225, 500), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
 
-    cv2.imwrite("images/output/combined.jpg", cv2_image)
+    # cv2.imwrite("images/output/combined.jpg", cv2_image)
+    cv2.imwrite(str(path), cv2_image)
 
 # --------------------------- Open folder functions -------------------------- #
 
@@ -1019,6 +1035,17 @@ def set_info_from_today():
     # Update the main label
     main_label.config(text="Set date to: " + month_var.get() + " " + day_var.get() + ", " + year_var.get() + " and target number 1")
 
+def shorten_month(month):
+    """Shortens a month name to the first three letters
+
+    Args:
+        month (str): The month name
+
+    Returns:
+        str: The shortened month name
+    """    
+    return str(month[:3]).lower()
+
 def verify_info():
     """Checks if the data is invalid, blank, or default
 
@@ -1055,7 +1082,7 @@ def rename_file(file):
         file (str or pathlib.Path): File to rename
     """
     file = pathlib.Path(file) # Convert the file to a pathlib Path
-    new_stem = f"{day_var.get().zfill(2)}{month_var.get()[:3]}{year_var.get()}{name_var.get()}{target_num_var.get()}" # Create the new filename
+    new_stem = f"{day_var.get().zfill(2)}{shorten_month(month_var.get())}{year_var.get()}{name_var.get()}{target_num_var.get()}" # Create the new filename
     renamed_file = file.with_stem(new_stem)
     file.rename(renamed_file) # Create the new file path
     print(f"Image renamed to {renamed_file}")
@@ -2441,10 +2468,8 @@ def analyze_image(image):
                 hole_ratio_x = (hole_x-a) / pixel_outer
                 hole_ratio_y = (hole_y-a) / pixel_outer
 
-                global csv_name
-
-                path = pathlib.Path('data', csv_name)
-                with open(path, 'a', newline="") as csvfile:
+                global csv_path
+                with open(csv_path, 'a', newline="") as csvfile:
                     filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                     filewriter.writerow([image, dropped_points, x_count, hole_x, hole_y, distance, hole_ratio_x, hole_ratio_y])
                     csvfile.close()
@@ -2684,10 +2709,8 @@ def analyze_orion_image(image):
                 hole_ratio_x = (hole_x-a) / pixel_outer
                 hole_ratio_y = (hole_y-a) / pixel_outer
 
-                global csv_name
-
-                path = pathlib.Path('data', csv_name)
-                with open(path, 'a', newline="") as csvfile:
+                global csv_path
+                with open(csv_path, 'a', newline="") as csvfile:
                     filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                     filewriter.writerow([image, ones, decimal, hole_x, hole_y, distance, hole_ratio_x, hole_ratio_y])
                     csvfile.close()
@@ -2902,10 +2925,8 @@ def analyze_orion_image_nra_scoring(image):
                 hole_ratio_x = (hole_x-a) / pixel_outer
                 hole_ratio_y = (hole_y-a) / pixel_outer
 
-                global csv_name
-
-                path = pathlib.Path('data', csv_name)
-                with open(path, 'a', newline="") as csvfile:
+                global csv_path
+                with open(csv_path, 'a', newline="") as csvfile:
                     filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                     filewriter.writerow([image, dropped_points, x_count, hole_x, hole_y, distance, hole_ratio_x, hole_ratio_y])
                     csvfile.close()
@@ -3101,10 +3122,8 @@ def analyze_50ft_conventional(image):
                 hole_ratio_x = (hole_x-a) / pixel_outer
                 hole_ratio_y = (hole_y-a) / pixel_outer
 
-                global csv_name
-
-                path = pathlib.Path('data', csv_name)
-                with open(path, 'a', newline="") as csvfile:
+                global csv_path
+                with open(csv_path, 'a', newline="") as csvfile:
                     filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                     filewriter.writerow([image, dropped_points, x_count, hole_x, hole_y, distance, hole_ratio_x, hole_ratio_y])
                     csvfile.close()
