@@ -415,14 +415,32 @@ def analyze_target(target_type):
     global current_target_type
     current_target_type = target_type # Set the current target type
 
-    # Create and store a name for the target output file
-    target_metadata = f"{name_var.get()}{day_var.get()}{shorten_month(month_var.get())}{year_var.get()}{target_num_var.get()}"
-    csv_name = f"data-{target_metadata}.csv"
-
     # Create a folder (if necessary) for the current date's targets
     global data_folder
     data_folder = Path("data", f"{day_var.get()}{shorten_month(month_var.get())}{year_var.get()}")
     ensure_path_exists(data_folder)
+
+    # If a global data CSV doesn't exist, create it
+    GLOBAL_CSV_PATH = Path('data/data.csv')
+    if not GLOBAL_CSV_PATH.exists(): create_csv(GLOBAL_CSV_PATH)
+
+    # If today's overview CSV doesn't exist, create it
+    overview_csv_name = f"overview-{day_var.get()}{shorten_month(month_var.get())}{year_var.get()}.csv"
+    overview_csv_path = Path(data_folder, overview_csv_name)
+    if not overview_csv_path.exists(): create_csv(overview_csv_path)
+
+    # If there is a duplicate name on this day, increase the target number
+    with open(overview_csv_path) as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        for index,row in enumerate(csv_reader):
+            if index != 0:
+                if row[0] == name_var.get():
+                    target_num_var.set(int(row[2]) + 1)
+                    print(f"Name already in today's data. Increased target number to {target_num_var.get()}")
+
+    # Create and store a name for the target output file
+    target_metadata = f"{name_var.get()}{day_var.get()}{shorten_month(month_var.get())}{year_var.get()}{target_num_var.get()}"
+    csv_name = f"data-{target_metadata}.csv"
 
     # If the CSV file already exists, delete it
     global csv_path
@@ -432,8 +450,8 @@ def analyze_target(target_type):
         os.remove(csv_path)
     
     # Create the CSV file template
-    with open(csv_path, 'x', newline="") as csvfile:
-        filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+    with open(csv_path, 'x', newline="") as csv_file:
+        filewriter = csv.writer(csv_file, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
 
         # label it differently if its a decimal target
         if target_type == ScoringTypes.ORION_USAS_50:
@@ -441,7 +459,7 @@ def analyze_target(target_type):
         else:
             filewriter.writerow(["Image", "Dropped", "X", "hole_x", "hole_y", "Distance", "hole_ratio_x", "hole_ratio_y"])
         
-        csvfile.close()
+        csv_file.close()
 
     # Analyze each cropped image
     if target_type == ScoringTypes.NRA:
@@ -513,21 +531,30 @@ def analyze_target(target_type):
     # Round the score to the nearest decimal place to avoid floating point error
     score = round(score, 1)
 
-    # If a global data CSV doesn't exist, create it
-    if not Path('data/data.csv').exists(): create_csv()
+    def write_target_to_csv(csv_file):
+        """Write the target's score and x count to the CSV file
+        
+        Args:
+            csv_file (str or path): The CSV file to write to
+        """
+        filewriter = csv.writer(csv_file, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        filewriter.writerow([name_var.get(), day_var.get() + " " + month_var.get() + " " + year_var.get(), target_num_var.get(), score, x_count])
+        csv_file.close()
 
     # Save the target's basic info to the global data CSV
-    with open("data/data.csv", 'a', newline="") as csvfile:
-                filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-                filewriter.writerow([name_var.get(), day_var.get() + " " + month_var.get() + " " + year_var.get(), target_num_var.get(), score, x_count])
-                csvfile.close()
+    with open(GLOBAL_CSV_PATH, 'a', newline="") as csv_file:
+        write_target_to_csv(csv_file)
+    
+    # Save the target's basic info to today's CSV
+    with open(overview_csv_path, 'a', newline="") as csv_file:
+        write_target_to_csv(csv_file)
 
     if enable_teams_var.get():
         teams_csv_path = Path(f"data/{active_team_var.get()}.csv")
-        with open(teams_csv_path, 'a', newline="") as csvfile:
-                filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        with open(teams_csv_path, 'a', newline="") as csv_file:
+                filewriter = csv.writer(csv_file, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                 filewriter.writerow([name_var.get(), day_var.get() + " " + month_var.get() + " " + year_var.get(), target_num_var.get(), score, x_count])
-                csvfile.close()
+                csv_file.close()
 
     main_label.config(text="Done") # Update main label
 
@@ -822,14 +849,17 @@ def open_analysis_window():
     show_image(image_index)
     update_buttons()
 
-def create_csv():
-    """Creates a data.csv file to store the data from all targets."""
+def create_csv(path):
+    """Creates a data.csv file to store the data from all targets.
+    
+    Args:
+        path (str or Path): The path of the CSV file to create."""
     # Open the CSV file
-    with open('data/data.csv', 'x', newline="") as csvfile:
-        filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL) # Create a filewriter
+    with open(Path(path), 'x', newline="") as csv_file:
+        filewriter = csv.writer(csv_file, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL) # Create a filewriter
         filewriter.writerow(['Name', 'Date', 'Target Number', 'Score','X']) # Write the header row
-        csvfile.close() # Close the file
-    main_label.config(text="Created CSV data file") # Update the main label
+        csv_file.close() # Close the file
+    main_label.config(text=f"Created CSV file at {path}") # Update the main label
 
 def combine_output(score, x_count, path):
     """Saves an image with all of the target data after scoring
@@ -1786,15 +1816,15 @@ def refresh_team_options():
 
 def create_teams_csv_files():
     """Creates the team1.csv and team2.csv files for storing team scores"""
-    with open('data/team1.csv', 'x', newline="") as csvfile:
-        filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL) # Create a filewriter
+    with open('data/team1.csv', 'x', newline="") as csv_file:
+        filewriter = csv.writer(csv_file, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL) # Create a filewriter
         filewriter.writerow(['Name', 'Date', 'Target Number', 'Score','X']) # Write the header row
-        csvfile.close() # Close the file
+        csv_file.close() # Close the file
 
-    with open('data/team2.csv', 'x', newline="") as csvfile:
-        filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL) # Create a filewriter
+    with open('data/team2.csv', 'x', newline="") as csv_file:
+        filewriter = csv.writer(csv_file, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL) # Create a filewriter
         filewriter.writerow(['Name', 'Date', 'Target Number', 'Score','X']) # Write the header row
-        csvfile.close() # Close the file
+        csv_file.close() # Close the file
     
     main_label.config(text="Created teams CSV files") # Update the main label
 
@@ -2497,10 +2527,10 @@ def analyze_image(image):
                 hole_ratio_y = (hole_y-a) / pixel_outer
 
                 global csv_path
-                with open(csv_path, 'a', newline="") as csvfile:
-                    filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                with open(csv_path, 'a', newline="") as csv_file:
+                    filewriter = csv.writer(csv_file, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                     filewriter.writerow([image, dropped_points, x_count, hole_x, hole_y, distance, hole_ratio_x, hole_ratio_y])
-                    csvfile.close()
+                    csv_file.close()
     #endregion
 
     if individual_output_type_var.get() == "legacy":
@@ -2738,10 +2768,10 @@ def analyze_orion_image(image):
                 hole_ratio_y = (hole_y-a) / pixel_outer
 
                 global csv_path
-                with open(csv_path, 'a', newline="") as csvfile:
-                    filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                with open(csv_path, 'a', newline="") as csv_file:
+                    filewriter = csv.writer(csv_file, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                     filewriter.writerow([image, ones, decimal, hole_x, hole_y, distance, hole_ratio_x, hole_ratio_y])
-                    csvfile.close()
+                    csv_file.close()
     #endregion
 
     if individual_output_type_var.get() == "legacy":
@@ -2954,10 +2984,10 @@ def analyze_orion_image_nra_scoring(image):
                 hole_ratio_y = (hole_y-a) / pixel_outer
 
                 global csv_path
-                with open(csv_path, 'a', newline="") as csvfile:
-                    filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                with open(csv_path, 'a', newline="") as csv_file:
+                    filewriter = csv.writer(csv_file, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                     filewriter.writerow([image, dropped_points, x_count, hole_x, hole_y, distance, hole_ratio_x, hole_ratio_y])
-                    csvfile.close()
+                    csv_file.close()
     #endregion
 
     if individual_output_type_var.get() == "legacy":
@@ -3151,10 +3181,10 @@ def analyze_50ft_conventional(image):
                 hole_ratio_y = (hole_y-a) / pixel_outer
 
                 global csv_path
-                with open(csv_path, 'a', newline="") as csvfile:
-                    filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                with open(csv_path, 'a', newline="") as csv_file:
+                    filewriter = csv.writer(csv_file, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                     filewriter.writerow([image, dropped_points, x_count, hole_x, hole_y, distance, hole_ratio_x, hole_ratio_y])
-                    csvfile.close()
+                    csv_file.close()
     #endregion
 
     if individual_output_type_var.get() == "legacy":
