@@ -71,6 +71,11 @@ def load_image(target_type, image_selector="ask"):
 
     if image_selector == "ask": image_file = filedialog.askopenfilename() # Open a tkinter file dialog to select an image
     else: image_file = image_selector # Use the image passed in
+
+    if image_file == "": # If the user didn't select an image, return
+        main_label.config(text="No image selected") # Update the main label
+        return
+
     image = cv2.imread(image_file) # Load the image for OpenCV image
 
     # If the user wants to use information from the file name, do so
@@ -415,6 +420,7 @@ def analyze_target(target_type):
     csv_name = f"data-{target_metadata}.csv"
 
     # Create a folder (if necessary) for the current date's targets
+    global data_folder
     data_folder = pathlib.Path("data", f"{day_var.get()}{shorten_month(month_var.get())}{year_var.get()}")
     ensure_path_exists(data_folder)
 
@@ -666,7 +672,7 @@ def show_folder(path):
     print(f"Opening folder: {str(path)}")
     main_label.config(text="Opening folder... ONLY WORKS ON WINDOWS")
     subprocess.run(["explorer", pathlib.Path(path)]) # Run a system command to open the folder using Explorer (Windows only)
-    main_label.config(text="Working directory opened in Explorer") # Update the main label
+    main_label.config(text=f"{path} opened in explorer") # Update the main label
 
 def open_file(path):
     """Opens the file specified by path with the default viewer
@@ -947,7 +953,7 @@ def open_folder(scoring_type):
 
     show_output_when_finished_var.set(show_output_when_finished_backup) # Revert the show_output_when_finished_var to its original value
     is_opening_folder = False # Keep track of whether or not the folder is being opened
-    show_folder(pathlib.Path("data").resolve()) # Open the data folder in Explorer
+    show_folder(data_folder) # Open the data folder in Explorer
 
 # ---------------------------- File info funtions ---------------------------- #
 
