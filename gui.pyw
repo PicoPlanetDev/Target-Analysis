@@ -39,7 +39,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 from configparser import ConfigParser
 from enum import Enum
-import pathlib
+from pathlib import Path
 import subprocess
 #import traceback # For debugging - Usage: traceback.print_stack()
 #endregion
@@ -372,13 +372,13 @@ def scan_image():
 
     # Scanning uses WINDOWS ONLY wia-cmd-scanner.exe from https://github.com/nagimov/wia-cmd-scanner
     subprocess.run([
-        pathlib.Path('assets\wia-cmd-scanner\wia-cmd-scanner.exe'), 
+        Path('assets\wia-cmd-scanner\wia-cmd-scanner.exe'), 
         '/w', '0', 
         '/h', '0', 
         '/dpi', '300', 
         '/color', 'RGB', 
         '/format', 'JPG', 
-        '/output', pathlib.Path('images',image_name)
+        '/output', Path('images',image_name)
     ])
     main_label.config(text="Image scanned as " + image_name) # Update the main label
     return image_name # Return the image name to call the load function on it
@@ -391,7 +391,7 @@ def scan_process(target_type):
     """    
     main_label.config(text="Scanning image...") # Update the main label
     image_name = scan_image() # Scan and save an image, getting the image name
-    path = pathlib.Path("images", image_name) # Get the path to the image
+    path = Path("images", image_name) # Get the path to the image
     load_image(target_type, path) # Load the image
     # Again, really dumb that I haven't combined the enums yet. So I have to do a hacky thing to convert to the scoring type
     if target_type == TargetTypes.ORION_USAS_50:
@@ -421,12 +421,12 @@ def analyze_target(target_type):
 
     # Create a folder (if necessary) for the current date's targets
     global data_folder
-    data_folder = pathlib.Path("data", f"{day_var.get()}{shorten_month(month_var.get())}{year_var.get()}")
+    data_folder = Path("data", f"{day_var.get()}{shorten_month(month_var.get())}{year_var.get()}")
     ensure_path_exists(data_folder)
 
     # If the CSV file already exists, delete it
     global csv_path
-    csv_path = pathlib.Path(data_folder, csv_name)
+    csv_path = Path(data_folder, csv_name)
     if csv_path.exists():
         print("CSV already exists. Removing old version")
         os.remove(csv_path)
@@ -514,7 +514,7 @@ def analyze_target(target_type):
     score = round(score, 1)
 
     # If a global data CSV doesn't exist, create it
-    if not pathlib.Path('data/data.csv').exists(): create_csv()
+    if not Path('data/data.csv').exists(): create_csv()
 
     # Save the target's basic info to the global data CSV
     with open("data/data.csv", 'a', newline="") as csvfile:
@@ -523,7 +523,7 @@ def analyze_target(target_type):
                 csvfile.close()
 
     if enable_teams_var.get():
-        teams_csv_path = pathlib.Path(f"data/{active_team_var.get()}.csv")
+        teams_csv_path = Path(f"data/{active_team_var.get()}.csv")
         with open(teams_csv_path, 'a', newline="") as csvfile:
                 filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                 filewriter.writerow([name_var.get(), day_var.get() + " " + month_var.get() + " " + year_var.get(), target_num_var.get(), score, x_count])
@@ -537,7 +537,7 @@ def analyze_target(target_type):
     filemenu.entryconfigure(1, state=NORMAL)
 
     save_name = f"archive-{target_metadata}.jpg"
-    save_path = pathlib.Path(data_folder, save_name)
+    save_path = Path(data_folder, save_name)
     combine_output(score, x_count, save_path)
     
     # If scanning a single target, show the analysis window
@@ -587,7 +587,7 @@ def show_output():
     output_top_frame.grid_columnconfigure(1, weight=1)
 
     # Create a button to open the global data CSV file
-    open_data_csv_button = ttk.Button(output_top_frame, text="Open data CSV", command=lambda: open_file(pathlib.Path('data', 'data.csv')))
+    open_data_csv_button = ttk.Button(output_top_frame, text="Open data CSV", command=lambda: open_file(Path('data', 'data.csv')))
     open_data_csv_button.grid(row=0, column=2)
     output_top_frame.grid_columnconfigure(2, weight=1)
     #endregion
@@ -667,28 +667,28 @@ def show_folder(path):
     """Open Windows Explorer to the path specified
 
     Args:
-        path (str or pathlib.Path): The path to open
+        path (str or Path): The path to open
     """
     print(f"Opening folder: {str(path)}")
     main_label.config(text="Opening folder... ONLY WORKS ON WINDOWS")
-    subprocess.run(["explorer", pathlib.Path(path)]) # Run a system command to open the folder using Explorer (Windows only)
+    subprocess.run(["explorer", Path(path)]) # Run a system command to open the folder using Explorer (Windows only)
     main_label.config(text=f"{path} opened in explorer") # Update the main label
 
 def open_file(path):
     """Opens the file specified by path with the default viewer
     
     Args:
-        path (str or pathlib.Path): path to the file to open
+        path (str or Path): path to the file to open
     """
     main_label.config(text="Opening file " + str(path)) # Update the main label
-    subprocess.run([pathlib.Path(path)], shell=True) # Run a system command to open the file using the default viewer (should work on any operating system)
+    subprocess.run([Path(path)], shell=True) # Run a system command to open the file using the default viewer (should work on any operating system)
 
 def ensure_path_exists(path):
     """Checks if the given path exists, and creates it if it doesn't
     
     Args:
-        path (str or pathlib.Path): The path to check"""
-    path = pathlib.Path(path)
+        path (str or Path): The path to check"""
+    path = Path(path)
     if not path.exists(): os.mkdir(path)
 
 def open_analysis_window():
@@ -701,7 +701,7 @@ def open_analysis_window():
         output_images = []
         output_image_names = []
         # os.listdir returns a list of the files in the directory
-        for file in pathlib.Path("images/output").iterdir():
+        for file in Path("images/output").iterdir():
             # Output images are saved as such: <original image name>-output.png
             if file.name.endswith("output.jpg"):
                 output_images.append(ImageTk.PhotoImage(Image.open(file).resize((600, 600), Image.Resampling.LANCZOS))) # Load the image as a tkinter photo image and add it to the list
@@ -837,7 +837,7 @@ def combine_output(score, x_count, path):
     Args:
         score (float): The score of the target
         x_count (float): The number of Xs on the target
-        path (str or pathlib.Path): The path to the target image
+        path (str or Path): The path to the target image
     """
     # Create a new image with the correct size
     new_image = Image.new('RGB', (600, 800))
@@ -904,12 +904,23 @@ def open_folder(scoring_type):
     Note:
         This function uses ScoringTypes because it automatically distinguishes between left and right NRA targets
     """    
+    def cleanup():
+        """Returns opening folder variables to original state"""        
+        show_output_when_finished_var.set(show_output_when_finished_backup) # Revert the show_output_when_finished_var to its original value
+        is_opening_folder = False # Keep track of whether or not the folder is being opened
+    
     global is_opening_folder
     is_opening_folder = True # Keep track of whether or not the folder is being opened
     show_output_when_finished_backup = show_output_when_finished_var.get()
     show_output_when_finished_var.set(False)
     main_label.config(text="Opening folder... This could take a while") # Update the main label
-    folder = pathlib.Path(filedialog.askdirectory()) # Get the folder to open
+
+    folder = filedialog.askdirectory() # Get the folder to open
+    if folder == "": # If the user didn't select a folder
+        main_label.config(text="No folder selected") # Update the main label
+        cleanup()
+        return
+    else: folder = Path(folder) # Convert the folder to a Path object
 
     # os.listdir() returns a list of all files in the folder
     for file in folder.iterdir():
@@ -950,9 +961,8 @@ def open_folder(scoring_type):
                 if rename_files_var.get() and needs_renamed: rename_file(file) # If the name is improper and the user wants to rename the file
 
                 analyze_target(scoring_type)
-
-    show_output_when_finished_var.set(show_output_when_finished_backup) # Revert the show_output_when_finished_var to its original value
-    is_opening_folder = False # Keep track of whether or not the folder is being opened
+    
+    cleanup()
     show_folder(data_folder) # Open the data folder in Explorer
 
 # ---------------------------- File info funtions ---------------------------- #
@@ -961,9 +971,9 @@ def set_info_from_file(file):
     """Sets the target metadata by parsing the file name
 
     Args:
-        file (str or pathlib.Path): pathlib Path to the opened file
+        file (str or Path): pathlib Path to the opened file
     """    
-    file = pathlib.Path(file) # Convert the file to a pathlib Path
+    file = Path(file) # Convert the file to a pathlib Path
     filename_without_extension = str(file.stem).lower() # get the filename without the extension
 
     # Backup all of the current metadata in case the file was improperly named
@@ -1085,9 +1095,9 @@ def rename_file(file):
     """Renames the given file based on current metadata in Target Analysis.
 
     Args:
-        file (str or pathlib.Path): File to rename
+        file (str or Path): File to rename
     """
-    file = pathlib.Path(file) # Convert the file to a pathlib Path
+    file = Path(file) # Convert the file to a pathlib Path
     new_stem = f"{day_var.get().zfill(2)}{shorten_month(month_var.get())}{year_var.get()}{name_var.get()}{target_num_var.get()}" # Create the new filename
     renamed_file = file.with_stem(new_stem)
     file.rename(renamed_file) # Create the new file path
@@ -1325,14 +1335,14 @@ def load_names_config():
 
 def clear_data():
     """Deletes all files in the data and images/output folders"""
-    path = pathlib.Path('data') # Set the path to the data folder
+    path = Path('data') # Set the path to the data folder
     # List all the files in the folder
     for file in path.iterdir():
         # If the file is a CSV (meaning that it was probably generated by the software, delete it)
         if file.suffix == ".csv":
             os.remove(file)
     
-    path = pathlib.Path("images/output") # Set the path to the images/output folder
+    path = Path("images/output") # Set the path to the images/output folder
     # List all the files in the folder
     for file in path.iterdir():
         # If the file is a JPG (meaning that it was probably generated by the software, delete it)
@@ -1364,11 +1374,18 @@ def show_trends():
     def showMostMissed():
         bulls = [0,0,0,0,0,0,0,0,0,0] # Create a list of bulls to keep track of the most missed targets
 
-        folder = pathlib.Path(filedialog.askdirectory()) # Get the folder to open
+        folder = filedialog.askdirectory() # Get the folder to open
+
+        if folder == "": # If the user didn't select a folder, return
+            main_label.config(text="No folder selected")
+            return
+        else:
+            folder = Path(folder) # Set the folder to the selected folder
+
         # os.listdir() returns a list of all files in the folder
         for file in folder.iterdir():
             # Ignore files that are not target CSVs
-            if file.name != "data.csv" and file.name != ".gitkeep":
+            if file.name != "data.csv" and file.name != ".gitkeep" and file.suffix == ".csv":
                 # Open the CSV file
                 with open(file) as csv_file:
                     csv_reader = csv.reader(csv_file, delimiter=',') # Create a CSV reader
@@ -1424,6 +1441,11 @@ def show_trends():
 
     def showTrendGraph():
         data_csv = filedialog.askopenfilename() # Get the CSV file to open (this can be a backup to accomodate for multiple shooters)
+        if data_csv == "":
+            main_label.config(text="No file selected") # Update the main label
+            return
+        else:
+            data_csv = Path(data_csv)
 
         # Create some arrays for relevant data
         dates = []
@@ -1530,7 +1552,7 @@ def open_teams_window():
         update_teams_config()
         refresh_team_options()
         if enable_teams_var.get() == True:
-            if not pathlib.Path("data/team1.csv").exists() or not pathlib.Path("data/team2.csv").exists():
+            if not Path("data/team1.csv").exists() or not Path("data/team2.csv").exists():
                 create_teams_csv_files()
 
     # Load scores from teams csv files and update the UI
@@ -1554,7 +1576,7 @@ def open_teams_window():
         # Load scores from the CSV file path and put them in a list of tuples (score, x_count)
         def get_score_to_list(path):
             out_scores = []
-            with open(pathlib.Path(path)) as csv_file:
+            with open(Path(path)) as csv_file:
                 csv_reader = csv.reader(csv_file, delimiter=',')
                 line_count = 0
                 for row in csv_reader:
@@ -1791,7 +1813,7 @@ def open_settings():
         update_config()
 
     def open_names_file():
-        path = pathlib.Path('names.ini')
+        path = Path('names.ini')
         open_file(path)
 
     main_label.config(text="Showing settings window") # Update the main label
@@ -3244,7 +3266,7 @@ orion50ftconventional_max_hole_radius = tk.IntVar(root, 40)
 #endregion
 
 # Check for a config file. If it exists, load the values from it. Otherwise, create a config file frome the defaults.
-if pathlib.Path("config.ini").exists():
+if Path("config.ini").exists():
     # If the file exists, update settings to match the config file
     update_settings_from_config("config.ini")
 else:
@@ -3252,17 +3274,17 @@ else:
     create_default_config("config.ini")
 
 # If there is not config backup, create one now
-if not pathlib.Path("config-backup.ini").exists(): create_default_config("config-backup.ini")    
+if not Path("config-backup.ini").exists(): create_default_config("config-backup.ini")    
 
 # If there is not a names config, create one now
-if not pathlib.Path("names.ini").exists(): create_names_config()
+if not Path("names.ini").exists(): create_names_config()
 #endregion
 
 #region Menubar
 menubar = tk.Menu(root) # Create the menubar
 
 filemenu = tk.Menu(menubar, tearoff=0) # Create the file menu
-filemenu.add_command(label="Show in Explorer", command=lambda: show_folder(pathlib.Path(__file__).parent))
+filemenu.add_command(label="Show in Explorer", command=lambda: show_folder(Path(__file__).parent))
 filemenu.add_command(label="Show output", command=show_output, state=DISABLED)
 filemenu.add_command(label="Show trends", command=show_trends)
 filemenu.add_command(label="Teams", command=open_teams_window)
@@ -3379,7 +3401,7 @@ use_file_info_checkbutton.grid(column=5, row=0, rowspan=2, padx=5)
 # Teams frame enabled only when teams are enabled
 teams_frame = ttk.Frame(options_frame)
 # Update teams info
-if not pathlib.Path("teams.ini").exists():
+if not Path("teams.ini").exists():
     create_teams_config()
 load_teams_config()
 refresh_team_options()
