@@ -46,7 +46,6 @@ import subprocess
 
 # --------------------------- Load image functions --------------------------- #
 
-# Load an image for any target type
 def load_image(target_type, image_selector="ask"):
     """Prompts the user to select an image from their computer, adds it to the preview, and calls the appropriate function to crop the image
 
@@ -100,7 +99,6 @@ def load_image(target_type, image_selector="ask"):
 
 # --------------------------- Crop image functions --------------------------- #
 
-# Crop the image based on the given target_type and saves the bulls to images/output
 def crop_image(image, target_type):
     """Crops the given image based on the given target_type and saves the bulls to images/output
 
@@ -358,31 +356,11 @@ def crop_image(image, target_type):
 
 # --------------------------- Scan image functions --------------------------- #
 
-# Get image from scanner
 def scan_image():
+    """Uses wia-cmd-scanner to scan an image and save it to the images folder"""
     def create_image_name():
         '''Generates a file name compatible with Target Analysis based on the current options'''
-        # Create a dictionary to convert the full month name to 3 letters, reverse of the dictionary used in set_info_from_file
-        months = {
-            'January': 'jan', 
-            'February': 'feb',
-            'March': 'mar',
-            'April': 'apr',
-            'May': 'may',
-            'June': 'jun',
-            'July': 'jul',
-            'August': 'aug',
-            'September': 'sep',
-            'October': 'oct',
-            'November': 'nov',
-            'December': 'dec',
-        }
-        # Use a try-except to alert the user if the date is invalid
-        try: month = months[month_var.get()] # Get the month as a 3 letter string
-        except:
-            main_label.config(text="Error: Invalid month entered")
-            print("Error: Invalid month entered")
-            month = 'err'
+        month = month_var.get()[:3].lower() # Get the first 3 letters of the month
         return day_var.get() + month + year_var.get() + name_var.get() + target_num_var.get() + ".jpg" # Create the image name
     
     image_name = create_image_name() # Create the image name
@@ -400,7 +378,6 @@ def scan_image():
     main_label.config(text="Image scanned as " + image_name) # Update the main label
     return image_name # Return the image name to call the load function on it
 
-# Scan and save image, load, crop, and analyze the target
 def scan_process(target_type):
     """Scans an image, loads and crops it, and analyzes the target
 
@@ -420,10 +397,8 @@ def scan_process(target_type):
         scoring_type = ScoringTypes.ORION_50FT_CONVENTIONAL
     analyze_target(scoring_type) # Analyze the image
 
-
 # -------------------- Target processing control functions ------------------- #
 
-# Run the analyze_image function for every image that has been cropped out
 def analyze_target(target_type): 
     """Runs the appropriate analyze_image function for every image that has been cropped and saved.
 
@@ -563,7 +538,6 @@ def analyze_target(target_type):
         elif show_output_when_finished_var.get():
             show_output() # Otherwise, show the output now that analysis has finished
             
-# Show an overview of the target with the score and x count
 def show_output():
     """Shows the most recently saved results of the analysis in a new window."""
     main_label.config(text="Showing output") # Update main label
@@ -606,7 +580,7 @@ def show_output():
     output_top_frame.grid_columnconfigure(2, weight=1)
     #endregion
 
-    #region Create canvases and images for each bull
+    # Create canvases and images for each bull
     top_left_canvas = tk.Canvas(output_bottom_frame, width=170,height=170)
     top_left_canvas.grid(row = 0, column = 0)
 
@@ -676,23 +650,20 @@ def show_output():
     global bottom_right_output
     bottom_right_output = ImageTk.PhotoImage(Image.open("images/output/bottom-right.jpg-output.jpg").resize((170, 170), Image.Resampling.LANCZOS))
     bottom_right_canvas.create_image(0, 0, anchor="nw", image=bottom_right_output)
-    #endregion
 
-# Open the folder specified in path in windows explorer
 def show_folder(path):
-    """Runs the explorer to the path given
+    """Open Windows Explorer to the path specified
 
     Args:
-        path (str): where to navigate to in explorer
+        path (str or pathlib.Path): The path to open
     """
     print(f"Opening folder: {str(path)}")
     main_label.config(text="Opening folder... ONLY WORKS ON WINDOWS")
     subprocess.run(["explorer", pathlib.Path(path)]) # Run a system command to open the folder using Explorer (Windows only)
     main_label.config(text="Working directory opened in Explorer") # Update the main label
 
-# Open file with default viewer
 def open_file(path):
-    """Opens the file with the default viewer
+    """Opens the file specified by path with the default viewer
     
     Args:
         path (str or pathlib.Path): path to the file to open
@@ -700,13 +671,13 @@ def open_file(path):
     main_label.config(text="Opening file " + str(path)) # Update the main label
     subprocess.run([pathlib.Path(path)], shell=True) # Run a system command to open the file using the default viewer (should work on any operating system)
 
-# Ensure that an image/output directory is available to save images
 def check_output_dir():
+    """Checks if the output directory exists, and creates it if it doesn't"""
     path = pathlib.Path('images/output')
     if not path.exists(): os.mkdir(path)
 
-# Show tkinter based image viewer for the analysis
 def open_analysis_window():
+    """Opens a tkinter-based image viewer for the analysis review"""
     # Load all of the images that have been saved from analysis
     def load_images():
         # Create a list of images
@@ -836,8 +807,8 @@ def open_analysis_window():
     show_image(image_index)
     update_buttons()
 
-# Create data.csv file
 def create_csv():
+    """Creates a data.csv file to store the data from all targets."""
     # Open the CSV file
     with open('data/data.csv', 'x', newline="") as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL) # Create a filewriter
@@ -902,14 +873,13 @@ def combine_output(score, x_count):
 
 # --------------------------- Open folder functions -------------------------- #
 
-# Open a folder of images for any scoring type
 def open_folder(scoring_type):
-    """Loads, crops, and analyzes all files in a user-selected folder
+    """Loads, crops, and analyzes all images in a user-selected folder
 
     Args:
         scoring_type (ScoringTypes): The type of target that is in the folder
     
-    Special note:
+    Note:
         This function uses ScoringTypes because it automatically distinguishes between left and right NRA targets
     """    
     global is_opening_folder
@@ -969,7 +939,7 @@ def set_info_from_file(file):
     """Sets the target metadata by parsing the file name
 
     Args:
-        file (Path): pathlib Path to the opened file
+        file (str or pathlib.Path): pathlib Path to the opened file
     """    
     file = pathlib.Path(file) # Convert the file to a pathlib Path
     filename_without_extension = str(file.stem).lower() # get the filename without the extension
@@ -1092,8 +1062,8 @@ def rename_file(file):
 
 # ----------------------------- Bubbles functions ---------------------------- #
 
-# Set shooter name from initials on Orion targets
 def set_name_from_bubbles(target_type):
+    """Set shooter name from initials on Orion targets"""
     check_output_dir()
 
     DEFAULT_RADIUS = 15
@@ -1277,14 +1247,15 @@ def set_name_from_bubbles(target_type):
 
     if name != None: name_var.set(name)
 
-# Create a default names config file
 def create_names_config():
+    """Generates a default names.ini config file"""
     config = ConfigParser()
 
     config.read('names.ini')
 
     config.add_section('index')
     config.set('index', 'index', '1')
+    config.set('index', '; The index should be set to the number of names in the list (the highest number below + 1)')
 
     config.add_section('initials')
     config.set('initials', '0', 'SK')
@@ -1296,8 +1267,12 @@ def create_names_config():
     with open('names.ini', 'w') as f:
         config.write(f)
 
-# Load initials and names from names.ini config file and and puts them into respective lists
 def load_names_config():
+    """Loads the names.ini config file and returns the initials and names lists
+
+    Returns:
+        list, list: initials list, names list
+    """    
     config = ConfigParser()
     config.read('names.ini')
 
@@ -1315,8 +1290,8 @@ def load_names_config():
 
 # -------------------------- Miscellaneous functions ------------------------- #
 
-# Delete all files in the /data and /images/output folders
 def clear_data():
+    """Deletes all files in the data and images/output folders"""
     path = pathlib.Path('data') # Set the path to the data folder
     # List all the files in the folder
     for file in path.iterdir():
@@ -1333,16 +1308,16 @@ def clear_data():
 
     main_label.config(text="data and images/output directories cleared") # Update the main label
 
-# Enable/disable dark mode based on the value of dark_mode_var
 def update_dark_mode():
+    """Updates the dark mode based on the value of dark_mode_var"""
     # If dark mode is enabled, set the theme to dark
     if dark_mode_var.get() == True:
         root.tk.call("set_theme", "dark") # Set the theme to dark
     else:
         root.tk.call("set_theme", "light") # Set the theme to light
 
-# Show options for extracting trends from existing data files
 def show_trends():
+    """Show options for extracting trends from existing data files"""
     main_label.config(text="Showing trends window") # Update the main label
 
     #region Create window
@@ -1509,8 +1484,8 @@ def show_trends():
 
 # ------------------------------ Teams functions ------------------------------ #
 
-# Open teams editor window
 def open_teams_window():
+    """Open the teams editor window"""
     # If the teams window is going to be closed, save the teams info and close the window
     def on_close_teams():
         update_teams_config()
@@ -1677,10 +1652,9 @@ def open_teams_window():
 
     team2_open_csv_button = ttk.Button(team2_results_frame, text="Open CSV", command=lambda: open_file("data/team2.csv"))
     team2_open_csv_button.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
-    #endregion
 
-# Create a default teams config file
 def create_teams_config():
+    """Creates a default teams config file"""
     config = ConfigParser()
 
     config.read('teams.ini')
@@ -1697,8 +1671,8 @@ def create_teams_config():
     with open('teams.ini', 'w') as f:
         config.write(f)
 
-# Update the teams config file from current state
 def update_teams_config():
+    """Updates the teams config file from current state"""
     config = ConfigParser()
 
     config.read('teams.ini')
@@ -1712,8 +1686,8 @@ def update_teams_config():
     with open('teams.ini', 'w') as f:
         config.write(f)
 
-# Load teams info from teams.ini config file
 def load_teams_config():
+    """Loads teams info from config file"""
     config = ConfigParser()
     config.read('teams.ini')
 
@@ -1722,8 +1696,8 @@ def load_teams_config():
     team2_name_var.set(config.get('teams', 'team2_name'))
     keep_best_var.set(config.getint('teams', 'keep_best'))
 
-# Refresh the UI for the team selector on the main page
 def refresh_team_options():
+    """Refreshes the team options UI on the main page"""
     global teams_frame
     team1_radio_button = ttk.Radiobutton(teams_frame, text=team1_name_var.get(), variable=active_team_var, value="team1")
     team1_radio_button.grid(row=0, column=0, padx=5, sticky=NSEW)
@@ -1755,8 +1729,8 @@ def refresh_team_options():
         today_button.grid_forget()
         today_button.grid(column=4, row=0, rowspan=2, padx=2.5)
 
-# Create team1.csv and team2.csv files for storing scores
 def create_teams_csv_files():
+    """Creates the team1.csv and team2.csv files for storing team scores"""
     with open('data/team1.csv', 'x', newline="") as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL) # Create a filewriter
         filewriter.writerow(['Name', 'Date', 'Target Number', 'Score','X']) # Write the header row
@@ -1771,8 +1745,8 @@ def create_teams_csv_files():
 
 # ---------------------------- Settings functions ---------------------------- #
 
-# Open the settings window
 def open_settings():
+    """Create a settings window"""
     # If the settings window is going to be closed, save the changes and destroy the window
     def on_close_settings():
         update_config()
@@ -2130,8 +2104,8 @@ def open_settings():
 
 # ----------------------------- Config functions ----------------------------- #
 
-# Read settings from config file and apply them to the necessary tk vars
 def update_settings_from_config(file):
+    """Reads settings from config file and applies them to the necessary tk vars"""
     # Create a config parser
     config = ConfigParser()
 
@@ -2186,8 +2160,8 @@ def update_settings_from_config(file):
     orion50ftconventional_max_contour_area.set(config.getint("50ftconventional", "50ftconventional_max_contour_area"))
     orion50ftconventional_max_hole_radius.set(config.getint("50ftconventional", "50ftconventional_max_hole_radius"))
 
-# Save settings to config file
 def create_default_config(file):
+    """Saves the default settings to a config file"""
     # Create a config parser
     config = ConfigParser()
 
@@ -2253,8 +2227,8 @@ def create_default_config(file):
     with open(file, 'w') as f:
         config.write(f)
 
-# Update config.ini file with current settings
 def update_config():
+    """Update the config file with the current settings"""
     config = ConfigParser() # Create a config parser
 
     config.read('config.ini') # Read the config file
@@ -2310,8 +2284,12 @@ def update_config():
 
 # -------------------------- Analyze image functions ------------------------- #
 
-# Score a single NRA A-17 bull. Derived from improved.py
 def analyze_image(image):
+    """Analyze an image of a bull from an NRA A-17 target and save the score to a csv file.
+
+    Args:
+        image (str): Path to the image to analyze.
+    """    
     # Basic implementation of the distance formula
     def compute_distance(x1, y1, x2, y2):
         return math.sqrt(((x2 - x1) ** 2)+((y2 - y1) ** 2))
@@ -2477,8 +2455,12 @@ def analyze_image(image):
         cv2.waitKey(0)
     cv2.imwrite(image + "-output.jpg", output) # Save the output image
 
-# Score a single Orion NRA/USAS-50 bull. Derived from analyze_image
 def analyze_orion_image(image):
+    """Analyze an image of a bull on an Orion USAS-50 and save the score to a csv file.
+
+    Args:
+        image (str): Path to the image to analyze.
+    """    
     # Basic implementation of the distance formula
     def compute_distance(x1, y1, x2, y2):
         return math.sqrt(((x2 - x1) ** 2)+((y2 - y1) ** 2))
@@ -2716,8 +2698,13 @@ def analyze_orion_image(image):
         cv2.waitKey(0)
     cv2.imwrite(image + "-output.jpg", output) # Save the output image
 
-# Score a single Orion NRA/USAS-50 bull using NRA A-17 scoring. Derived from analyze_orion_image and analyze_image
 def analyze_orion_image_nra_scoring(image):
+    """Analyze an image of a bull from an Orion USAS-50 target 
+    using the rings of an NRA A-17 target and save the score to a csv file.
+
+    Args:
+        image (str): Path to the image to analyze.
+    """    
     # Basic implementation of the distance formula
     def compute_distance(x1, y1, x2, y2):
         return math.sqrt(((x2 - x1) ** 2)+((y2 - y1) ** 2))
@@ -2929,8 +2916,13 @@ def analyze_orion_image_nra_scoring(image):
         cv2.waitKey(0)
     cv2.imwrite(image + "-output.jpg", output) # Save the output image
 
-# Score a single Orion 50ft conventional bull. Derived from analyze_image
 def analyze_50ft_conventional(image):
+    """Analyze an image of a bull from an Orion 50ft conventional
+    target and save the score to a csv file.
+
+    Args:
+        image (str): Path to the image to analyze.
+    """    
     # Basic implementation of the distance formula
     def compute_distance(x1, y1, x2, y2):
         return math.sqrt(((x2 - x1) ** 2)+((y2 - y1) ** 2))
