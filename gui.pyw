@@ -108,7 +108,7 @@ def crop_image(image, target_type):
     """
 
     main_label.config(text="Cropping image...") # Update main label
-    check_output_dir()
+    ensure_path_exists('images/output')
 
     # Pixel measurements were taken from 300dpi targets, so use the same ratio where necessary
     ratio_height = 3507
@@ -671,9 +671,9 @@ def open_file(path):
     main_label.config(text="Opening file " + str(path)) # Update the main label
     subprocess.run([pathlib.Path(path)], shell=True) # Run a system command to open the file using the default viewer (should work on any operating system)
 
-def check_output_dir():
-    """Checks if the output directory exists, and creates it if it doesn't"""
-    path = pathlib.Path('images/output')
+def ensure_path_exists(path):
+    """Checks if the given path exists, and creates it if it doesn't"""
+    path = pathlib.Path(path)
     if not path.exists(): os.mkdir(path)
 
 def open_analysis_window():
@@ -1064,7 +1064,7 @@ def rename_file(file):
 
 def set_name_from_bubbles(target_type):
     """Set shooter name from initials on Orion targets"""
-    check_output_dir()
+    ensure_path_exists('images/output')
 
     DEFAULT_RADIUS = 15
 
