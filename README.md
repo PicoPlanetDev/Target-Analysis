@@ -253,7 +253,9 @@ You will need two tabs open for this process: the Google Sheet that you want to 
 19. Now click the `CREATE` button and save the key to the folder where Target Analysis is installed. It must be renamed to `sheets_secrets.json` (you can copy and paste this name) for Target Analysis to detect it.
 
 **Now that the Google Sheets integration is set up**, you need to make sure that your Google Sheet has a compatible layout. At present, Target Analysis expects every shooter's scores to be on a separate sheet (tab at the bottom) that is named the same as the names you enter into Target Analysis.<br>
-On this sheet, the date must be in Column A, the score out of 100 in Column B, and the X count in Column C. If there are multiple targets entered on the same day, the day is only entered once for the first target. Here is an example page of the spreadsheet: ![Google Sheet setup](https://raw.githubusercontent.com/PicoPlanetDev/Target-Analysis/main/help/google-sheet.png?raw=true)
+On this sheet, the date must be in Column A, the score out of 100 in Column B, and the X count in Column C. If there are multiple targets entered on the same day, the day is only entered once for the first target. Here is an example page of the spreadsheet:
+
+![Google Sheet setup](https://raw.githubusercontent.com/PicoPlanetDev/Target-Analysis/main/help/google-sheet.png?raw=true)
 
 #### How to use the Google Sheets integration
 1. Score a target or batch of targets
