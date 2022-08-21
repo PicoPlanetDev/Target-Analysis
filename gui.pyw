@@ -1830,6 +1830,134 @@ def create_teams_csv_files():
     
     main_label.config(text="Created teams CSV files") # Update the main label
 
+# -------------------------- Google Sheets functions ------------------------- #
+class SheetsEditor():
+    def __init__(self, service_file, sheet_name) -> None:
+        """Create a SheetsEditor to add scores to a Google Sheet
+        See https://pygsheets.readthedocs.io/en/latest/authorization.html for more info on service_file
+
+        Args:
+            service_file (file): JSON file containing service account credentials from Google Cloud Platform
+            sheet_name (str): Name of the Google Sheet to edit
+        """        
+        client = pygsheets.authorize(service_account_file=service_file)
+        self.document = client.open(sheet_name)
+        
+    def append_score(self, name, date, score, x_count):
+        """Append a score to the Google Sheet
+
+        Args:
+            name (str): Name of the sheet to edit
+            date (str): Date associated with the score
+            score (int): _description_
+            x_count (int): _description_
+        """
+        # Work on the named sheet
+        sheet = self.document.worksheet_by_title(name)
+
+        last_filled_row = 0
+        last_date = ''
+        for index,row in enumerate(sheet):
+            # print(index, row[0:3])
+            if row[0] != '': last_date = row[0] # The date row might have blanks (multiple scores on the same day)
+            last_filled_row = index + 1 # The last filled row is the index of the last row + 1 since it's zero-based
+
+        last_date = datetime.datetime.strptime(last_date, r'%m/%d/%Y') # Convert mm-dd-yyyy to datetime
+        date = datetime.datetime.strptime(date, r'%d %B %Y') # Convert dd Month yyyy to datetime
+        
+        needs_date = date > last_date # Only add a date to the column if it's newer than the last date
+        date_formatted = date.strftime(r'%m/%d/%Y') if needs_date else '' # Convert datetime to mm-dd-yyyy or leave blank
+        values = [[date_formatted, score, x_count]] # Date, Score, X Count
+        sheet.update_values(f'A{last_filled_row+1}', values) # Add the values at the next available row
+
+def open_sheets_window():
+    """Create a Google Sheets integration window"""
+
+    def on_close_sheets_window():
+        update_config()
+        sheets_window.destroy()
+
+    def make_window_ontop():
+        sheets_window.attributes("-topmost", True)
+        sheets_window.update()
+        sheets_window.attributes("-topmost", False)
+
+    main_label.config(text="Showing Google Sheets window") # Update the main label
+
+    #region Create settings window
+    sheets_window = tk.Toplevel(root)
+    sheets_window.title("Target Analysis")
+    sheets_window.minsize(width=500, height=200)
+    sheets_window.geometry("500x300")
+    sheets_window.tk.call('wm', 'iconphoto', sheets_window._w, tk.PhotoImage(file='assets/icon.png'))
+    #endregion
+
+    #region Create frames
+    sheets_top_frame = ttk.Frame(sheets_window)
+    sheets_top_frame.pack(side=TOP, expand=False, pady=5, fill=X)
+
+    sheets_name_frame = ttk.Frame(sheets_window)
+    sheets_name_frame.pack(side=TOP, fill=X, padx=5)
+
+    sheets_buttons_frame = ttk.Frame(sheets_window)
+    sheets_buttons_frame.pack(side=TOP, fill=X, padx=5)
+    #endregion
+
+    # Create top label
+    sheets_top_label = ttk.Label(sheets_top_frame, text="Google Sheets Integration", font='bold')
+    sheets_top_label.pack(side=TOP)
+
+    # Create name info label
+    sheets_name_info_label = ttk.Label(sheets_name_frame, text="Ensure the sheet is shared with the service account with edit permissions")
+    sheets_name_info_label.pack(side=TOP, padx=5, pady=5)
+
+    # Create name entry
+    sheets_name_label = ttk.Label(sheets_name_frame, text="Google Sheet Name")
+    sheets_name_label.pack(side=LEFT, padx=5, pady=5)
+    sheets_name_entry = ttk.Entry(sheets_name_frame, textvariable=sheets_name_var)
+    sheets_name_entry.pack(side=LEFT, padx=5, fill=X, expand=True, pady=5)
+
+    csv_path = None
+
+    def select_file():
+        nonlocal csv_path
+        csv_path = filedialog.askopenfilename(initialdir=Path('data'),filetypes=(("CSV files","*.csv"),("all files","*.*")))
+        if csv_path != '':
+            csv_path = Path(csv_path)
+            nonlocal sheets_upload_button
+            sheets_upload_button.config(state=NORMAL)
+        else:
+            main_label.config(text="No file selected")
+            csv_path = None
+        
+        make_window_ontop()
+
+    def upload_data_to_sheets():
+        """Uploads the data from the CSV file to the Google Sheet"""
+        nonlocal csv_path
+        if csv_path is None:
+            main_label.config(text="No file selected. Cannot upload data to Google Sheets")
+            raise Exception("No file selected. Cannot upload data to Google Sheets")
+
+        sheets_editor = SheetsEditor('sheets_secrets.json', sheets_name_var.get())
+
+        with open(csv_path) as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=',')
+            for index,row in enumerate(csv_reader):
+                if index != 0:
+                    sheets_editor.append_score(row[0], row[1], int(row[3]), int(row[4])) # row[2] is the target number (skipped)
+    
+    csv_path = None
+
+    # Create buttons
+    sheets_select_button = ttk.Button(sheets_buttons_frame, text="Select CSV data file", command=select_file)
+    sheets_select_button.pack(side=LEFT, padx=5, pady=5)
+    
+    sheets_upload_button = ttk.Button(sheets_buttons_frame, text="Upload to Google Sheets", command=upload_data_to_sheets, state=DISABLED)
+    sheets_upload_button.pack(side=LEFT, padx=5, pady=5)
+
+    sheets_window.protocol("WM_DELETE_WINDOW", on_close_sheets_window) # Update the config when the window is closed
+
 # ---------------------------- Settings functions ---------------------------- #
 
 def open_settings():
@@ -2207,6 +2335,7 @@ def update_settings_from_config(file):
     capitalize_names_var.set(config.getboolean("settings", "capitalize_names"))
     rename_files_var.set(config.getboolean("settings", "rename_files"))
     auto_use_today_var.set(config.getboolean("settings", "auto_use_today"))
+    sheets_name_var.set(config.get("settings", "sheets_name"))
     update_dark_mode() # Apply the dark mode setting
 
     # Continue setting variables for the Orion targets
@@ -2265,6 +2394,7 @@ def create_default_config(file):
     config.set('settings', 'capitalize_names', str(capitalize_names_var.get()))
     config.set('settings', 'rename_files', str(rename_files_var.get()))
     config.set('settings', 'auto_use_today', str(auto_use_today_var.get()))
+    config.set('settings', 'sheets_name', str(sheets_name_var.get()))
 
     # Add the orion section to the config file
     config.add_section('orion')
@@ -2329,6 +2459,7 @@ def update_config():
     config.set('settings', "capitalize_names", str(capitalize_names_var.get()))
     config.set('settings', 'rename_files', str(rename_files_var.get()))
     config.set('settings', 'auto_use_today', str(auto_use_today_var.get()))
+    config.set('settings', 'sheets_name', str(sheets_name_var.get()))
     # Continue updating the settings for the Orion section
     config.set('orion', 'orion_kernel_size_dpi1', str(orion_kernel_size_dpi1.get()))
     config.set('orion', 'orion_kernel_size_dpi2', str(orion_kernel_size_dpi2.get()))
@@ -3247,6 +3378,9 @@ rename_files_var = tk.BooleanVar(root, True)
 # Use today on launch
 auto_use_today_var = tk.BooleanVar(root, True)
 
+# Google Sheets Name
+sheets_name_var = tk.StringVar(root, "Score Sheet")
+
 # Teams
 enable_teams_var = tk.BooleanVar(root, False)
 team1_name_var = tk.StringVar(root, "Team 1")
@@ -3317,6 +3451,7 @@ filemenu.add_command(label="Show in Explorer", command=lambda: show_folder(Path(
 filemenu.add_command(label="Show output", command=show_output, state=DISABLED)
 filemenu.add_command(label="Show trends", command=show_trends)
 filemenu.add_command(label="Teams", command=open_teams_window)
+filemenu.add_command(label="Google Sheets", command=open_sheets_window)
 filemenu.add_command(label="Scan image", command=scan_image)
 filemenu.add_separator()
 filemenu.add_command(label="Settings", command=open_settings)

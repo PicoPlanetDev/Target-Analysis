@@ -227,6 +227,44 @@ Please note that there was not a noticeable accuracy increase when using the 600
 - Max cnt area: This defines the maximum area of a detected contour for it to be kept.
 - Max hole radius: If a contour is detected, and it passes the min/max area filter, and its size is smaller than this radius, it is counted as a bullet hole and scored.
 
+## Google Sheets Integration
+The Google Sheets integration allows you to upload scores from Target Analysis directly to a Google Sheet, but it does require some advanced setup.
+
+#### How to setup the Google Sheets integration
+You will need two tabs open for this process: the Google Sheet that you want to store your info on, and the following website:
+1. In a browser, go to [console.cloud.google.com](https://console.cloud.google.com) and agree to the Terms of Service
+2. Dismiss the `Access support tools quickly` message in the top right, if present
+3. At the top left, click `Select a project ⏷`
+4. Click the `NEW PROJECT` button on the window that appears
+5. Name the project something distinguishable
+6. Click `Create`
+7. Once it has been created, click `SELECT PROJECT` in the notifications window in the top right
+8. Now use the Search bar at the top to search for and select `Google Sheets API`
+9. Click the `GOT IT` button in the top left if a popup appears
+10. Click the `ENABLE` button
+11. Repeat steps 8-10 for the `Google Drive API`
+12. Once the Google Drive API is enabled, you should see a sidebar with a `Credentials` item on the left. *If it doesn't appear there,* click the menu button in the top left, then hover over `APIs & Services` and select `Credentials`.
+13. Click `+ CREATE CREDENTIALS` at the top and select `Service account`
+14. Name the service account something distinguishable, and press the copy icon `⧉` next to the email address
+15. With this email address still copied to the clipboard, change tabs (don't close the Cloud Console) to your Google Sheet, select `Share`, and paste in the email address. Then, click `Done` and switch back to the Cloud Console tab
+16. Click `CREATE AND CONTINUE` then don't enter anything, just press `CONTINUE` and finally `DONE`
+17. Under the Service Accounts heading, click on the email address that ends in `gserviceaccount.com`
+18. At the top, select the `KEYS` menu and click the `ADD KEY ⏷` button. Select `Create new key` and make sure it is set to `JSON`.
+19. Now click the `CREATE` button and save the key to the folder where Target Analysis is installed. It must be renamed to `sheets_secrets.json` (you can copy and paste this name) for Target Analysis to detect it.
+
+**Now that the Google Sheets integration is set up**, you need to make sure that your Google Sheet has a compatible layout. At present, Target Analysis expects every shooter's scores to be on a separate sheet (tab at the bottom) that is named the same as the names you enter into Target Analysis.<br>
+On this sheet, the date must be in Column A, the score out of 100 in Column B, and the X count in Column C. If there are multiple targets entered on the same day, the day is only entered once for the first target. Here is an example page of the spreadsheet: ![Google Sheet setup](https://raw.githubusercontent.com/PicoPlanetDev/Target-Analysis/main/help/google-sheet.png?raw=true)
+
+#### How to use the Google Sheets integration
+1. Score a target or batch of targets
+2. Open the `overview-<date>.csv` file in the `data/<current date>` directory and ensure that the scores are correct
+3. In Target Analysis, click `File -> Google Sheets`
+4. Type the name of the Google Sheet you have set up, such as `Score Book` (you only have to type it the first time)
+5. Click the `Select CSV data file` button and open the same CSV file you want to upload
+6. Click `Upload to Google Sheets` then check your spreadsheet.
+
+If nothing appears in your spreadsheet, please make sure that you have shared the sheet with the service account email address, the name of the sheet in Target Analysis is the same as online, the sheet pages are named properly, and the Google Sheets integration was correctly configured.
+
 ### Folder structure
 ```
 Target-Analysis

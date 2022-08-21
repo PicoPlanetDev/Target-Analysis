@@ -159,3 +159,6 @@ teams.ini
 
 # keep spec
 !gui.spec
+
+# Google Sheets service account credentials
+sheets_secrets.json
