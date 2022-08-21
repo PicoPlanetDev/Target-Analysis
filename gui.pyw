@@ -23,24 +23,26 @@
 #endregion
 
 #region Import libraries
+# Tkinter for the GUI
 from tkinter.constants import BOTH, BOTTOM, DISABLED, HORIZONTAL, LEFT, NORMAL, NSEW, RIDGE, RIGHT, TOP, X
 from tkinter.font import BOLD
-import cv2
 import tkinter as tk
-from tkinter import ttk
-from tkinter import filedialog
-from PIL import ImageTk,Image
-import os
-import csv
+from tkinter import ttk, filedialog
+# OpenCV and numpy primarily used for image processing
+import cv2
 import numpy as np
-import math
-import datetime
+from PIL import ImageTk,Image # PIL for image resizing and images in the GUI
+import os # OS for file management
+import csv # CSV for reading and writing data files
+import datetime # Datetime for date-string manipulation
+# Matplotlib for plotting trends of scores
 import matplotlib.pyplot as plt
 import matplotlib
-from configparser import ConfigParser
-from enum import Enum
-from pathlib import Path
-import subprocess
+from configparser import ConfigParser # Configparser for storing settings in .ini files
+from enum import Enum # Enum for the different target types
+from pathlib import Path # Pathlib for path manipulation and formatting
+import subprocess # Subprocess for running other programs
+import pygsheets # Pygsheets for Google Sheets integration
 #import traceback # For debugging - Usage: traceback.print_stack()
 #endregion
 
@@ -2368,17 +2370,26 @@ def update_config():
         config.write(f)
 
 # -------------------------- Analyze image functions ------------------------- #
+def compute_distance(x1, y1, x2, y2):
+    """Compute the distance between two points
+
+    Args:
+        x1 (int): Initial x coordinate
+        y1 (int): Initial y coordinate
+        x2 (int): Final x coordinate
+        y2 (int): Final y coordinate
+
+    Returns:
+        float: _description_
+    """    
+    return (((x2 - x1) ** 2)+((y2 - y1) ** 2)) ** 0.5
 
 def analyze_image(image):
     """Analyze an image of a bull from an NRA A-17 target and save the score to a csv file.
 
     Args:
         image (str): Path to the image to analyze.
-    """    
-    # Basic implementation of the distance formula
-    def compute_distance(x1, y1, x2, y2):
-        return math.sqrt(((x2 - x1) ** 2)+((y2 - y1) ** 2))
-
+    """
     #region multipliers are from NRA A-17 target in millimeters
     outer = 46.150
     five = 37.670/outer
@@ -2543,11 +2554,7 @@ def analyze_orion_image(image):
 
     Args:
         image (str): Path to the image to analyze.
-    """    
-    # Basic implementation of the distance formula
-    def compute_distance(x1, y1, x2, y2):
-        return math.sqrt(((x2 - x1) ** 2)+((y2 - y1) ** 2))
-
+    """
     #region multipliers are from NRA/USAS-50 target in millimeters
     outer = 33.38
     four = 28.5/outer
@@ -2786,10 +2793,6 @@ def analyze_orion_image_nra_scoring(image):
     Args:
         image (str): Path to the image to analyze.
     """    
-    # Basic implementation of the distance formula
-    def compute_distance(x1, y1, x2, y2):
-        return math.sqrt(((x2 - x1) ** 2)+((y2 - y1) ** 2))
-
     #region multipliers are from NRA A-17 target in millimeters
     # because scoring is performed according to the NRA A-17 target
     outer = 46.150
@@ -3001,11 +3004,7 @@ def analyze_50ft_conventional(image):
 
     Args:
         image (str): Path to the image to analyze.
-    """    
-    # Basic implementation of the distance formula
-    def compute_distance(x1, y1, x2, y2):
-        return math.sqrt(((x2 - x1) ** 2)+((y2 - y1) ** 2))
-
+    """
     #region multipliers are from NRA A-17 target in millimeters
     outer = 46.150
     five = 37.670/outer
