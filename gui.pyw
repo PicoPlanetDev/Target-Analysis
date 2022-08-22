@@ -1330,7 +1330,6 @@ def create_names_config():
 
     config.add_section('index')
     config.set('index', 'index', '1')
-    config.set('index', '; The index should be set to the number of names in the list (the highest number below + 1)')
 
     config.add_section('initials')
     config.set('initials', '0', 'SK')
