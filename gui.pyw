@@ -67,7 +67,7 @@ def load_image(target_type, image_selector="ask"):
         canvas = orion_50ft_conventional_canvas
     #endregion
 
-    main_label.config(text="Loading image...") # Update the main label
+    update_main_label("Loading image...")
 
     canvas.delete("all") # Clear the left canvas in case it already has an image
 
@@ -75,7 +75,7 @@ def load_image(target_type, image_selector="ask"):
     else: image_file = image_selector # Use the image passed in
 
     if image_file == "": # If the user didn't select an image, return
-        main_label.config(text="No image selected") # Update the main label
+        update_main_label("No image selected", "warning")
         return
 
     image = cv2.imread(image_file) # Load the image for OpenCV image
@@ -98,7 +98,7 @@ def load_image(target_type, image_selector="ask"):
     target_preview = ImageTk.PhotoImage(Image.open(image_file).resize((230, 350), Image.Resampling.LANCZOS)) # Store the image as a tkinter photo image and resize it
     canvas.create_image(0, 0, anchor="nw", image=target_preview) # Place the image on the canvas
 
-    main_label.config(text="Image loaded") # Update the main label
+    update_main_label("Image loaded")
 
     root.minsize(550,540) # Increase the window size to accomodate the image
 
@@ -114,7 +114,7 @@ def crop_image(image, target_type):
         target_type (TargetTypes): The type of target to crop
     """
 
-    main_label.config(text="Cropping image...") # Update main label
+    update_main_label("Cropping image...") # Update main label
     ensure_path_exists('images/output')
 
     # Pixel measurements were taken from 300dpi targets, so use the same ratio where necessary
@@ -356,10 +356,10 @@ def crop_image(image, target_type):
 
     # Get name from bubbles if enabled
     if use_bubbles_var.get() and (tab_control.index("current") == 1 or tab_control.index("current") == 2):
-        main_label.config(text="Setting name from bubbles...")
+        update_main_label("Setting name from bubbles...")
         set_name_from_bubbles(target_type)
     
-    main_label.config(text="Cropped image") # Update the main label
+    update_main_label("Cropped image")
 
 # --------------------------- Scan image functions --------------------------- #
 
@@ -382,7 +382,7 @@ def scan_image():
         '/format', 'JPG', 
         '/output', Path('images',image_name)
     ])
-    main_label.config(text="Image scanned as " + image_name) # Update the main label
+    update_main_label(f"Image scanned as {image_name}")
     return image_name # Return the image name to call the load function on it
 
 def scan_process(target_type):
@@ -391,7 +391,7 @@ def scan_process(target_type):
     Args:
         target_type (TargetTypes): What target type the scanned image is
     """    
-    main_label.config(text="Scanning image...") # Update the main label
+    update_main_label("Scanning image...")
     image_name = scan_image() # Scan and save an image, getting the image name
     path = Path("images", image_name) # Get the path to the image
     load_image(target_type, path) # Load the image
@@ -412,7 +412,7 @@ def analyze_target(target_type):
     Args:
         target_type (TargetType): The type of target to analyze
     """    
-    main_label.config(text="Analyzing target...") # Update main label
+    update_main_label("Analyzing target...") # Update main label
 
     global current_target_type
     current_target_type = target_type # Set the current target type
@@ -560,8 +560,6 @@ def analyze_target(target_type):
                 filewriter.writerow([name_var.get(), day_var.get() + " " + month_var.get() + " " + year_var.get(), target_num_var.get(), score, x_count])
                 csv_file.close()
 
-    main_label.config(text="Done") # Update main label
-
     # Enable the "Show Output" menu item
     # If any menu items have been added above this, make sure to recount them to get the correct index
     # Counting starts at zero.
@@ -583,7 +581,7 @@ def analyze_target(target_type):
             
 def show_output():
     """Shows the most recently saved results of the analysis in a new window."""
-    main_label.config(text="Showing output") # Update main label
+    update_main_label("Showing output window") # Update main label
 
     #region Create window
     show_output_window = tk.Toplevel(root)
@@ -701,9 +699,9 @@ def show_folder(path):
         path (str or Path): The path to open
     """
     print(f"Opening folder: {str(path)}")
-    main_label.config(text="Opening folder... ONLY WORKS ON WINDOWS")
+    update_main_label("Opening folder (Windows only)")
     subprocess.run(["explorer", Path(path)]) # Run a system command to open the folder using Explorer (Windows only)
-    main_label.config(text=f"{path} opened in explorer") # Update the main label
+    update_main_label(f"{path} opened in explorer")
 
 def open_file(path):
     """Opens the file specified by path with the default viewer
@@ -711,7 +709,7 @@ def open_file(path):
     Args:
         path (str or Path): path to the file to open
     """
-    main_label.config(text="Opening file " + str(path)) # Update the main label
+    update_main_label(f"Opening file {path}")
     subprocess.run([Path(path)], shell=True) # Run a system command to open the file using the default viewer (should work on any operating system)
 
 def ensure_path_exists(path):
@@ -863,7 +861,7 @@ def create_csv(path):
         filewriter = csv.writer(csv_file, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL) # Create a filewriter
         filewriter.writerow(['Name', 'Date', 'Target Number', 'Score','X']) # Write the header row
         csv_file.close() # Close the file
-    main_label.config(text=f"Created CSV file at {path}") # Update the main label
+    update_main_label(f"Created CSV file at {path}")
 
 def combine_output(score, x_count, path):
     """Saves an image with all of the target data after scoring
@@ -947,11 +945,11 @@ def open_folder(scoring_type):
     is_opening_folder = True # Keep track of whether or not the folder is being opened
     show_output_when_finished_backup = show_output_when_finished_var.get()
     show_output_when_finished_var.set(False)
-    main_label.config(text="Opening folder... This could take a while") # Update the main label
+    update_main_label("Analyzing folder, this could take a while...")
 
     folder = filedialog.askdirectory() # Get the folder to open
     if folder == "": # If the user didn't select a folder
-        main_label.config(text="No folder selected") # Update the main label
+        update_main_label("No folder selected", "warning")
         cleanup()
         return
     else: folder = Path(folder) # Convert the folder to a Path object
@@ -1056,8 +1054,7 @@ def set_info_from_file(file):
         if capitalize_names_var.get(): name = name.title() # Capitalize the name if the user wants it capitalized
         name_var.set(name)
 
-    # Update the main label
-    main_label.config(text=f"Set date to: {month_var.get()} {day_var.get()}, {year_var.get()} and target number {target_num_var.get()}")
+    update_main_label(f"Set date to: {month_var.get()} {day_var.get()}, {year_var.get()} and target number {target_num_var.get()}")
 
     if verify_info() != "valid":
         # If the file was improperly named, revert the metadata to its original value
@@ -1068,7 +1065,7 @@ def set_info_from_file(file):
         name_var.set(name_var_backup)
         
         print(f"File was improperly named. Reverted to: {month_var.get()} {day_var.get()}, {year_var.get()} and target number {target_num_var.get()}")
-        main_label.config(text=f"Info reverted: File was improperly named")
+        update_main_label(f"Info reverted: File was improperly named", "warning")
 
         raise ValueError("File was improperly named")
 
@@ -1082,8 +1079,8 @@ def set_info_from_today():
 
     target_num_var.set("1") # Default the target number to 1
 
-    # Update the main label
-    main_label.config(text="Set date to: " + month_var.get() + " " + day_var.get() + ", " + year_var.get() + " and target number 1")
+   
+    update_main_label(f"Set date to: {month_var.get()} {day_var.get()}, {year_var.get()} and target number 1")
 
 def shorten_month(month):
     """Shortens a month name to the first three letters
@@ -1382,7 +1379,7 @@ def clear_data():
         if file.suffix == ".jpg" or file.suffix == ".jpeg":
             os.remove(file)
 
-    main_label.config(text="data and images/output directories cleared") # Update the main label
+    update_main_label("Data and images/output directories cleared")
 
 def update_dark_mode():
     """Updates the dark mode based on the value of dark_mode_var"""
@@ -1394,7 +1391,7 @@ def update_dark_mode():
 
 def show_trends():
     """Show options for extracting trends from existing data files"""
-    main_label.config(text="Showing trends window") # Update the main label
+    update_main_label("Showing trends window")
 
     #region Create window
     trends_window = tk.Toplevel(root)
@@ -1410,7 +1407,7 @@ def show_trends():
         folder = filedialog.askdirectory() # Get the folder to open
 
         if folder == "": # If the user didn't select a folder, return
-            main_label.config(text="No folder selected")
+            update_main_label("No folder selected", "warning")
             return
         else:
             folder = Path(folder) # Set the folder to the selected folder
@@ -1475,7 +1472,7 @@ def show_trends():
     def showTrendGraph():
         data_csv = filedialog.askopenfilename() # Get the CSV file to open (this can be a backup to accomodate for multiple shooters)
         if data_csv == "":
-            main_label.config(text="No file selected") # Update the main label
+            update_main_label("No file selected", "warning")
             return
         else:
             data_csv = Path(data_csv)
@@ -1570,6 +1567,17 @@ def show_trends():
     load_csv_button = ttk.Button(trends_window, text="Load CSV (for graph)", command=showTrendGraph)
     load_csv_button.pack(padx=10, pady=0)
 
+def update_main_label(text, log_type="info"):
+    """Updates the main label with the given text and log type for color
+
+    Args:
+        text (str): The text to display
+        log_type (str): The way to display (error, warning, info)
+    """    
+    if log_type == "error": color="red"
+    elif log_type == "warning": color="orange"
+    else: color="black"
+    main_label.config(text=text, foreground=color)
 # ------------------------------ Teams functions ------------------------------ #
 
 def open_teams_window():
@@ -1829,7 +1837,7 @@ def create_teams_csv_files():
         filewriter.writerow(['Name', 'Date', 'Target Number', 'Score','X']) # Write the header row
         csv_file.close() # Close the file
     
-    main_label.config(text="Created teams CSV files") # Update the main label
+    update_main_label("Created teams CSV files")
 
 # -------------------------- Google Sheets functions ------------------------- #
 class SheetsEditor():
@@ -1840,9 +1848,16 @@ class SheetsEditor():
         Args:
             service_file (file): JSON file containing service account credentials from Google Cloud Platform
             sheet_name (str): Name of the Google Sheet to edit
-        """        
-        client = pygsheets.authorize(service_account_file=service_file)
-        self.document = client.open(sheet_name)
+        """
+        try: client = pygsheets.authorize(service_account_file=service_file)
+        except Exception as e:
+            update_main_label("Couldn't authorize. Make sure sheets_secrets.json is in this directory.", "error")
+            raise e
+
+        try: self.document = client.open(sheet_name)
+        except Exception as e:
+            update_main_label("Couldn't open sheet. Make sure the sheet name is correct.", "error")
+            raise e
         
     def append_score(self, name, date, score, x_count):
         """Append a score to the Google Sheet
@@ -1854,7 +1869,10 @@ class SheetsEditor():
             x_count (int): _description_
         """
         # Work on the named sheet
-        sheet = self.document.worksheet_by_title(name)
+        try: sheet = self.document.worksheet_by_title(name)
+        except Exception as e:
+            update_main_label(f"Couldn't find page named {name}. Please check the spreadsheet.", "error")
+            raise e
 
         last_filled_row = 0
         last_date = ''
@@ -1863,8 +1881,12 @@ class SheetsEditor():
             if row[0] != '': last_date = row[0] # The date row might have blanks (multiple scores on the same day)
             last_filled_row = index + 1 # The last filled row is the index of the last row + 1 since it's zero-based
 
-        last_date = datetime.datetime.strptime(last_date, r'%m/%d/%Y') # Convert mm-dd-yyyy to datetime
-        date = datetime.datetime.strptime(date, r'%m/%d/%Y') # Convert dd Month yyyy to datetime
+        try:
+            last_date = datetime.datetime.strptime(last_date, r'%m/%d/%Y') # Convert mm-dd-yyyy to datetime
+            date = datetime.datetime.strptime(date, r'%m/%d/%Y') # Convert dd Month yyyy to datetime
+        except ValueError as e:
+            update_main_label("Couldn't parse date in CSV file. Please use mm/dd/yyyy.", "error")
+            raise e
         
         needs_date = date > last_date # Only add a date to the column if it's newer than the last date
         date_formatted = date.strftime(r'%m/%d/%Y') if needs_date else '' # Convert datetime to mm-dd-yyyy or leave blank
@@ -1883,7 +1905,7 @@ def open_sheets_window():
         sheets_window.update()
         sheets_window.attributes("-topmost", False)
 
-    main_label.config(text="Showing Google Sheets window") # Update the main label
+    update_main_label("Showing Google Sheets window")
 
     #region Create settings window
     sheets_window = tk.Toplevel(root)
@@ -1928,7 +1950,7 @@ def open_sheets_window():
             nonlocal sheets_upload_button
             sheets_upload_button.config(state=NORMAL)
         else:
-            main_label.config(text="No file selected")
+            update_main_label("No file selected", "warning")
             csv_path = None
         
         make_window_ontop()
@@ -1936,8 +1958,8 @@ def open_sheets_window():
     def upload_data_to_sheets():
         """Uploads the data from the CSV file to the Google Sheet"""
         nonlocal csv_path
-        if csv_path is None:
-            main_label.config(text="No file selected. Cannot upload data to Google Sheets")
+        if csv_path == "":
+            update_main_label("No file selected. Cannot upload data to Google Sheets", "warning")
             raise Exception("No file selected. Cannot upload data to Google Sheets")
 
         sheets_editor = SheetsEditor('sheets_secrets.json', sheets_name_var.get())
@@ -1977,7 +1999,7 @@ def open_settings():
         path = Path('names.ini')
         open_file(path)
 
-    main_label.config(text="Showing settings window") # Update the main label
+    update_main_label("Showing settings window")
 
     #region Create settings window
     settings_window = tk.Toplevel(root)
