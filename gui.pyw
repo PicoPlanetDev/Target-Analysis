@@ -540,7 +540,9 @@ def analyze_target(target_type):
             csv_file (str or path): The CSV file to write to
         """
         filewriter = csv.writer(csv_file, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        filewriter.writerow([name_var.get(), day_var.get() + " " + month_var.get() + " " + year_var.get(), target_num_var.get(), score, x_count])
+        date = datetime.datetime.strptime(f"{day_var.get()} {month_var.get()} {year_var.get()}", r"%d %B %Y")
+        date_str = date.strftime(r"%m/%d/%Y")
+        filewriter.writerow([name_var.get(), date_str, target_num_var.get(), score, x_count])
         csv_file.close()
 
     # Save the target's basic info to the global data CSV
@@ -997,7 +999,7 @@ def open_folder(scoring_type):
     cleanup()
     show_folder(data_folder) # Open the data folder in Explorer
 
-# ---------------------------- File info funtions ---------------------------- #
+# ---------------------------- Date funtions ---------------------------- #
 
 def set_info_from_file(file):
     """Sets the target metadata by parsing the file name
@@ -1862,7 +1864,7 @@ class SheetsEditor():
             last_filled_row = index + 1 # The last filled row is the index of the last row + 1 since it's zero-based
 
         last_date = datetime.datetime.strptime(last_date, r'%m/%d/%Y') # Convert mm-dd-yyyy to datetime
-        date = datetime.datetime.strptime(date, r'%d %B %Y') # Convert dd Month yyyy to datetime
+        date = datetime.datetime.strptime(date, r'%m/%d/%Y') # Convert dd Month yyyy to datetime
         
         needs_date = date > last_date # Only add a date to the column if it's newer than the last date
         date_formatted = date.strftime(r'%m/%d/%Y') if needs_date else '' # Convert datetime to mm-dd-yyyy or leave blank
