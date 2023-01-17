@@ -43,6 +43,7 @@ from enum import Enum # Enum for the different target types
 from pathlib import Path # Pathlib for path manipulation and formatting
 import subprocess # Subprocess for running other programs
 import pygsheets # Pygsheets for Google Sheets integration
+#import pyzbar # for barcode reading and positioning
 #import traceback # For debugging - Usage: traceback.print_stack()
 #endregion
 
@@ -116,6 +117,8 @@ def crop_image(image, target_type):
 
     update_main_label("Cropping image...") # Update main label
     ensure_path_exists('images/output')
+
+    #_, barcode_rect = get_barcode(image) # Get the barcode rectangle
 
     # Pixel measurements were taken from 300dpi targets, so use the same ratio where necessary
     ratio_height = 3507
@@ -360,6 +363,18 @@ def crop_image(image, target_type):
         set_name_from_bubbles(target_type)
     
     update_main_label("Cropped image")
+
+def get_barcode(image):
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) # Make the image grayscale
+    detected_barcodes = pyzbar.pyzbar.decode(gray) # Detect the barcodes
+
+    if len(detected_barcodes) == 0:
+        raise Exception("No barcode detected")
+
+    for barcode in detected_barcodes:
+        barcode_data = barcode.data.decode("utf-8")
+        barcode_rect = barcode.rect
+        return barcode_data, barcode_rect
 
 # --------------------------- Scan image functions --------------------------- #
 
@@ -1195,6 +1210,8 @@ def set_name_from_bubbles(target_type):
     if target_type == TargetTypes.ORION_USAS_50 or target_type == TargetTypes.ORION_USAS_50_NRA_SCORING:
         x_offset = 7
         y_offset = -32
+    x_offset += orion_bubble_offset_x_var.get()
+    y_offset += orion_bubble_offset_y_var.get()
 
     def draw_debug_lines(output, columns, rows):
         for value in columns.values():
@@ -1748,6 +1765,7 @@ def open_teams_window():
 
     team2_open_csv_button = ttk.Button(team2_results_frame, text="Open CSV", command=lambda: open_file("data/team2.csv"))
     team2_open_csv_button.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
+    #endregion
 
 def create_teams_config():
     """Creates a default teams config file"""
@@ -2359,6 +2377,8 @@ def update_settings_from_config(file):
     rename_files_var.set(config.getboolean("settings", "rename_files"))
     auto_use_today_var.set(config.getboolean("settings", "auto_use_today"))
     sheets_name_var.set(config.get("settings", "sheets_name"))
+    orion_bubble_offset_x_var.set(config.getint("settings", "orion_bubble_offset_x"))
+    orion_bubble_offset_y_var.set(config.getint("settings", "orion_bubble_offset_y"))
     update_dark_mode() # Apply the dark mode setting
 
     # Continue setting variables for the Orion targets
@@ -2418,6 +2438,8 @@ def create_default_config(file):
     config.set('settings', 'rename_files', str(rename_files_var.get()))
     config.set('settings', 'auto_use_today', str(auto_use_today_var.get()))
     config.set('settings', 'sheets_name', str(sheets_name_var.get()))
+    config.set('settings', 'orion_bubble_offset_x', str(orion_bubble_offset_x_var.get()))
+    config.set('settings', 'orion_bubble_offset_y', str(orion_bubble_offset_y_var.get()))
 
     # Add the orion section to the config file
     config.add_section('orion')
@@ -2483,6 +2505,8 @@ def update_config():
     config.set('settings', 'rename_files', str(rename_files_var.get()))
     config.set('settings', 'auto_use_today', str(auto_use_today_var.get()))
     config.set('settings', 'sheets_name', str(sheets_name_var.get()))
+    config.set('settings', 'orion_bubble_offset_x', str(orion_bubble_offset_x_var.get()))
+    config.set('settings', 'orion_bubble_offset_y', str(orion_bubble_offset_y_var.get()))
     # Continue updating the settings for the Orion section
     config.set('orion', 'orion_kernel_size_dpi1', str(orion_kernel_size_dpi1.get()))
     config.set('orion', 'orion_kernel_size_dpi2', str(orion_kernel_size_dpi2.get()))
@@ -3410,6 +3434,7 @@ team1_name_var = tk.StringVar(root, "Team 1")
 team2_name_var = tk.StringVar(root, "Team 2")
 active_team_var = tk.StringVar(root, "team1")
 keep_best_var = tk.IntVar(root, 8)
+#endregion
 
 #region While many similar parameters exist for non-Orion targets, each has been tuned for its use case and therefore are unique to Orion scanning.
 orion_kernel_size_dpi1 = tk.IntVar(root, 2)
@@ -3450,6 +3475,10 @@ orion50ftconventional_min_contour_area = tk.IntVar(root, 1000)
 orion50ftconventional_max_contour_area = tk.IntVar(root, 5000)
 orion50ftconventional_max_hole_radius = tk.IntVar(root, 40)
 #endregion
+
+#region Fine tuning settings for Orion bubble offsets
+orion_bubble_offset_x_var = tk.IntVar(root, 0)
+orion_bubble_offset_y_var = tk.IntVar(root, 0)
 
 # Check for a config file. If it exists, load the values from it. Otherwise, create a config file frome the defaults.
 if Path("config.ini").exists():
